@@ -2,6 +2,7 @@ import dompurify from "dompurify";
 import { marked } from "marked";
 import { useEffect, useState } from "react";
 import { BlogType } from "../types";
+import { Copy } from "lucide-react";
 
 interface Heading {
   title: string;
@@ -58,12 +59,24 @@ function extractHeadings(markdown: string): Heading[] {
   return root;
 }
 
+// function to generate hashtags from a space separated string
+function getHashtags(hastags: string) {
+  return hastags.split(" ");
+}
+
 export default function Blog({ blog }: { blog: BlogType }) {
   const [htmlContent, setHtmlContent] = useState("");
   const [headings, setHeadings] = useState<Heading[]>([]);
+  const [hashtags, setHashtags] = useState<string[]>([]);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [trendingHashTags, setTrendingHashTags] = useState<string[]>([
+    "serverless",
+    "aws",
+  ]);
 
   useEffect(() => {
     setHeadings(extractHeadings(blog.body));
+    setHashtags(getHashtags(blog.hashtags));
   }, [blog.body]);
 
   useEffect(() => {
@@ -95,17 +108,65 @@ export default function Blog({ blog }: { blog: BlogType }) {
           </div>
 
           <div className="flex flex-col items-start">
-            <div className="flex justify-center space-x-4 m-5">
-              <p className="text-gray-500 text-center">
-                {getDateString(blog.date)}
-              </p>
+            <div className="flex justify-between space-x-4 m-5 w-full">
+              {blog.published ? (
+                <p className="text-gray-500 text-center">
+                  Published, {getDateString(blog.date)}
+                </p>
+              ) : (
+                <p className="text-gray-500 text-center">
+                  Draft, Not Published yet
+                </p>
+              )}
+              <div>
+                <button
+                  className="bg-black text-white px-4 py-2 rounded font-extrabold text-sm"
+                  onClick={() => setShareOpen(!shareOpen)}
+                >
+                  Share
+                </button>
+                {shareOpen && (
+                  <div className="relative">
+                    <div
+                      className="absolute end-0 z-10 mt-2 divide-y divide-gray-100 rounded-md border border-gray-100 bg-white shadow-lg"
+                      role="menu"
+                    >
+                      <div className="p-2 flex justify-between items-start">
+                        <strong className="block p-2 text-xs font-medium  text-gray-600">
+                          {window.location.href.split("/").slice(0)[2] +
+                            "/b/" +
+                            blog.short_id}
+                        </strong>
+
+                        <button
+                          className="bg-black text-white px-4 py-2 rounded font-extrabold text-sm"
+                          onClick={() => {
+                            navigator.clipboard.writeText(
+                              window.location.href.split("/").slice(0)[2] +
+                                "/b/" +
+                                blog.short_id
+                            );
+                          }}
+                        >
+                          {/* icon only */}
+                          <Copy size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="flex space-x-4 m-5 flex-wrap">
-              {blog.hastags.map((hastag) => (
+              {hashtags.map((hastag) => (
                 <p
                   key={hastag}
-                  className="px-2 py-1 rounded-full text-sm hover:underline  cursor-pointer"
+                  className={`px-2 py-1 rounded-full text-sm hover:underline  cursor-pointer ${
+                    trendingHashTags.includes(hastag)
+                      ? "font-bold text-red-600"
+                      : ""
+                  }`}
                 >
                   # {hastag}
                 </p>

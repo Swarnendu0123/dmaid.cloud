@@ -3,5 +3,7 @@ export interface BlogType {
   id: string;
   body: string;
   date: string;
-  hastags: string[];
+  hashtags: string;
+  published?: boolean;
+  short_id?: string;
 }
