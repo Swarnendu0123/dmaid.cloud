@@ -4,9 +4,9 @@ const Navigation = () => {
   return (
     <nav className="flex justify-between">
       <h1 className="text-center text-3xl font-bold">Better SDE</h1>
-      <ul className="flex justify-center space-x-4">
+      <ul className="flex justify-center space-x-4 text-sm">
         <li>
-          <Link to="/" className="hover:underline text-gray-500">
+          <Link to="/" className="hover:underline text-gray-500 ">
             Free Resources
           </Link>
         </li>
