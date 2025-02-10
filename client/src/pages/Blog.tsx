@@ -102,7 +102,7 @@ export default function Blog({ blog }: { blog: BlogType }) {
             </div>
 
             <div className="flex space-x-4 m-5 flex-wrap">
-              {blog.hastags.map((hastag, index) => (
+              {blog.hastags.map((hastag) => (
                 <p
                   key={hastag}
                   className="px-2 py-1 rounded-full text-sm hover:underline  cursor-pointer"
