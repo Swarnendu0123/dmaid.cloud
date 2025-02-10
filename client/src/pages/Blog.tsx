@@ -114,7 +114,7 @@ export default function Blog({ blog }: { blog: BlogType }) {
           </div>
 
           {/* Render Markdown */}
-          <article className="prose lg:prose-xl prose-a:text-gray-600 max-w-full prose-code:text-red-600 prose-pre:text-white prose-pre:bg-gray-100 prose-p:text-md prose-code:text-md prose-ul:text-md prose-ol:text-md hover:prose-headings:underline cursor-default prose-headings:text-gray-600">
+          <article className="prose lg:prose-xl prose-a:text-gray-600 max-w-full prose-code:text-red-600 prose-pre:text-white prose-pre:bg-gray-100 prose-p:text-md prose-code:text-md prose-ul:text-md prose-ol:text-md hover:prose-headings:underline cursor-default prose-headings:text-gray-600 prose-table:border-gray-200 prose-table:border prose-th:p-2 prose-td:p-2 prose-th:bg-gray-100 prose-td:border">
             <div
               dangerouslySetInnerHTML={{ __html: htmlContent }}
               className="text-sm prose-p:text-gray-500 p-5"
