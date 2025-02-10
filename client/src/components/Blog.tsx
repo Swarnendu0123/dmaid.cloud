@@ -69,7 +69,7 @@ export default function Blog({ blog }: { blog: BlogType }) {
   const [headings, setHeadings] = useState<Heading[]>([]);
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [shareOpen, setShareOpen] = useState(false);
-  const [trendingHashTags, setTrendingHashTags] = useState<string[]>([
+  const [trendingHashTags] = useState<string[]>([
     "serverless",
     "aws",
   ]);
