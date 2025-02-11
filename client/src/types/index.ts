@@ -5,5 +5,6 @@ export interface BlogType {
   date: string;
   hashtags: string;
   published?: boolean;
-  short_id?: string;
+  short_id: string;
+  free?: boolean;
 }

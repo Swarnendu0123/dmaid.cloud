@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { BlogType } from "../types";
-import { Copy, Printer, Share } from "lucide-react";
+import { Copy, Download, Share } from "lucide-react";
 import Markdown from "./Markdown";
 import { usePDF } from "react-to-pdf";
 
@@ -82,7 +82,6 @@ export default function Blog({ blog }: { blog: BlogType }) {
     return new Date(date).toDateString();
   };
 
-
   return (
     <div className="flex justify-evenly">
       {/* Table of Contents */}
@@ -102,7 +101,8 @@ export default function Blog({ blog }: { blog: BlogType }) {
             <div className="flex justify-between space-x-4 m-5 w-full">
               {blog.published ? (
                 <p className="text-gray-500 text-center">
-                  Published, {getDateString(blog.date)}
+                  Published,
+                  {getDateString(blog.date)}
                 </p>
               ) : (
                 <p className="text-gray-500 text-center">
@@ -114,7 +114,7 @@ export default function Blog({ blog }: { blog: BlogType }) {
                   className="bg-black text-white px-4 py-2 rounded font-extrabold text-sm m-1"
                   onClick={() => toPDF()}
                 >
-                  <Printer size={16} />
+                  <Download size={16} />
                 </button>
 
                 <button

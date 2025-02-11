@@ -9,6 +9,7 @@ export const blogs: BlogType[] = [
     date: "2021-09-12",
     hashtags:
       "serverless cloud aws functions lambda azure gcp faas devops microservices scalability automation cloudcomputing eventdriven",
+    free: true,
   },
   {
     id: "d1a4b89e-3e7a-4f25-9238-94a3b3d4e5f8",
@@ -18,6 +19,8 @@ export const blogs: BlogType[] = [
     date: "2021-09-15",
     hashtags:
       "docker containers devops microservices virtualization cloud kubernetes ci/cd isolation scalability portability security orchestration",
+    free: false,
+    published: true,
   },
   // a table markdown example
   {
@@ -28,5 +31,6 @@ export const blogs: BlogType[] = [
     date: "2021-09-20",
     hashtags:
       "markdown tables formatting documentation data comparison syntax html css readme content alignment borders",
+    published: true,
   },
 ];
