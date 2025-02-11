@@ -4,10 +4,15 @@ const Navigation = () => {
   return (
     <nav className="flex justify-between">
       <h1 className="text-center text-3xl font-bold">Better SDE</h1>
-      <ul className="flex justify-center space-x-4 text-sm">
+      <ul className="flex justify-center space-x-4 text-sm font-normal">
         <li>
-          <Link to="/" className="hover:underline text-gray-500 ">
+          <Link to="/" className="hover:underline text-gray-500">
             Free Resources
+          </Link>
+        </li>
+        <li>
+          <Link to="/pricing" className="hover:underline text-gray-500">
+            Pricing
           </Link>
         </li>
         <li>
@@ -17,10 +22,10 @@ const Navigation = () => {
         </li>
         <li>
           <Link
-            to="/about"
+            to="/auth/signin"
             className="bg-black text-white px-4 py-2 rounded font-extrabold"
           >
-            Subscribe
+            Sign In
           </Link>
         </li>
       </ul>

@@ -1,8 +1,8 @@
-import dompurify from "dompurify";
-import { marked } from "marked";
 import { useEffect, useState } from "react";
 import { BlogType } from "../types";
-import { Copy } from "lucide-react";
+import { Copy, Printer, Share } from "lucide-react";
+import Markdown from "./Markdown";
+import { usePDF } from "react-to-pdf";
 
 interface Heading {
   title: string;
@@ -65,32 +65,23 @@ function getHashtags(hastags: string) {
 }
 
 export default function Blog({ blog }: { blog: BlogType }) {
-  const [htmlContent, setHtmlContent] = useState("");
   const [headings, setHeadings] = useState<Heading[]>([]);
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [shareOpen, setShareOpen] = useState(false);
-  const [trendingHashTags] = useState<string[]>([
-    "serverless",
-    "aws",
-  ]);
+  const [trendingHashTags] = useState<string[]>(["serverless", "aws"]);
+  const [fileName, setFileName] = useState("content.pdf");
+  const { toPDF, targetRef } = usePDF({ filename: fileName });
 
   useEffect(() => {
     setHeadings(extractHeadings(blog.body));
     setHashtags(getHashtags(blog.hashtags));
-  }, [blog.body]);
-
-  useEffect(() => {
-    const htmlContentHandeller = async () => {
-      const m = await marked(blog.body);
-      setHtmlContent(dompurify.sanitize(m));
-    };
-
-    htmlContentHandeller();
+    setFileName(blog.title + ".pdf");
   }, [blog.body]);
 
   const getDateString = (date: string) => {
     return new Date(date).toDateString();
   };
+
 
   return (
     <div className="flex justify-evenly">
@@ -120,10 +111,17 @@ export default function Blog({ blog }: { blog: BlogType }) {
               )}
               <div>
                 <button
-                  className="bg-black text-white px-4 py-2 rounded font-extrabold text-sm"
+                  className="bg-black text-white px-4 py-2 rounded font-extrabold text-sm m-1"
+                  onClick={() => toPDF()}
+                >
+                  <Printer size={16} />
+                </button>
+
+                <button
+                  className="bg-black text-white px-4 py-2 rounded font-extrabold text-sm m-1"
                   onClick={() => setShareOpen(!shareOpen)}
                 >
-                  Share
+                  <Share size={16} />
                 </button>
                 {shareOpen && (
                   <div className="relative">
@@ -175,12 +173,9 @@ export default function Blog({ blog }: { blog: BlogType }) {
           </div>
 
           {/* Render Markdown */}
-          <article className="prose lg:prose-xl prose-a:text-gray-600 max-w-full prose-code:text-red-600 prose-pre:text-white prose-pre:bg-gray-100 prose-p:text-md prose-code:text-md prose-ul:text-md prose-ol:text-md hover:prose-headings:underline cursor-default prose-headings:text-gray-600 prose-table:border-gray-200 prose-table:border prose-th:p-2 prose-td:p-2 prose-th:bg-gray-100 prose-td:border">
-            <div
-              dangerouslySetInnerHTML={{ __html: htmlContent }}
-              className="text-sm prose-p:text-gray-500 p-5"
-            />
-          </article>
+          <div ref={targetRef} className="flex justify-center">
+            <Markdown markdownString={blog.body} />
+          </div>
         </div>
       </div>
     </div>
