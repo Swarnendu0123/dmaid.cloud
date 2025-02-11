@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { BlogType } from "../types";
-import { Copy, Download, Share } from "lucide-react";
+import { Bookmark, Copy, Download, MoveLeft, Share } from "lucide-react";
 import Markdown from "./Markdown";
 import { usePDF } from "react-to-pdf";
 
@@ -85,13 +85,21 @@ export default function Blog({ blog }: { blog: BlogType }) {
   return (
     <div className="flex justify-evenly">
       {/* Table of Contents */}
-      <div className="mt-20 text-gray-500 h-full p-1 rounded text-sm">
-        <p className="font-bold">Contents</p>
-        <HeadingTree headings={headings} />
+      <div className="mt-10">
+        <button className="bg-black text-white px-4 py-2 rounded font-extrabold text-sm m-1">
+          <MoveLeft size={16} />
+        </button>
+        <div className="mt-5 text-gray-500 h-full p-1 rounded text-sm">
+          <p className="font-bold">Contents</p>
+          <HeadingTree headings={headings} />
+        </div>
       </div>
 
       {/* Blog Content */}
-      <div className="text-start p-2 overflow-y-auto hide-scroll m-2 flex justify-center w-3/4">
+      <div
+        className="text-start p-2 overflow-y-auto hide-scroll m-2 flex justify-center w-3/4"
+        ref={targetRef}
+      >
         <div className="max-w-[900px]">
           <div className="py-5 text-5xl font-black text-black p-5">
             {blog.title}
@@ -99,17 +107,21 @@ export default function Blog({ blog }: { blog: BlogType }) {
 
           <div className="flex flex-col items-start">
             <div className="flex justify-between space-x-4 m-5 w-full">
-              {blog.published ? (
-                <p className="text-gray-500 text-center">
-                  Published,
-                  {getDateString(blog.date)}
-                </p>
-              ) : (
-                <p className="text-gray-500 text-center">
-                  Draft, Not Published yet
-                </p>
-              )}
               <div>
+                {blog.published ? (
+                  <p className="text-gray-500">
+                    Published,
+                    {getDateString(blog.date)}
+                  </p>
+                ) : (
+                  <p className="text-gray-500">Draft, Not Published yet</p>
+                )}
+              </div>
+              <div>
+                <button className="bg-black text-white px-4 py-2 rounded font-extrabold text-sm m-1">
+                  <Bookmark size={16} />
+                </button>
+
                 <button
                   className="bg-black text-white px-4 py-2 rounded font-extrabold text-sm m-1"
                   onClick={() => toPDF()}
@@ -173,7 +185,7 @@ export default function Blog({ blog }: { blog: BlogType }) {
           </div>
 
           {/* Render Markdown */}
-          <div ref={targetRef} className="flex justify-center">
+          <div className="flex justify-center border-t-2 border-gray-100">
             <Markdown markdownString={blog.body} />
           </div>
         </div>

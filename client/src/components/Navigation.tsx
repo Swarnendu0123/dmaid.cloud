@@ -34,7 +34,12 @@ const Navigation = () => {
 
   return (
     <nav className="flex justify-between">
-      <h1 className="text-center text-3xl font-bold">Better SDE</h1>
+      <h1
+        className="text-center text-3xl font-bold cursor-pointer"
+        onClick={() => navigate("/")}
+      >
+        Better SDE
+      </h1>
       <ul className="flex justify-center space-x-4 text-sm font-normal">
         <li className="flex items-center space-x-2">
           <Link to="/" className="hover:underline text-gray-500">
@@ -88,24 +93,15 @@ const Navigation = () => {
                     className="w-20 h-20 rounded-md"
                   />
                   <div className="flex flex-col items-start justify-between h-full">
-                    <button
-                      className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1"
-                      
-                    >
+                    <button className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1">
                       <LayoutDashboard size={16} />
                     </button>
-                    <button
-                      className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1"
-                      
-                    >
+                    <button className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1">
                       <BookMarked size={16} />
                     </button>
                   </div>
                   <div className="flex flex-col items-start justify-between h-full">
-                    <button
-                      className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1"
-                      
-                    >
+                    <button className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1">
                       <UserCog size={16} />
                     </button>
                     <button
