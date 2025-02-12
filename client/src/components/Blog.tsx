@@ -163,7 +163,7 @@ export default function Blog({ blog }: { blog: BlogType }) {
                           className="bg-black text-white px-4 py-2 rounded font-extrabold text-sm"
                           onClick={() => {
                             navigator.clipboard.writeText(
-                              window.location.href.split("/").slice(0)[2] +
+                              "https://" + window.location.href.split("/").slice(0)[2] +
                                 "/b/" +
                                 blog.short_id
                             );
