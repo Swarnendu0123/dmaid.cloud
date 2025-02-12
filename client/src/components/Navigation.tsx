@@ -35,10 +35,10 @@ const Navigation = () => {
   return (
     <nav className="flex justify-between">
       <h1
-        className="text-center text-3xl font-bold cursor-pointer"
+        className="text-center text-3xl font-black cursor-pointer"
         onClick={() => navigate("/")}
       >
-        Dnfy
+        Dnfy_
       </h1>
       <ul className="flex justify-center space-x-4 text-sm font-normal">
         <li className="flex items-center space-x-2">
