@@ -3,6 +3,8 @@ import { BlogType } from "../types";
 import { Bookmark, Copy, Download, MoveLeft, Share } from "lucide-react";
 import Markdown from "./Markdown";
 import { usePDF } from "react-to-pdf";
+import Diagram from "./Diagram";
+import { useToPng } from "@hugocxl/react-to-image";
 
 interface Heading {
   title: string;
@@ -71,6 +73,15 @@ export default function Blog({ blog }: { blog: BlogType }) {
   const [trendingHashTags] = useState<string[]>(["serverless", "aws"]);
   const [fileName, setFileName] = useState("content.pdf");
   const { toPDF, targetRef } = usePDF({ filename: fileName });
+  const [_, convert, ref] = useToPng<HTMLDivElement>({
+    quality: 1,
+    onSuccess: (data) => {
+      const link = document.createElement("a");
+      link.download = "diagram.png";
+      link.href = data;
+      link.click();
+    },
+  });
 
   useEffect(() => {
     setHeadings(extractHeadings(blog.body));
@@ -185,8 +196,21 @@ export default function Blog({ blog }: { blog: BlogType }) {
           </div>
 
           {/* Render Markdown */}
-          <div className="flex justify-center border-t-2 border-gray-100">
+          <div className="flex justify-center">
             <Markdown markdownString={blog.body} />
+          </div>
+
+          {/* Diagram */}
+          <div className="flex justify-center" ref={ref}>
+            <Diagram />
+          </div>
+          <div className="flex justify-end">
+            <button
+              className="bg-black text-white px-4 py-2 rounded font-extrabold text-sm m-1"
+              onClick={convert}
+            >
+              <Download size={16} />
+            </button>
           </div>
         </div>
       </div>

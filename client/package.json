@@ -10,10 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hugocxl/react-to-image": "^0.0.9",
     "dompurify": "^3.2.4",
     "firebase": "^11.3.0",
     "lucide-react": "^0.475.0",
     "marked": "^15.0.7",
+    "mermaid": "^11.4.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.1.5",
