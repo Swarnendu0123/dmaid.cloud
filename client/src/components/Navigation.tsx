@@ -38,7 +38,7 @@ const Navigation = () => {
         className="text-center text-3xl font-bold cursor-pointer"
         onClick={() => navigate("/")}
       >
-        Better SDE
+        Dnfy
       </h1>
       <ul className="flex justify-center space-x-4 text-sm font-normal">
         <li className="flex items-center space-x-2">

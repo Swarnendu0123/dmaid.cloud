@@ -3,7 +3,7 @@ import Markdown from "../components/Markdown";
 
 const Landing = () => {
   const content =
-    "# Better SDE\n\n Learn to **code**, build **projects**, and get **hired**. Starts with `INR 99/month`. \n\n Prepaid, Not a subscription.";
+    "# Dnfy \n\n Learn to **code**, build **projects**, and get **hired**. Starts with `INR 99/month`. \n\n Prepaid, Not a subscription.";
 
   return (
     <div className="text-black font-normal">
