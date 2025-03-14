@@ -2,7 +2,6 @@ import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import Redirect from "./pages/ShortURL_Redirect";
 import Landing from "./pages/Landing";
-import Auth from "./components/auth/login.auth";
 import CreateDiagramPage from "./pages/Diagram/CreateDiagram";
 import Navigation from "./components/Navigation";
 
@@ -18,9 +17,6 @@ function App() {
 
         {/* Short URL Redirect */}
         <Route path="d/:id" element={<Redirect />} />
-
-        {/* Authentication */}
-        <Route path="auth" element={<Auth />} />
       </Route>
     </Routes>
   );
