@@ -1,4 +1,3 @@
-import Navigation from "../components/Navigation";
 import Markdown from "../components/Markdown";
 
 const Landing = () => {
@@ -7,7 +6,6 @@ const Landing = () => {
 
   return (
     <div className="text-black font-normal">
-      <Navigation />
       <div className="h-[600px] flex justify-center items-center">
         <div className="flex justify-center items-center flex-col">
           <div>

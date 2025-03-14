@@ -1,19 +1,27 @@
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
-import Home from "./pages/Home";
-import Redirect from "./pages/Redirect";
+import Redirect from "./pages/ShortURL_Redirect";
 import Landing from "./pages/Landing";
-import Checkout from "./pages/Checkout";
 import Auth from "./components/auth/login.auth";
+import CreateDiagramPage from "./pages/Diagram/CreateDiagram";
+import Navigation from "./components/Navigation";
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Landing />} />
-      <Route path="/blog/:id" element={<Home />} />
-      <Route path="/b/:id" element={<Redirect />} />
-      <Route path="/checkout" element={<Checkout />} />
-      <Route path="/auth" element={<Auth />} />
+      <Route path="/" element={<Navigation />}>
+        {/* Landing Page */}
+        <Route index element={<Landing />} />
+
+        {/* Diagram */}
+        <Route path="diagram/create" element={<CreateDiagramPage />} />
+
+        {/* Short URL Redirect */}
+        <Route path="d/:id" element={<Redirect />} />
+
+        {/* Authentication */}
+        <Route path="auth" element={<Auth />} />
+      </Route>
     </Routes>
   );
 }
