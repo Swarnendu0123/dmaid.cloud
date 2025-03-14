@@ -12,6 +12,7 @@ const MermaidEditor = () => {
   const [history, setHistory] = useState<string[]>([default_code]);
   const [redoStack, setRedoStack] = useState<string[]>([]);
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const panzoomRef = useRef<any>(null);
@@ -48,12 +49,15 @@ const MermaidEditor = () => {
 
   const handleDownloadSVG = () => {
     if (diagramRef.current) {
-      const svgContent = diagramRef.current.innerHTML;
-      if (!svgContent.includes("<svg")) {
+      const svgElement = diagramRef.current.querySelector("svg");
+      if (!svgElement) {
         alert("No valid diagram to download!");
         return;
       }
 
+      setIsDownloading(true); // Disable button & show loading
+
+      const svgContent = new XMLSerializer().serializeToString(svgElement);
       const blob = new Blob([svgContent], { type: "image/svg+xml" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -63,6 +67,10 @@ const MermaidEditor = () => {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+
+      setTimeout(() => {
+        setIsDownloading(false); // Re-enable button after download
+      }, 1000);
     }
   };
 
@@ -138,12 +146,11 @@ const MermaidEditor = () => {
             <Image size={16} color="#000" />
           </p>
 
-          <button className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1">
-            <ArrowDownToLine
-              size={16}
-              color="#ffffff"
-              onClick={() => setIsDownloadModalOpen(true)}
-            />
+          <button
+            className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1"
+            onClick={() => setIsDownloadModalOpen(true)}
+          >
+            <ArrowDownToLine size={16} color="#ffffff" />
           </button>
         </div>
       </div>
@@ -215,14 +222,28 @@ const MermaidEditor = () => {
               {/* Download text and button */}
               <div className="flex items-center">
                 <p>Download Dmaid (in SVG)</p>
-                <button className="bg-black text-white px-4 py-2 rounded font-black text-sm m-0.5 my-1 mx-4 flex items-center">
-                  Download
-                  <ArrowDownToLine
-                    size={16}
-                    color="#ffffff"
-                    onClick={handleDownloadSVG}
-                    className="ml-2"
-                  />
+                <button
+                  className={`bg-black text-white px-4 py-2 rounded font-black text-sm m-0.5 my-1 mx-4 flex items-center ${
+                    isDownloading ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                  onClick={handleDownloadSVG}
+                  disabled={isDownloading}
+                >
+                  {isDownloading ? (
+                    <div className="flex items-center">
+                      <span className="animate-spin mr-2">⏳</span>{" "}
+                      Processing...
+                    </div>
+                  ) : (
+                    <>
+                      Download
+                      <ArrowDownToLine
+                        size={16}
+                        color="#ffffff"
+                        className="ml-2"
+                      />
+                    </>
+                  )}
                 </button>
               </div>
             </div>
