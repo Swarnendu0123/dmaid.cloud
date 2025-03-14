@@ -1,10 +1,7 @@
-export interface BlogType {
-  title: string;
+export interface DiagramType {
+  code: string;
   id: string;
-  body: string;
+  short_url_id: string;
   date: string;
-  hashtags: string;
   published?: boolean;
-  short_id: string;
-  free?: boolean;
 }

@@ -3,14 +3,7 @@ import CodeMirror from "@uiw/react-codemirror";
 import { markdown } from "@codemirror/lang-markdown";
 import mermaid from "mermaid";
 import Panzoom from "@panzoom/panzoom";
-import {
-  ArrowDownToLine,
-  Image,
-  Redo,
-  Undo,
-  Users,
-  X,
-} from "lucide-react";
+import { ArrowDownToLine, Image, Redo, Undo, Users, X } from "lucide-react";
 import { default_code } from "./default_mermaid_code";
 
 const MermaidEditor = () => {
@@ -204,15 +197,31 @@ const MermaidEditor = () => {
             >
               <X size={20} color="#fff" />
             </button>
-            <h2 className="text-xl mb-4 font-black">Download</h2>
+            <h2 className="text-xl mb-4 font-black">Download Dmaid</h2>
             <div className="flex flex-col gap-2">
+              {/* Render SVG in modal */}
+              <div className="border p-4 mt-4 rounded-lg overflow-auto max-h-80 w-full">
+                <div
+                  className="overflow-auto max-h-72"
+                  style={{ whiteSpace: "nowrap" }} // Prevents SVG from wrapping and ensures horizontal scrolling if needed
+                  dangerouslySetInnerHTML={{
+                    __html:
+                      diagramRef.current?.innerHTML ||
+                      "<p>No diagram available</p>",
+                  }}
+                />
+              </div>
+
+              {/* Download text and button */}
               <div className="flex items-center">
-                <p>Download Diagram (in SVG)</p>
-                <button className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1 mx-4">
+                <p>Download Dmaid (in SVG)</p>
+                <button className="bg-black text-white px-4 py-2 rounded font-black text-sm m-0.5 my-1 mx-4 flex items-center">
+                  Download
                   <ArrowDownToLine
                     size={16}
                     color="#ffffff"
                     onClick={handleDownloadSVG}
+                    className="ml-2"
                   />
                 </button>
               </div>
