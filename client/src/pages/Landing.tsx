@@ -2,7 +2,7 @@ import Markdown from "../components/Markdown";
 
 const Landing = () => {
   const content =
-    "# Dnfy_\n\n Learn to **code**, build **projects**, and get **hired**. Starts with `INR 99/month`. \n\n Prepaid, Not a subscription.";
+    "# Dmaid.Cloud\n\n Learn to **code**, build **projects**, and get **hired**. Starts with `INR 99/month`. \n\n Prepaid, Not a subscription.";
 
   return (
     <div className="text-black font-normal">
