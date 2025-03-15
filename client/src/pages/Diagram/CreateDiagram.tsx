@@ -7,11 +7,11 @@ import {
   ArrowDownToLine,
   Copy,
   Image,
-  Link,
   Lock,
   Redo,
   Share2,
   Undo,
+  User,
   Users,
   X,
 } from "lucide-react";
@@ -337,14 +337,13 @@ const MermaidEditor = () => {
             <h2 className="text-xl mb-4 font-black">Access Control Settings</h2>
             <div className="flex flex-col gap-2">
               <div className="flex flex-col">
-                <div className="flex">
-                  <div className="text-sm p-2 m-1 font-bold">Access Type</div>
-                  <div className="bg-black opacity-50 rounded text-white text-sm p-2 m-1 flex justify-center items-center">
+                <div className="flex items-center">
+                  <div className="text-sm p-2 m-1 font-bold w-72">Access Type</div>
+                  <div className="bg-black opacity-50 rounded text-white text-sm p-2 m-1 flex justify-center items-center w-full">
                     Private <Lock size={16} color="#ffffff" className="ml-1" />
                   </div>
-                  <div className="bg-black rounded text-white text-sm p-2 m-1 flex justify-center items-center">
-                    Anyone With the link{" "}
-                    <Link size={16} color="#ffffff" className="ml-1" />
+                  <div className="bg-black rounded text-white text-sm p-2 m-1 flex justify-center items-center w-full">
+                    Public <User size={16} color="#ffffff" className="ml-1" />
                   </div>
                 </div>
 
