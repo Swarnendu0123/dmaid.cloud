@@ -14,17 +14,16 @@ const schema_1 = require("../../db/schema");
 const router = (0, express_1.Router)();
 router.get("/", (req, res) => {
     res.send({
-        message: "Welcome to evnt.press server!",
+        message: "Welcome to dmaid.cloud server!",
         ref_docs: [
             "https://expressjs.com/en/5x/api.html",
             "https://mongoosejs.com/docs/guide.html",
         ],
         version: "V1",
         routes: {
-            "GET /api/v1/events": "To get all the events",
-            "GET /api/v1/event/:id": "To get a single event",
-            "POST /api/v1/event/create": "To create an event",
-            "PUT /api/v1/event/:id/update": "To update an event",
+            "GET '/'": "should redirect to '/api/v1'",
+            "GET '/api/v1'": "should display all the API Route information",
+            "GET '/api/v1/diagram/:uuid'": "to get a specific diagram",
         },
     });
 });
