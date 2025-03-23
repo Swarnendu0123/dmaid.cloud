@@ -15,3 +15,4 @@ export async function connectToDB() {
     console.log("[server/src/db/index.ts]: Failed to connect with DB, try to connect to your personal wifi :)");
   }
 }
+
