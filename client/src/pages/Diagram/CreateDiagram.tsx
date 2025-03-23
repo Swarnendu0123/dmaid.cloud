@@ -5,11 +5,11 @@ import mermaid from "mermaid";
 import Panzoom from "@panzoom/panzoom";
 import {
   ArrowDownToLine,
+  Brain,
   Copy,
   Image,
   Lock,
   Redo,
-  Share2,
   Undo,
   User,
   Users,
@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { default_code } from "./default_mermaid_code";
 import { v4 as uuidv4 } from "uuid";
+import { BACKEND_URL } from "../../config";
 
 const MermaidEditor = () => {
   const [code, setCode] = useState(default_code);
@@ -25,12 +26,16 @@ const MermaidEditor = () => {
   const [redoStack, setRedoStack] = useState<string[]>([]);
   const [exportSVGName, setExportSVGName] = useState("Dmaid_" + uuidv4());
   const [owner, setOwner] = useState("swarno@admin.dmaid.cloud");
+  const [prompt, setPrompt] = useState("");
 
   // Modals
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [isGenerateWithAIModalOpen, setIsGenerateWithAIModalOpen] =
+    useState(false);
 
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isAIGenerating, setIsAIGenerating] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const panzoomRef = useRef<any>(null);
@@ -163,6 +168,43 @@ const MermaidEditor = () => {
     }
   };
 
+  // function to generate the code using AI
+  const generateAIDiagram = async () => {
+    try {
+      setLoading(true);
+      setIsAIGenerating(true);
+      console.log(BACKEND_URL + "/diagram/generate");
+
+      const response = await fetch(BACKEND_URL + "/diagram/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate AI diagram");
+      }
+
+      const data = await response.json();
+      if (data.diagram) {
+        setCode(data.diagram); // Update the editor with the AI-generated code
+        setExportSVGName(data.title);
+        setHistory((prev) => [...prev, data.diagram]); // Add to history
+        setRedoStack([]); // Clear redo stack
+      } else {
+        alert("No diagram code was generated.");
+      }
+    } catch (error) {
+      console.error("Error generating AI diagram:", error);
+      alert("An error occurred while generating the diagram.");
+    } finally {
+      setLoading(false); // Hide loading indicator
+      setIsAIGenerating(false);
+    }
+  };
+
   return (
     <div className="flex gap-4 p-4 items-start relative">
       <div>
@@ -195,8 +237,11 @@ const MermaidEditor = () => {
           >
             <Users size={16} color="#ffffff" />
           </button>
-          <button className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1">
-            <Share2 size={16} color="#ffffff" />
+          <button
+            className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1"
+            onClick={() => setIsGenerateWithAIModalOpen(true)}
+          >
+            <Brain size={16} color="#ffffff" />
           </button>
         </div>
 
@@ -338,7 +383,9 @@ const MermaidEditor = () => {
             <div className="flex flex-col gap-2">
               <div className="flex flex-col">
                 <div className="flex items-center">
-                  <div className="text-sm p-2 m-1 font-bold w-72">Access Type</div>
+                  <div className="text-sm p-2 m-1 font-bold w-72">
+                    Access Type
+                  </div>
                   <div className="bg-black opacity-50 rounded text-white text-sm p-2 m-1 flex justify-center items-center w-full">
                     Private <Lock size={16} color="#ffffff" className="ml-1" />
                   </div>
@@ -370,6 +417,54 @@ const MermaidEditor = () => {
                     <Copy size={16} color="#ffffff" />
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* generate with AI Modal */}
+      {isGenerateWithAIModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50">
+          <div className="bg-white p-6 rounded-lg shadow-lg relative">
+            <button
+              className="absolute top-2 right-2 bg-black rounded"
+              onClick={() => setIsGenerateWithAIModalOpen(false)}
+            >
+              <X size={20} color="#fff" />
+            </button>
+            <h2 className="text-xl mb-4 font-black">
+              Generate Diagrams with AI
+            </h2>
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-col">
+                <div className="flex items-center">
+                  <textarea
+                    name=""
+                    id=""
+                    value={prompt}
+                    className="border p-2 m-1 rounded w-96"
+                    onChange={(e) => setPrompt(e.target.value)}
+                    placeholder="Create a client Server Architecture with Database and Middlewares"
+                  />
+                </div>
+
+                <button
+                  className={`bg-black text-white px-4 py-2 rounded font-black text-sm m-0.5 my-1 mx-4 flex items-center justify-center ${
+                    isAIGenerating ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                  onClick={generateAIDiagram}
+                  disabled={isAIGenerating}
+                >
+                  {isAIGenerating ? (
+                    <div className="flex items-center justify-center">
+                      <span className="animate-spin mr-2">⏳</span>{" "}
+                      Generating...
+                    </div>
+                  ) : (
+                    <>Generate With AI</>
+                  )}
+                </button>
               </div>
             </div>
           </div>

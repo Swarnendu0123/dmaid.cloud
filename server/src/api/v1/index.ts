@@ -1,5 +1,7 @@
 import { Router } from "express";
 import { EventModel } from "../../db/schema";
+import { generateDiagram } from "../../controllers/aiDiagramGenerator";
+import { generateTitle } from "../../controllers/aiTitleGenerator";
 
 const router = Router();
 
@@ -12,101 +14,56 @@ router.get("/", (req, res) => {
     ],
     version: "V1",
     routes: {
-      "GET '/'": "should redirect to '/api/v1'",
-      "GET '/api/v1'": "should display all the API Route information",
-      "GET '/api/v1/diagram/:uuid'": "to get a specific diagram",
+      "info routes": {
+        "GET '/'": "should redirect to '/api/v1'",
+        "GET '/api/v1'": "should display all the API Route information",
+      },
+
+      "diagram Routes": {
+        "GET '/api/v1/diagram/:uuid'": "to get a specific diagram",
+        "POST '/api/v1/diagram/create'":
+          "to save a specific diagram for the first time",
+        "PUT '/api/v1/diagram/edit/:uuid'": "to edit a specific diagram",
+      },
+
+      "access control routes": {
+        "PUT '/api/v1/control/view/:email'":
+          "to give view access of a specific file (check owner)",
+        "PUT '/api/v1/control/edit/:email'":
+          "to give the edit access of a specific diagram (check owner)",
+        "PUT '/api/v1/control/transfer/:email'":
+          "to transfer the ownership to a specific user",
+      },
+
+      "AI Routes": {
+        "POST 'api/v1/diagram/generate'": "to generate a diagram using GEN AI",
+      },
     },
   });
 });
 
 // route to get all events
-router.get("/events", async (req, res) => {
+router.post("/diagram/generate", async (req, res) => {
   try {
-    const events = await EventModel.find();
-    console.log(events);
-    res.send({ message: "Events found!", success: true, data: events });
-  } catch (e) {
-    res.send({ message: "Events not found!", success: false });
-  }
-});
+    const prompt = req.body.prompt;
 
-// route to get an event by id
-router.get("/event/:id", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const event = await EventModel.findById(id);
-    res.send({ message: "Event found!", success: true, data: event });
-  } catch (e) {
-    res.send({ message: "Event not found!", success: false });
-  }
-});
+    console.log(prompt);
 
-// route to create an event
-router.post("/event/create", (req, res) => {
-  try {
-    // we dont need to pass id mongodb will automatically generate _id variable for us
-    const {
-      name,
-      date,
-      location,
-      registration,
-      registration_fee,
-      image,
-      registered,
-      org_name,
-    } = req.body;
-    const newEvent = new EventModel({
-      name,
-      date,
-      location,
-      registration,
-      registration_fee,
-      image,
-      registered,
-      org_name,
-    });
-    newEvent.save();
+    const generated_diagram = await generateDiagram(prompt);
+    const generated_title = await generateTitle(prompt);
+
+    console.log(generated_diagram);
+    console.log(generated_title);
+    
+
     res.send({
-      message: "Event created successfully!",
+      messege: "Diagram generated",
+      diagram: generated_diagram,
+      title: generated_title,
       success: true,
-      data: newEvent,
     });
   } catch (e) {
-    res.send({ message: "Failed to create event!", success: false });
-  }
-});
-
-// route to update an event
-router.put("/event/:id/update", async (req, res) => {
-  try {
-    const { id } = req.params;
-    const {
-      name,
-      date,
-      location,
-      registration,
-      registration_fee,
-      image,
-      registered,
-      org_name,
-    } = req.body;
-    const updatedEvent = await EventModel.findByIdAndUpdate(id, {
-      name,
-      date,
-      location,
-      registration,
-      registration_fee,
-      image,
-      registered,
-      org_name,
-    });
-    res.send({
-      message: "Event updated successfully!",
-      success: true,
-      data: updatedEvent,
-    });
-  } catch (e) {
-    res.send({ message: "Failed to update event!", success: false });
+    res.send({ message: "Error in generating the response!", success: false });
   }
 });
 
