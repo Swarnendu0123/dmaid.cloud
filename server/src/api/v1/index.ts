@@ -5,14 +5,16 @@ const router = Router();
 
 router.get("/", (req, res) => {
   res.send({
-    message: "Welcome to evnt.press server!",
+    message: "Welcome to dmaid.cloud server!",
     ref_docs: [
       "https://expressjs.com/en/5x/api.html",
       "https://mongoosejs.com/docs/guide.html",
     ],
     version: "V1",
     routes: {
-      "GET /api/v1/diagram": "To get all the events",
+      "GET '/'": "should redirect to '/api/v1'",
+      "GET '/api/v1'": "should display all the API Route information",
+      "GET '/api/v1/diagram/:uuid'": "to get a specific diagram",
     },
   });
 });
