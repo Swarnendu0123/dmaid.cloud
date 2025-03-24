@@ -190,9 +190,10 @@ const Navigation = () => {
 
       <nav className="flex justify-between">
         <h1
-          className="text-center text-3xl font-black cursor-pointer"
+          className="text-center text-3xl font-black cursor-pointer flex"
           onClick={() => navigate("/")}
         >
+          <img src="/logo_dmaid.png" alt="" height={10} width={50} />
           Dmaid.cloud
         </h1>
         <ul className="flex justify-center space-x-4 text-sm font-normal">
