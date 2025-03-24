@@ -196,12 +196,101 @@ graph TD;
 
 ---
 
+
+### Example 9: Git Flow With Feature Branches, Releases, and Hotfixes
+
+The Mermaid code would be:
+gitGraph
+    commit id: "Initial commit"
+    branch develop
+    commit id: "Implement feature A"
+    branch feature/A
+    commit id: "Add tests for feature A"
+    commit id: "Fix bugs in feature A"
+    checkout develop
+    merge feature/A id: "Merge feature A"
+    branch feature/B
+    commit id: "Implement feature B"
+    commit id: "Add tests for feature B"
+    checkout develop
+    merge feature/B id: "Merge feature B"
+    commit id: "Update CI/CD pipeline"
+    branch release/1.0
+    commit id: "Prepare release 1.0"
+    checkout develop
+    merge release/1.0 id: "Merge release 1.0"
+    branch hotfix/bug-1
+    commit id: "Fix critical bug in production"
+    checkout develop
+    merge hotfix/bug-1 id: "Merge hotfix"
+    checkout develop
+    commit id: "Implement feature C"
+    branch feature/C
+    commit id: "Add tests for feature C"
+    checkout develop
+    merge feature/C id: "Merge feature C"
+
+
+---
+
+### Example 10: Multiplayer Game Architecture With Unity Client, Go Backend, and WebRTC
+
+The Mermaid code would be:
+graph LR;
+    subgraph Unity Client
+        User-->|Game Input|Unity_Game;
+        Unity_Game-->|Position Updates, Actions|Game_Logic;
+        Game_Logic-->|gRPC Requests|Go_Gateway;
+        Game_Logic-->|Proximity Check|Proximity_Detection;
+        Proximity_Detection-- Distance Check -->Nearby_Players;
+        Nearby_Players-->|Initiate WebRTC|WebRTC_Manager;
+        WebRTC_Manager-->|Peer-to-Peer Communication|Other_Players;
+    end
+    subgraph Go Backend
+        Go_Gateway-- gRPC -->Matchmaking_Service;
+        Go_Gateway-- gRPC -->Authentication_Service;
+        Go_Gateway-- gRPC -->Player_State_Service;
+        Go_Gateway-- Kafka -->Game_Event_Processor;
+        Matchmaking_Service-->|Assign to Game Server|Game_Server_Allocator;
+        Game_Server_Allocator-->|Start Game Instance|Game_Server;
+        Authentication_Service-->|Verify Credentials|Database;
+        Player_State_Service-->|Store/Retrieve|Database;
+        Game_Event_Processor-->|Process events|Kafka_Topic;
+        Game_Server-->|Manage game session|Game_State;
+    end
+    subgraph Kafka Cluster
+        Kafka_Topic
+    end
+    subgraph Data Storage
+        Database
+    end
+    subgraph WebRTC Connection
+        Other_Players
+    end
+
+    style Go_Gateway fill:#f9f,stroke:#333,stroke-width:2px
+    style Matchmaking_Service fill:#f9f,stroke:#333,stroke-width:2px
+    style Authentication_Service fill:#f9f,stroke:#333,stroke-width:2px
+    style Player_State_Service fill:#f9f,stroke:#333,stroke-width:2px
+    style Game_Event_Processor fill:#f9f,stroke:#333,stroke-width:2px
+    style Game_Server fill:#f9f,stroke:#333,stroke-width:2px
+
+    style Unity_Game fill:#ccf,stroke:#333,stroke-width:2px
+    style Game_Logic fill:#ccf,stroke:#333,stroke-width:2px
+    style Proximity_Detection fill:#ccf,stroke:#333,stroke-width:2px
+    style WebRTC_Manager fill:#ccf,stroke:#333,stroke-width:2px
+
+---
+
+
 ### Guidelines:
 - Always generate valid Mermaid.js code.
 - Ensure the output strictly follows Mermaid.js syntax.
 - The diagrams should be detailed and accurate.
 - Do not enclose Mermaid code within triple backticks (\`\`\`).
 - Do not include specific terminology such as "mermaid" or any related keywords in the output.
+- Do not include 'branch main' in case of gitGraph.
+- Do not use 'tag' in gitGraph
 `;
 
   const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
