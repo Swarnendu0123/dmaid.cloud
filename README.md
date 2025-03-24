@@ -27,12 +27,6 @@ graph TD;
     Backend -->|Sends Mermaid Code| API
     API -->|Returns Generated Diagram| Backend
     Backend -->|Sends Diagram Data| WebEditor
-
-    style API fill:#f9f,stroke:#333,stroke-width:2px
-    style Backend fill:#ccf,stroke:#333,stroke-width:2px
-    style Database fill:#ccf,stroke:#333,stroke-width:2px
-    style WebEditor fill:#ccf,stroke:#333,stroke-width:2px
-    style User fill:#ccf,stroke:#333,stroke-width:2px
 ```
 
 
