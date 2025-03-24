@@ -43,5 +43,5 @@ https://www.tldraw.com/f/4CtJWrRjnFN-ORD68BzyE?d=v-284.-230.2878.1982.OkOPtPWQ-2
 
 
 # Deployments and URLS
-- Server URl: [https://api.dmaid.cloud](https://api.dmaid.cloud)
 - Client URL: [https://dmaid.cloud](https://dmaid.cloud)
+- Server URl: [https://api.dmaid.cloud](https://api.dmaid.cloud)
