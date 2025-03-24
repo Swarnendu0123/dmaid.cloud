@@ -31,7 +31,7 @@ graph TD;
 
 
 # Project Details 
-https://www.tldraw.com/f/4CtJWrRjnFN-ORD68BzyE?d=v-284.-230.2878.1982.OkOPtPWQ-2pQucWwkoKKy
+https://www.tldraw.com/f/4CtJWrRjnFN-ORD68BzyE
 
 
 # Technologies
