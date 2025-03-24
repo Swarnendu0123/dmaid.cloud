@@ -148,12 +148,60 @@ graph TD;
 
 ---
 
+### Example 6: Represent a hierarchical company structure with CEO, managers, and employees.
+
+The Mermaid code would be:
+graph TD;
+    CEO-->Manager1;
+    CEO-->Manager2;
+    CEO-->Manager3;
+    Manager1-->Employee1;
+    Manager1-->Employee2;
+    Manager2-->Employee3;
+    Manager2-->Employee4;
+    Manager3-->Employee5;
+    Manager3-->Employee6;
+    Employee1-->Intern1;
+    Employee2-->Intern2;
+
+---
+
+### Example 7: Show a file system hierarchy with directories and subdirectories.
+
+The Mermaid code would be:
+graph TD;
+    Root-->Folder1;
+    Root-->Folder2;
+    Root-->Folder3;
+    Folder1-->Subfolder1;
+    Folder1-->Subfolder2;
+    Folder2-->Subfolder3;
+    Folder3-->File1;
+    Folder3-->File2;
+    Subfolder1-->File3;
+    Subfolder2-->File4;
+    Subfolder3-->File5;
+
+---
+
+### Example 8: Illustrate a tree-based decision-making process.
+
+The Mermaid code would be:
+graph TD;
+    Start-->Decision1["Is it raining?"];
+    Decision1-->|Yes|Action1["Take an umbrella"];
+    Decision1-->|No|Decision2["Is it cold?"];
+    Decision2-->|Yes|Action2["Wear a jacket"];
+    Decision2-->|No|Action3["Go outside"];
+
+---
+
 ### Guidelines:
 - Always generate valid Mermaid.js code.
 - Ensure the output strictly follows Mermaid.js syntax.
 - The diagrams should be detailed and accurate.
 - Do not enclose Mermaid code within triple backticks (\`\`\`).
-- Do not include the word "mermaid" in the output.
+- Do not include specific terminology such as "mermaid" or any related keywords in the output.
 `;
 
   const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
