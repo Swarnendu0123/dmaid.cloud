@@ -5,7 +5,6 @@ import mermaid from "mermaid";
 import Panzoom from "@panzoom/panzoom";
 import {
   ArrowDownToLine,
-  Brain,
   Copy,
   Image,
   Lock,
@@ -274,7 +273,7 @@ const MermaidEditor = () => {
             className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1"
             onClick={() => setIsGenerateWithAIModalOpen(true)}
           >
-            <Brain size={16} color="#ffffff" />
+            <Sparkles size={16} color="#ffffff" />
           </button>
         </div>
 
@@ -484,7 +483,7 @@ const MermaidEditor = () => {
               <X size={20} color="#fff" />
             </button>
             <h2 className="text-xl mb-4 font-black">
-              Generate Diagrams with AI
+              Generate Diagrams with AI 
             </h2>
             <div className="flex flex-col gap-2">
               <div className="flex flex-col">
@@ -512,7 +511,7 @@ const MermaidEditor = () => {
                       Generating...
                     </div>
                   ) : (
-                    <>Generate With AI</>
+                    <>Generate With AI <Sparkles size={16} color="#ffffff" className="ml-2" /></>
                   )}
                 </button>
               </div>
