@@ -19,129 +19,149 @@ const genAI = new generative_ai_1.GoogleGenerativeAI(process.env.GOOGLE_GEMINI_A
 function generateDiagram(prompt) {
     return __awaiter(this, void 0, void 0, function* () {
         const instructions = `
-You are an expert in converting English descriptions into Mermaid.js diagrams! Your task is to generate valid Mermaid.js code based on natural language descriptions of processes, workflows, or architectures.
+You are an expert in converting English descriptions into highly detailed Mermaid.js diagrams! Your task is to generate valid Mermaid.js code based on natural language descriptions of complex workflows, system architectures, or processes.
 
 For example:
 
-Example 1: Generate a client-server architecture-based Mermaid code.
+### Example 1: Show an advanced authentication and authorization flow involving OAuth, JWT, and role-based access control (RBAC).
 
 The Mermaid code would be:
 sequenceDiagram;
-participant Client;
-participant Server;
-participant Database;
-Client->>Server: HTTP Request (e.g., GET /data);
-Server->>Database: Query Data;
-Database-->>Server: Data Response;
-Server-->>Client: HTTP Response (JSON Data);
-Note over Client,Server: Client interacts with the server via API calls;
-Note over Server,Database: Server retrieves data from the database;
+    participant User;
+    participant Client;
+    participant AuthServer;
+    participant OAuthProvider;
+    participant Database;
+    participant ResourceServer;
 
-Example 2: Show the login process from the user to the authentication server and database.
+    User->>Client: Login via OAuth;
+    Client->>OAuthProvider: Request Auth Code;
+    OAuthProvider-->>Client: Authorization Code;
+    Client->>OAuthProvider: Exchange Code for Token;
+    OAuthProvider-->>Client: Access Token & Refresh Token;
+    Client->>AuthServer: Validate Token;
+    AuthServer->>Database: Fetch User Roles & Permissions;
+    Database-->>AuthServer: User Data & Roles;
+    AuthServer-->>Client: Verified User Data;
+    Client->>ResourceServer: Request Protected Resource;
+    ResourceServer->>AuthServer: Validate User Permissions;
+    AuthServer-->>ResourceServer: Access Granted;
+    ResourceServer-->>Client: Return Resource;
 
-The Mermaid code would be:
-sequenceDiagram;
-participant User;
-participant Client;
-participant AuthServer;
-participant Database;
-User->>Client: Enters Credentials;
-Client->>AuthServer: Send Login Request;
-AuthServer->>Database: Validate Credentials;
-Database-->>AuthServer: Response (Valid/Invalid);
-AuthServer-->>Client: Token (if valid);
-Client-->>User: Login Successful/Failed;
+---
 
-Example 3: Generate a Git branching workflow diagram.
+### Example 2: Represent a Git workflow with multiple developers, code reviews, and hotfix handling.
 
 The Mermaid code would be:
 gitGraph
-   commit id: "Initial commit"
-   branch develop
-   commit id: "Feature 1 implemented"
-   branch feature2
-   checkout develop
-   commit id: "Bug fix"
-   checkout feature2
-   commit id: "Feature 2 implemented"
-   checkout develop
-   merge feature2 id: "Merge feature2 into develop"
-   branch release
-   checkout release
-   commit id: "Release prep"
-   checkout main
-   merge develop id: "Merge develop into main"
-   commit id: "Version 1.0"
-   checkout develop
-   branch feature3
-   checkout feature3
-   commit id: "Feature 3 implemented"
-   checkout main
+    commit id: "Initial commit"
+    branch develop
+    commit id: "Setup project structure"
+    branch feature/auth
+    commit id: "Implement authentication"
+    checkout develop
+    branch feature/ui
+    commit id: "Develop UI components"
+    checkout feature/auth
+    commit id: "Add OAuth support"
+    checkout develop
+    merge feature/auth id: "Merge authentication"
+    checkout feature/ui
+    commit id: "Enhance UI with animations"
+    checkout develop
+    merge feature/ui id: "Merge UI components"
+    branch hotfix/login-bug
+    checkout hotfix/login-bug
+    commit id: "Fix login issue in production"
+    checkout main
+    merge hotfix/login-bug id: "Deploy hotfix"
+    checkout develop
+    branch feature/checkout
+    commit id: "Implement checkout flow"
+    checkout develop
+    merge feature/checkout id: "Merge checkout"
 
-Example 4: Show an e-commerce order processing system.
+---
 
-The Mermaid code would be:
-sequenceDiagram;
-participant Customer;
-participant WebApp;
-participant PaymentGateway;
-participant Warehouse;
-participant DeliveryService;
-Customer->>WebApp: Place Order;
-WebApp->>PaymentGateway: Process Payment;
-PaymentGateway-->>WebApp: Payment Success;
-WebApp->>Warehouse: Prepare Order;
-Warehouse-->>WebApp: Order Ready;
-WebApp->>DeliveryService: Dispatch Order;
-DeliveryService-->>Customer: Deliver Order;
-Note over Customer,DeliveryService: Customer receives the order.
-
-Example 5: Visualize a complex microservices architecture.
+### Example 3: Illustrate a distributed e-commerce system with microservices, event-driven messaging, and external APIs.
 
 The Mermaid code would be:
 graph TD;
-  User-->API_Gateway;
-  API_Gateway-->Auth_Service;
-  API_Gateway-->Product_Service;
-  API_Gateway-->Order_Service;
-  Order_Service-->Inventory_Service;
-  Order_Service-->Payment_Service;
-  Payment_Service-->Banking_API;
-  Banking_API-->Payment_Service;
-  Inventory_Service-->Database;
-  Auth_Service-->Database;
-  Product_Service-->Database;
-  subgraph Services
-    Auth_Service
-    Product_Service
-    Order_Service
-    Inventory_Service
-    Payment_Service
-  end
-  subgraph External APIs
-    Banking_API
-  end
-  subgraph Data Layer
-    Database
-  end
+    User-->|Browses Products|WebApp;
+    WebApp-->|Fetch Data|Product_Service;
+    Product_Service-->|Query|Database;
+    User-->|Adds to Cart|Cart_Service;
+    Cart_Service-->|Stores Cart|Database;
+    User-->|Checkout|Order_Service;
+    Order_Service-->|Validates Order|Inventory_Service;
+    Inventory_Service-->|Check Stock|Database;
+    Order_Service-->|Process Payment|Payment_Service;
+    Payment_Service-->|Verify|Banking_API;
+    Banking_API-->|Authorize Payment|Payment_Service;
+    Payment_Service-->|Confirm|Order_Service;
+    Order_Service-->|Notify|Notification_Service;
+    Order_Service-->|Dispatch|Shipping_Service;
+    Shipping_Service-->|Track Shipment|Delivery_API;
+    subgraph Microservices
+        Product_Service
+        Cart_Service
+        Order_Service
+        Payment_Service
+        Inventory_Service
+        Notification_Service
+        Shipping_Service
+    end
+    subgraph External APIs
+        Banking_API
+        Delivery_API
+    end
+    subgraph Data Layer
+        Database
+    end
 
-Example 6: Show a CI/CD pipeline workflow.
+---
+
+### Example 4: Show a Kubernetes-based CI/CD pipeline integrating GitHub Actions, Helm, and Prometheus.
 
 The Mermaid code would be:
 graph TD;
-  Developer-->Git_Repo;
-  Git_Repo-->CI_Server;
-  CI_Server-->Test_Suite;
-  Test_Suite-->Build_Artifact;
-  Build_Artifact-->Staging_Server;
-  Staging_Server-->Approval_Step;
-  Approval_Step-->|Approved|Production_Server;
-  Approval_Step-->|Rejected|Developer;
-  Note over Developer,Production_Server: Changes are deployed if approved.
+    Developer-->|Push Code|GitHub_Repo;
+    GitHub_Repo-->|Triggers|GitHub_Actions;
+    GitHub_Actions-->|Run Tests|Test_Suite;
+    Test_Suite-->|Build Image|Docker_Registry;
+    Docker_Registry-->|Deploy|Kubernetes_Cluster;
+    Kubernetes_Cluster-->|Manage|Helm_Chart;
+    Helm_Chart-->|Monitor|Prometheus;
+    Prometheus-->|Alert|Alert_Manager;
+    Alert_Manager-->|Notify|Slack_Channel;
+    Kubernetes_Cluster-->|Expose|Ingress_Controller;
+    Ingress_Controller-->|Serve Requests|User;
 
-Guidelines:
+---
+
+### Example 5: Visualize a blockchain-based supply chain management system with smart contracts.
+
+The Mermaid code would be:
+graph TD;
+    Manufacturer-->|Produces Goods|SmartContract;
+    SmartContract-->|Generates NFT Certificate|Blockchain;
+    Distributor-->|Purchases Goods|SmartContract;
+    SmartContract-->|Transfers Ownership|Blockchain;
+    Retailer-->|Buys from Distributor|SmartContract;
+    SmartContract-->|Records Transaction|Blockchain;
+    Consumer-->|Scans QR Code|Blockchain;
+    Blockchain-->|Fetches Product History|Consumer;
+    subgraph On-Chain Data
+        SmartContract
+        Blockchain
+    end
+
+---
+
+### Guidelines:
 - Always generate valid Mermaid.js code.
-- Ensure the output follows Mermaid.js syntax accurately.
+- Ensure the output strictly follows Mermaid.js syntax.
+- The diagrams should be detailed and accurate.
 - Do not enclose Mermaid code within triple backticks (\`\`\`).
 - Do not include the word "mermaid" in the output.
 `;
