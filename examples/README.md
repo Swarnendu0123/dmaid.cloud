@@ -43,3 +43,10 @@ Git Workflow with CI/CD Pipeline
 ```
 
 ![Git Workflow with CI/CD Pipeline](./diagrams//Git%20Workflow%20with%20CI_CD%20Pipeline_%20(1).svg)
+
+# Example 6
+```
+Git Branching Model With Feature Development, Hotfixes, and Releases
+```
+
+![Git Branching Model With Feature Development, Hotfixes, and Releases](./diagrams//Git%20Branching%20Model%20With%20Feature%20Development,%20Hotfixes,%20and%20Releases_.svg)
