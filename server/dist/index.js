@@ -7,11 +7,13 @@ const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const db_1 = require("./db");
 const v1_1 = __importDefault(require("./api/v1"));
+const cors = require("cors");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3000;
 (0, db_1.connectToDB)();
 // middlewares
+app.use(cors());
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 // root route

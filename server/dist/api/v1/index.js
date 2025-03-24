@@ -10,7 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const schema_1 = require("../../db/schema");
+const aiDiagramGenerator_1 = require("../../controllers/aiDiagramGenerator");
+const aiTitleGenerator_1 = require("../../controllers/aiTitleGenerator");
 const router = (0, express_1.Router)();
 router.get("/", (req, res) => {
     res.send({
@@ -21,83 +22,44 @@ router.get("/", (req, res) => {
         ],
         version: "V1",
         routes: {
-            "GET '/'": "should redirect to '/api/v1'",
-            "GET '/api/v1'": "should display all the API Route information",
-            "GET '/api/v1/diagram/:uuid'": "to get a specific diagram",
+            "info routes": {
+                "GET '/'": "should redirect to '/api/v1'",
+                "GET '/api/v1'": "should display all the API Route information",
+            },
+            "diagram Routes": {
+                "GET '/api/v1/diagram/:uuid'": "to get a specific diagram",
+                "POST '/api/v1/diagram/create'": "to save a specific diagram for the first time",
+                "PUT '/api/v1/diagram/edit/:uuid'": "to edit a specific diagram",
+            },
+            "access control routes": {
+                "PUT '/api/v1/control/view/:email'": "to give view access of a specific file (check owner)",
+                "PUT '/api/v1/control/edit/:email'": "to give the edit access of a specific diagram (check owner)",
+                "PUT '/api/v1/control/transfer/:email'": "to transfer the ownership to a specific user",
+            },
+            "AI Routes": {
+                "POST 'api/v1/diagram/generate'": "to generate a diagram using GEN AI",
+            },
         },
     });
 });
 // route to get all events
-router.get("/events", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/diagram/generate", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const events = yield schema_1.EventModel.find();
-        console.log(events);
-        res.send({ message: "Events found!", success: true, data: events });
-    }
-    catch (e) {
-        res.send({ message: "Events not found!", success: false });
-    }
-}));
-// route to get an event by id
-router.get("/event/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { id } = req.params;
-        const event = yield schema_1.EventModel.findById(id);
-        res.send({ message: "Event found!", success: true, data: event });
-    }
-    catch (e) {
-        res.send({ message: "Event not found!", success: false });
-    }
-}));
-// route to create an event
-router.post("/event/create", (req, res) => {
-    try {
-        // we dont need to pass id mongodb will automatically generate _id variable for us
-        const { name, date, location, registration, registration_fee, image, registered, org_name, } = req.body;
-        const newEvent = new schema_1.EventModel({
-            name,
-            date,
-            location,
-            registration,
-            registration_fee,
-            image,
-            registered,
-            org_name,
-        });
-        newEvent.save();
+        const prompt = req.body.prompt;
+        console.log(prompt);
+        const generated_diagram = yield (0, aiDiagramGenerator_1.generateDiagram)(prompt);
+        const generated_title = yield (0, aiTitleGenerator_1.generateTitle)(prompt);
+        console.log(generated_diagram);
+        console.log(generated_title);
         res.send({
-            message: "Event created successfully!",
+            messege: "Diagram generated",
+            diagram: generated_diagram,
+            title: generated_title,
             success: true,
-            data: newEvent,
         });
     }
     catch (e) {
-        res.send({ message: "Failed to create event!", success: false });
-    }
-});
-// route to update an event
-router.put("/event/:id/update", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { id } = req.params;
-        const { name, date, location, registration, registration_fee, image, registered, org_name, } = req.body;
-        const updatedEvent = yield schema_1.EventModel.findByIdAndUpdate(id, {
-            name,
-            date,
-            location,
-            registration,
-            registration_fee,
-            image,
-            registered,
-            org_name,
-        });
-        res.send({
-            message: "Event updated successfully!",
-            success: true,
-            data: updatedEvent,
-        });
-    }
-    catch (e) {
-        res.send({ message: "Failed to update event!", success: false });
+        res.send({ message: "Error in generating the response!", success: false });
     }
 }));
 exports.default = router;
