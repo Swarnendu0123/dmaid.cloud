@@ -9,14 +9,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateDiagram = generateDiagram;
+exports.generateTextToDiagram = generateTextToDiagram;
 const generative_ai_1 = require("@google/generative-ai");
 const dotenv = require("dotenv");
 dotenv.config();
 const genAI = new generative_ai_1.GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
 // prompt: user question
 //  instruction: how to behave
-function generateDiagram(prompt) {
+function generateTextToDiagram(prompt) {
     return __awaiter(this, void 0, void 0, function* () {
         const instructions = `
 You are an expert in converting English descriptions into highly detailed Mermaid.js diagrams! Your task is to generate valid Mermaid.js code based on natural language descriptions of complex workflows, system architectures, or processes.
@@ -170,4 +170,4 @@ graph TD;
         return result.response.text();
     });
 }
-//# sourceMappingURL=aiDiagramGenerator.js.map
+//# sourceMappingURL=text_to_diagram.js.map

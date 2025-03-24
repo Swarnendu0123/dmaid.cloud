@@ -10,8 +10,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const aiDiagramGenerator_1 = require("../../controllers/aiDiagramGenerator");
-const aiTitleGenerator_1 = require("../../controllers/aiTitleGenerator");
+const text_to_diagram_1 = require("../../controllers/gen_ai/text_to_diagram");
+const text_to_title_1 = require("../../controllers/gen_ai/text_to_title");
+const diagram_to_title_1 = require("../../controllers/gen_ai/diagram_to_title");
 const router = (0, express_1.Router)();
 router.get("/", (req, res) => {
     res.send({
@@ -42,13 +43,13 @@ router.get("/", (req, res) => {
         },
     });
 });
-// route to get all events
+// route to generate diagrams based on prompt
 router.post("/diagram/generate", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const prompt = req.body.prompt;
         console.log(prompt);
-        const generated_diagram = yield (0, aiDiagramGenerator_1.generateDiagram)(prompt);
-        const generated_title = yield (0, aiTitleGenerator_1.generateTitle)(prompt);
+        const generated_diagram = yield (0, text_to_diagram_1.generateTextToDiagram)(prompt);
+        const generated_title = yield (0, text_to_title_1.generateTextTotitle)(prompt);
         console.log(generated_diagram);
         console.log(generated_title);
         res.send({
@@ -60,6 +61,23 @@ router.post("/diagram/generate", (req, res) => __awaiter(void 0, void 0, void 0,
     }
     catch (e) {
         res.send({ message: "Error in generating the response!", success: false });
+    }
+}));
+// route to generate titles based on diagrams
+router.post("/title/generate", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const diagram = req.body.diagram;
+        console.log(diagram);
+        const generated_title = yield (0, diagram_to_title_1.generateDiagramToTitle)(diagram);
+        console.log(generated_title);
+        res.send({
+            messege: "Title generated",
+            title: generated_title,
+            success: true,
+        });
+    }
+    catch (e) {
+        res.send({ message: "Error in generating the title!", success: false });
     }
 }));
 exports.default = router;

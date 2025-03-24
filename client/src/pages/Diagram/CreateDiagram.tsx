@@ -10,6 +10,7 @@ import {
   Image,
   Lock,
   Redo,
+  Sparkles,
   Undo,
   User,
   Users,
@@ -35,7 +36,8 @@ const MermaidEditor = () => {
     useState(false);
 
   const [isDownloading, setIsDownloading] = useState(false);
-  const [isAIGenerating, setIsAIGenerating] = useState(false);
+  const [isAIGeneratingDiagram, setIsAIGeneratingDiagram] = useState(false);
+  const [isAIGeneratingTitle, setIsAIGeneratingTitle] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const panzoomRef = useRef<any>(null);
@@ -172,8 +174,7 @@ const MermaidEditor = () => {
   const generateAIDiagram = async () => {
     try {
       setLoading(true);
-      setIsAIGenerating(true);
-      console.log(BACKEND_URL + "/diagram/generate");
+      setIsAIGeneratingDiagram(true);
 
       const response = await fetch(BACKEND_URL + "/diagram/generate", {
         method: "POST",
@@ -201,7 +202,39 @@ const MermaidEditor = () => {
       alert("An error occurred while generating the diagram.");
     } finally {
       setLoading(false); // Hide loading indicator
-      setIsAIGenerating(false);
+      setIsAIGeneratingDiagram(false);
+    }
+  };
+
+  // function to generate title from the diagram
+  const generateAItitleWithDiagrams = async () => {
+    try {
+      setIsAIGeneratingTitle(true);
+      const response = await fetch(BACKEND_URL + "/title/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ diagram: code }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate AI diagram");
+      }
+
+      const data = await response.json();
+      if (data.title) {
+        setExportSVGName(data.title);
+        console.log(data.title);
+        
+      } else {
+        alert("No text code was generated.");
+      }
+    } catch (error) {
+      console.error("Error generating AI title:", error);
+      alert("An error occurred while generating the title.");
+    } finally {
+      setIsAIGeneratingTitle(false);
     }
   };
 
@@ -322,6 +355,23 @@ const MermaidEditor = () => {
                   className="p-1 w-full border rounded"
                   value={exportSVGName}
                 />
+                <button
+                  className={`bg-black text-white px-4 py-2 rounded font-black text-sm ml-1 mr-1 flex items-center ${
+                    isAIGeneratingTitle ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                  onClick={generateAItitleWithDiagrams}
+                  disabled={isAIGeneratingTitle}
+                >
+                  {isAIGeneratingTitle ? (
+                    <div className="flex items-center">
+                      <span className="animate-spin">⏳</span>
+                    </div>
+                  ) : (
+                    <>
+                      <Sparkles size={16} color="#ffffff" className="" />
+                    </>
+                  )}
+                </button>
               </div>
 
               {/* Render Modal */}
@@ -451,12 +501,12 @@ const MermaidEditor = () => {
 
                 <button
                   className={`bg-black text-white px-4 py-2 rounded font-black text-sm m-0.5 my-1 mx-4 flex items-center justify-center ${
-                    isAIGenerating ? "opacity-50 cursor-not-allowed" : ""
+                    isAIGeneratingDiagram ? "opacity-50 cursor-not-allowed" : ""
                   }`}
                   onClick={generateAIDiagram}
-                  disabled={isAIGenerating}
+                  disabled={isAIGeneratingDiagram}
                 >
-                  {isAIGenerating ? (
+                  {isAIGeneratingDiagram ? (
                     <div className="flex items-center justify-center">
                       <span className="animate-spin mr-2">⏳</span>{" "}
                       Generating...

@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { EventModel } from "../../db/schema";
-import { generateDiagram } from "../../controllers/aiDiagramGenerator";
-import { generateTitle } from "../../controllers/aiTitleGenerator";
+import { generateTextToDiagram } from "../../controllers/gen_ai/text_to_diagram";
+import { generateTextTotitle } from "../../controllers/gen_ai/text_to_title";
+import { generateDiagramToTitle } from "../../controllers/gen_ai/diagram_to_title";
 
 const router = Router();
 
@@ -42,15 +42,15 @@ router.get("/", (req, res) => {
   });
 });
 
-// route to get all events
+// route to generate diagrams based on prompt
 router.post("/diagram/generate", async (req, res) => {
   try {
     const prompt = req.body.prompt;
 
     console.log(prompt);
 
-    const generated_diagram = await generateDiagram(prompt);
-    const generated_title = await generateTitle(prompt);
+    const generated_diagram = await generateTextToDiagram(prompt);
+    const generated_title = await generateTextTotitle(prompt);
 
     console.log(generated_diagram);
     console.log(generated_title);
@@ -66,5 +66,28 @@ router.post("/diagram/generate", async (req, res) => {
     res.send({ message: "Error in generating the response!", success: false });
   }
 });
+
+// route to generate titles based on diagrams
+router.post("/title/generate", async (req, res) => {
+  try {
+    const diagram = req.body.diagram;
+
+    console.log(diagram);
+
+    const generated_title = await generateDiagramToTitle(diagram);
+
+    console.log(generated_title);
+    
+
+    res.send({
+      messege: "Title generated",
+      title: generated_title,
+      success: true,
+    });
+  } catch (e) {
+    res.send({ message: "Error in generating the title!", success: false });
+  }
+});
+
 
 export default router;

@@ -7,7 +7,7 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
 
 // prompt: user question
 //  instruction: how to behave
-export async function generateTitle(prompt: string) {
+export async function generateTextTotitle(prompt: string) {
   const instructions = `
           You are an expert at converting English descriptions into concise and meaningful Mermaid.js diagram titles.
       

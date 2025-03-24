@@ -9,14 +9,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateTitle = generateTitle;
+exports.generateTextTotitle = generateTextTotitle;
 const generative_ai_1 = require("@google/generative-ai");
 const dotenv = require("dotenv");
 dotenv.config();
 const genAI = new generative_ai_1.GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
 // prompt: user question
 //  instruction: how to behave
-function generateTitle(prompt) {
+function generateTextTotitle(prompt) {
     return __awaiter(this, void 0, void 0, function* () {
         const instructions = `
           You are an expert at converting English descriptions into concise and meaningful Mermaid.js diagram titles.
@@ -40,4 +40,4 @@ function generateTitle(prompt) {
         return result.response.text();
     });
 }
-//# sourceMappingURL=aiTitleGenerator.js.map
+//# sourceMappingURL=text_to_title.js.map

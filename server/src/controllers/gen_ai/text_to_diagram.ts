@@ -7,7 +7,7 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
 
 // prompt: user question
 //  instruction: how to behave
-export async function generateDiagram(prompt: string) {
+export async function generateTextToDiagram(prompt: string) {
   const instructions = `
 You are an expert in converting English descriptions into highly detailed Mermaid.js diagrams! Your task is to generate valid Mermaid.js code based on natural language descriptions of complex workflows, system architectures, or processes.
 
