@@ -1,11 +1,12 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Groq from "groq-sdk";
-import { instructions } from "./instructions";
+
+import { instructions_text_to_diagram as instructions } from "./instructions";
 
 const dotenv = require("dotenv");
 
+// config
 dotenv.config();
-
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -19,10 +20,9 @@ export async function generateTextToDiagramWithGemini(prompt: string) {
 }
 
 // Gorq gen AI model
-export async function generateTextToDiagramWithGorq(prompt: any) {
-  console.log(prompt);
+export async function generateTextToDiagramWithGorq(prompt: any, ai_model: string) {
 
-  const chatCompletion = await getGroqChatCompletion(prompt);
+  const chatCompletion = await getGroqChatCompletion(prompt, ai_model);
 
   console.log(chatCompletion.choices[0]?.message?.content);
 
@@ -30,7 +30,8 @@ export async function generateTextToDiagramWithGorq(prompt: any) {
   return chatCompletion.choices[0]?.message?.content || "";
 }
 
-const getGroqChatCompletion = async (prompt: string) => {
+// grok config
+const getGroqChatCompletion = async (prompt: string, ai_model:string) => {
   return groq.chat.completions.create({
     //
     // Required parameters
@@ -51,7 +52,7 @@ const getGroqChatCompletion = async (prompt: string) => {
     ],
 
     // The language model which will generate the completion.
-    model: "llama-3.3-70b-specdec",
+    model: ai_model,
 
     //
     // Optional parameters

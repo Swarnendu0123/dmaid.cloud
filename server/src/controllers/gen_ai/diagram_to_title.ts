@@ -1,94 +1,84 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import Groq from "groq-sdk";
+
 const dotenv = require("dotenv");
+import { instructions_diagram_to_title as instructions } from "./instructions";
+
 
 dotenv.config();
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-export async function generateDiagramToTitle(diagram: string) {
-  const instructions = `
-    You are an expert in generating concise and meaningful titles for Mermaid.js diagrams based on their code representation.
 
-    ## Task:
-    Given a Mermaid.js diagram, extract its key components and generate a descriptive title that accurately summarizes the diagram's purpose.
-
-    ## Guidelines:
-    - Ensure the title is **clear, concise, and relevant** to the given diagram.
-    - Use **Title Case** for proper formatting.
-    - Avoid using **quotes (" or ')** in the output.
-    - Focus on **key themes**, such as authentication flows, data structures, or software development processes.
-    - Maintain **brevity** while ensuring the title conveys essential details.
-
-    ## Examples:
-
-    ### Example 1:
-    **Input (Mermaid Code):**
-    \`\`\`
-    sequenceDiagram;
-      participant User;
-      participant Client;
-      participant AuthServer;
-      participant OAuthProvider;
-      participant Database;
-      participant ResourceServer;
-
-      User->>Client: Login via OAuth;
-      Client->>OAuthProvider: Request Auth Code;
-      OAuthProvider-->>Client: Authorization Code;
-      Client->>OAuthProvider: Exchange Code for Token;
-      OAuthProvider-->>Client: Access Token & Refresh Token;
-      Client->>AuthServer: Validate Token;
-      AuthServer->>Database: Fetch User Roles & Permissions;
-      Database-->>AuthServer: User Data & Roles;
-      AuthServer-->>Client: Verified User Data;
-      Client->>ResourceServer: Request Protected Resource;
-      ResourceServer->>AuthServer: Validate User Permissions;
-      AuthServer-->>ResourceServer: Access Granted;
-      ResourceServer-->>Client: Return Resource;
-    \`\`\`
-    
-    **Expected Output:**  
-    Advanced Authentication and Authorization Flow With OAuth, JWT, and RBAC
-
-    ---
-
-    ### Example 2:
-    **Input (Mermaid Code):**
-    \`\`\`
-    gitGraph
-      commit id: "Initial commit"
-      branch develop
-      commit id: "Setup project structure"
-      branch feature/auth
-      commit id: "Implement authentication"
-      checkout develop
-      branch feature/ui
-      commit id: "Develop UI components"
-      checkout feature/auth
-      commit id: "Add OAuth support"
-      checkout develop
-      merge feature/auth id: "Merge authentication"
-      checkout feature/ui
-      commit id: "Enhance UI with animations"
-      checkout develop
-      merge feature/ui id: "Merge UI components"
-      branch hotfix/login-bug
-      checkout hotfix/login-bug
-      commit id: "Fix login issue in production"
-      checkout main
-      merge hotfix/login-bug id: "Deploy hotfix"
-      checkout develop
-      branch feature/checkout
-      commit id: "Implement checkout flow"
-      checkout develop
-      merge feature/checkout id: "Merge checkout"
-    \`\`\`
-    
-    **Expected Output:**  
-    Git Workflow With Feature Branching, Hotfixes, and Merging Strategies
-  `;
-
+// Gemini AI API config
+export async function generateDiagramToTitleWithGemini(diagram: string) {
   const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
   const result = await model.generateContent([instructions, diagram]);
   return result.response.text();
 }
+
+
+
+// Gorq gen AI model
+export async function generateDiagramToTitleWithGorq(prompt: any, ai_model: string) {
+
+  const chatCompletion = await getGroqChatCompletion(prompt, ai_model);
+
+  console.log(chatCompletion.choices[0]?.message?.content);
+
+  // Print the completion returned by the LLM.
+  return chatCompletion.choices[0]?.message?.content || "";
+}
+
+// grok config
+const getGroqChatCompletion = async (prompt: string, ai_model: string) => {
+  return groq.chat.completions.create({
+    //
+    // Required parameters
+    //
+    messages: [
+      // Set an optional system message. This sets the behavior of the
+      // assistant and can be used to provide specific instructions for
+      // how it should behave throughout the conversation.
+      {
+        role: "system",
+        content: instructions,
+      },
+      // Set a user message for the assistant to respond to.
+      {
+        role: "user",
+        content: prompt,
+      },
+    ],
+
+    // The language model which will generate the completion.
+    model: ai_model,
+
+    //
+    // Optional parameters
+    //
+
+    // Controls randomness: lowering results in less random completions.
+    // As the temperature approaches zero, the model will become deterministic
+    // and repetitive.
+    temperature: 0.5,
+
+    // The maximum number of tokens to generate. Requests can use up to
+    // 2048 tokens shared between prompt and completion.
+    max_completion_tokens: 1024,
+
+    // Controls diversity via nucleus sampling: 0.5 means half of all
+    // likelihood-weighted options are considered.
+    top_p: 1,
+
+    // A stop sequence is a predefined or user-specified text string that
+    // signals an AI to stop generating content, ensuring its responses
+    // remain focused and concise. Examples include punctuation marks and
+    // markers like "[end]".
+    stop: null,
+
+    // If set, partial message deltas will be sent.
+    stream: false,
+  });
+};

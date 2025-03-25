@@ -8,6 +8,7 @@ import {
   Copy,
   Image,
   Lock,
+  Plus,
   Redo,
   Sparkles,
   Undo,
@@ -27,15 +28,18 @@ const MermaidEditor = () => {
   const [exportSVGName, setExportSVGName] = useState("Dmaid_" + uuidv4());
   const [owner, setOwner] = useState("swarno@admin.dmaid.cloud");
   const [prompt, setPrompt] = useState("");
+  const [changePrompt, setChangePrompt] = useState("");
 
   // Modals
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isGenerateWithAIModalOpen, setIsGenerateWithAIModalOpen] =
     useState(false);
+  const [isEnhanceWithAIModalOpen, setEnhanceWithAIModalOpen] = useState(false);
 
   const [isDownloading, setIsDownloading] = useState(false);
   const [isAIGeneratingDiagram, setIsAIGeneratingDiagram] = useState(false);
+  const [isAIEnhancingDiagram, setIsAIEnhancingDiagram] = useState(false);
   const [isAIGeneratingTitle, setIsAIGeneratingTitle] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -189,10 +193,8 @@ const MermaidEditor = () => {
 
       const data = await response.json();
       if (data.diagram) {
-        setCode(data.diagram); // Update the editor with the AI-generated code
+        handleCodeChange(data.diagram); // Update the editor with the AI-generated code
         setExportSVGName(data.title);
-        setHistory((prev) => [...prev, data.diagram]); // Add to history
-        setRedoStack([]); // Clear redo stack
       } else {
         alert("No diagram code was generated.");
       }
@@ -225,7 +227,6 @@ const MermaidEditor = () => {
       if (data.title) {
         setExportSVGName(data.title);
         console.log(data.title);
-        
       } else {
         alert("No text code was generated.");
       }
@@ -234,6 +235,36 @@ const MermaidEditor = () => {
       alert("An error occurred while generating the title.");
     } finally {
       setIsAIGeneratingTitle(false);
+    }
+  };
+
+  // function to enhance code using AI
+  const enhanceTheDiagram = async () => {
+    try {
+      setIsAIEnhancingDiagram(true);
+      const response = await fetch(BACKEND_URL + "/diagram/enhance", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ diagram: code, prompt: changePrompt }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate AI diagram");
+      }
+
+      const data = await response.json();
+      if (data.diagram) {
+        handleCodeChange(data.diagram);
+      } else {
+        alert("No text code was generated.");
+      }
+    } catch (error) {
+      console.error("Error generating AI title:", error);
+      alert("An error occurred while generating the title.");
+    } finally {
+      setIsAIEnhancingDiagram(false);
     }
   };
 
@@ -271,9 +302,23 @@ const MermaidEditor = () => {
           </button>
           <button
             className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1"
-            onClick={() => setIsGenerateWithAIModalOpen(true)}
+            onClick={() => {
+              setEnhanceWithAIModalOpen(true);
+            }}
           >
             <Sparkles size={16} color="#ffffff" />
+          </button>
+
+          <button
+            disabled={code == ""}
+            className={`bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1 ${
+              code != "" ? "" : "opacity-50 cursor-not-allowed"
+            }`}
+            onClick={() => {
+              setIsGenerateWithAIModalOpen(true);
+            }}
+          >
+            <Plus size={16} color="#ffffff" />
           </button>
         </div>
 
@@ -482,9 +527,14 @@ const MermaidEditor = () => {
             >
               <X size={20} color="#fff" />
             </button>
-            <h2 className="text-xl mb-4 font-black">
-              Generate Diagrams with AI 
+            <h2 className="text-xl mb-1 font-black">
+              Generate Diagrams Template with AI
             </h2>
+            <p className="mb-1 w-96 ">
+              <span className="font-bold">Note:</span>
+              The existing Diagram will completely be over written by the new
+              Diagram
+            </p>
             <div className="flex flex-col gap-2">
               <div className="flex flex-col">
                 <div className="flex items-center">
@@ -511,7 +561,65 @@ const MermaidEditor = () => {
                       Generating...
                     </div>
                   ) : (
-                    <>Generate With AI <Sparkles size={16} color="#ffffff" className="ml-2" /></>
+                    <>
+                      Generate With AI{" "}
+                      <Sparkles size={16} color="#ffffff" className="ml-2" />
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* enhance with AI Modal */}
+      {isEnhanceWithAIModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50">
+          <div className="bg-white p-6 rounded-lg shadow-lg relative">
+            <button
+              className="absolute top-2 right-2 bg-black rounded"
+              onClick={() => setEnhanceWithAIModalOpen(false)}
+            >
+              <X size={20} color="#fff" />
+            </button>
+            <h2 className="text-xl mb-1 font-black">
+              Enhance/Edit Diagrams with AI
+            </h2>
+            <p className="mb-2 w-96 ">
+              <span className="font-bold">Note:</span>
+              It will change/edit your existing diagram, it will not completely
+              overwrite your existing diagram
+            </p>
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-col">
+                <div className="flex items-center">
+                  <textarea
+                    name=""
+                    id=""
+                    value={changePrompt}
+                    className="border p-2 m-1 rounded w-96"
+                    onChange={(e) => setChangePrompt(e.target.value)}
+                    placeholder="Add the Database and Middleware Layer"
+                  />
+                </div>
+
+                <button
+                  className={`bg-black text-white px-4 py-2 rounded font-black text-sm m-0.5 my-1 mx-4 flex items-center justify-center ${
+                    isAIEnhancingDiagram ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                  onClick={enhanceTheDiagram}
+                  disabled={isAIEnhancingDiagram}
+                >
+                  {isAIEnhancingDiagram ? (
+                    <div className="flex items-center justify-center">
+                      <span className="animate-spin mr-2">⏳</span> Enhancing...
+                    </div>
+                  ) : (
+                    <>
+                      Enhance/Edit With AI{" "}
+                      <Sparkles size={16} color="#ffffff" className="ml-2" />
+                    </>
                   )}
                 </button>
               </div>

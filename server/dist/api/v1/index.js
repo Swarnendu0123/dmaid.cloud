@@ -13,6 +13,7 @@ const express_1 = require("express");
 const text_to_diagram_1 = require("../../controllers/gen_ai/text_to_diagram");
 const text_to_title_1 = require("../../controllers/gen_ai/text_to_title");
 const diagram_to_title_1 = require("../../controllers/gen_ai/diagram_to_title");
+const diagram_enhancer_1 = require("../../controllers/gen_ai/diagram_enhancer");
 const router = (0, express_1.Router)();
 router.get("/", (req, res) => {
     res.send({
@@ -43,15 +44,23 @@ router.get("/", (req, res) => {
         },
     });
 });
+const ai_model = "gemma2-9b-it";
 // route to generate diagrams based on prompt
 router.post("/diagram/generate", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const prompt = req.body.prompt;
         console.log(prompt);
-        const generated_diagram = yield (0, text_to_diagram_1.generateTextToDiagramWithGorq)(prompt);
-        const generated_title = yield (0, text_to_title_1.generateTextTotitle)(prompt);
+        console.log("__________________________________________");
+        console.log("generating diagram ...");
+        console.log("__________________________________________");
+        const generated_diagram = yield (0, text_to_diagram_1.generateTextToDiagramWithGorq)(prompt, ai_model);
         console.log(generated_diagram);
+        console.log("__________________________________________");
+        console.log("generating title...");
+        console.log("__________________________________________");
+        const generated_title = yield (0, text_to_title_1.generateTextToTitleWithGroq)(prompt, ai_model);
         console.log(generated_title);
+        console.log("__________________________________________");
         res.send({
             messege: "Diagram generated",
             diagram: generated_diagram,
@@ -60,7 +69,30 @@ router.post("/diagram/generate", (req, res) => __awaiter(void 0, void 0, void 0,
         });
     }
     catch (e) {
-        res.send({ message: "Error in generating the response!", success: false });
+        res.send({
+            message: "Error in generating the response!",
+            success: false,
+            error: e,
+        });
+    }
+}));
+// route to enhance diagrams based on prompts
+router.post("/diagram/enhance", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const diagram = req.body.diagram;
+        const prompt = req.body.prompt;
+        console.log(diagram);
+        console.log(prompt);
+        const generated_diagram = yield (0, diagram_enhancer_1.diagramEnhancer)(prompt, diagram, ai_model);
+        console.log(generated_diagram);
+        res.send({
+            messege: "Diagram enhanced",
+            diagram: generated_diagram,
+            success: true,
+        });
+    }
+    catch (e) {
+        res.send({ message: "Error in enhancing the diagram!", success: false });
     }
 }));
 // route to generate titles based on diagrams
@@ -68,7 +100,7 @@ router.post("/title/generate", (req, res) => __awaiter(void 0, void 0, void 0, f
     try {
         const diagram = req.body.diagram;
         console.log(diagram);
-        const generated_title = yield (0, diagram_to_title_1.generateDiagramToTitle)(diagram);
+        const generated_title = yield (0, diagram_to_title_1.generateDiagramToTitleWithGorq)(diagram, ai_model);
         console.log(generated_title);
         res.send({
             messege: "Title generated",

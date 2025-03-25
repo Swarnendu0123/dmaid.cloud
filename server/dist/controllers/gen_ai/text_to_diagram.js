@@ -18,6 +18,7 @@ const generative_ai_1 = require("@google/generative-ai");
 const groq_sdk_1 = __importDefault(require("groq-sdk"));
 const instructions_1 = require("./instructions");
 const dotenv = require("dotenv");
+// config
 dotenv.config();
 const genAI = new generative_ai_1.GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
 const groq = new groq_sdk_1.default({ apiKey: process.env.GROQ_API_KEY });
@@ -27,22 +28,22 @@ const groq = new groq_sdk_1.default({ apiKey: process.env.GROQ_API_KEY });
 function generateTextToDiagramWithGemini(prompt) {
     return __awaiter(this, void 0, void 0, function* () {
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-        const result = yield model.generateContent([instructions_1.instructions, prompt]);
+        const result = yield model.generateContent([instructions_1.instructions_text_to_diagram, prompt]);
         return result.response.text();
     });
 }
 // Gorq gen AI model
-function generateTextToDiagramWithGorq(prompt) {
+function generateTextToDiagramWithGorq(prompt, ai_model) {
     return __awaiter(this, void 0, void 0, function* () {
         var _a, _b, _c, _d;
-        console.log(prompt);
-        const chatCompletion = yield getGroqChatCompletion(prompt);
+        const chatCompletion = yield getGroqChatCompletion(prompt, ai_model);
         console.log((_b = (_a = chatCompletion.choices[0]) === null || _a === void 0 ? void 0 : _a.message) === null || _b === void 0 ? void 0 : _b.content);
         // Print the completion returned by the LLM.
         return ((_d = (_c = chatCompletion.choices[0]) === null || _c === void 0 ? void 0 : _c.message) === null || _d === void 0 ? void 0 : _d.content) || "";
     });
 }
-const getGroqChatCompletion = (prompt) => __awaiter(void 0, void 0, void 0, function* () {
+// grok config
+const getGroqChatCompletion = (prompt, ai_model) => __awaiter(void 0, void 0, void 0, function* () {
     return groq.chat.completions.create({
         //
         // Required parameters
@@ -53,7 +54,7 @@ const getGroqChatCompletion = (prompt) => __awaiter(void 0, void 0, void 0, func
             // how it should behave throughout the conversation.
             {
                 role: "system",
-                content: instructions_1.instructions,
+                content: instructions_1.instructions_text_to_diagram,
             },
             // Set a user message for the assistant to respond to.
             {
@@ -62,7 +63,7 @@ const getGroqChatCompletion = (prompt) => __awaiter(void 0, void 0, void 0, func
             },
         ],
         // The language model which will generate the completion.
-        model: "llama-3.3-70b-specdec",
+        model: ai_model,
         //
         // Optional parameters
         //

@@ -1,7 +1,9 @@
 import { Router } from "express";
-import { generateTextToDiagramWithGemini, generateTextToDiagramWithGorq } from "../../controllers/gen_ai/text_to_diagram";
-import { generateTextTotitle } from "../../controllers/gen_ai/text_to_title";
-import { generateDiagramToTitle } from "../../controllers/gen_ai/diagram_to_title";
+import { generateTextToDiagramWithGorq } from "../../controllers/gen_ai/text_to_diagram";
+import { generateTextToTitleWithGroq } from "../../controllers/gen_ai/text_to_title";
+import { generateDiagramToTitleWithGorq } from "../../controllers/gen_ai/diagram_to_title";
+import { diagramEnhancer } from "../../controllers/gen_ai/diagram_enhancer";
+import { model } from "mongoose";
 
 const router = Router();
 
@@ -42,6 +44,8 @@ router.get("/", (req, res) => {
   });
 });
 
+const ai_model = "gemma2-9b-it";
+
 // route to generate diagrams based on prompt
 router.post("/diagram/generate", async (req, res) => {
   try {
@@ -49,12 +53,20 @@ router.post("/diagram/generate", async (req, res) => {
 
     console.log(prompt);
 
-    const generated_diagram = await generateTextToDiagramWithGorq(prompt);
-    const generated_title = await generateTextTotitle(prompt);
-
+    console.log("__________________________________________");
+    console.log("generating diagram ...");
+    console.log("__________________________________________");
+    const generated_diagram = await generateTextToDiagramWithGorq(
+      prompt,
+      ai_model
+    );
     console.log(generated_diagram);
+    console.log("__________________________________________");
+    console.log("generating title...");
+    console.log("__________________________________________");
+    const generated_title = await generateTextToTitleWithGroq(prompt, ai_model);
     console.log(generated_title);
-    
+    console.log("__________________________________________");
 
     res.send({
       messege: "Diagram generated",
@@ -63,7 +75,34 @@ router.post("/diagram/generate", async (req, res) => {
       success: true,
     });
   } catch (e) {
-    res.send({ message: "Error in generating the response!", success: false });
+    res.send({
+      message: "Error in generating the response!",
+      success: false,
+      error: e,
+    });
+  }
+});
+
+// route to enhance diagrams based on prompts
+router.post("/diagram/enhance", async (req, res) => {
+  try {
+    const diagram = req.body.diagram;
+    const prompt = req.body.prompt;
+
+    console.log(diagram);
+    console.log(prompt);
+
+    const generated_diagram = await diagramEnhancer(prompt, diagram, ai_model);
+
+    console.log(generated_diagram);
+
+    res.send({
+      messege: "Diagram enhanced",
+      diagram: generated_diagram,
+      success: true,
+    });
+  } catch (e) {
+    res.send({ message: "Error in enhancing the diagram!", success: false });
   }
 });
 
@@ -74,10 +113,12 @@ router.post("/title/generate", async (req, res) => {
 
     console.log(diagram);
 
-    const generated_title = await generateDiagramToTitle(diagram);
+    const generated_title = await generateDiagramToTitleWithGorq(
+      diagram,
+      ai_model
+    );
 
     console.log(generated_title);
-    
 
     res.send({
       messege: "Title generated",
@@ -88,6 +129,5 @@ router.post("/title/generate", async (req, res) => {
     res.send({ message: "Error in generating the title!", success: false });
   }
 });
-
 
 export default router;
