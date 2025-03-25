@@ -80,3 +80,11 @@ Organizational Structure of PVT LTD Company
 ```
 
 ![Organizational Structure of PVT LTD Company](./diagrams//Organizational%20Structure%20of%20PVT%20LTD%20Company_.svg)
+
+
+# Example 11
+```
+Scientific Method Flowchart With Iterative Feedback Loops
+```
+
+![Scientific Method Flowchart With Iterative Feedback Loops](./diagrams//Scientific%20Method%20Flowchart%20With%20Iterative%20Feedback%20Loops_.svg)
