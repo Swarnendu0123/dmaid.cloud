@@ -318,6 +318,70 @@ gitGraph
 ---
 
 
+### Example 12: Multi-Tier Client-Server Web Application Architecture With Load Balancing and Microservices
+
+The Mermaid code would be:
+graph TD;
+    subgraph Client
+        User-->|Request|Web_Browser;
+        Web_Browser-->|HTTP Request|Load_Balancer;
+    end
+    subgraph Server
+        Load_Balancer-->|Distribute Request|Application_Server1;
+        Load_Balancer-->|Distribute Request|Application_Server2;
+        Application_Server1-->|Process Request|Business_Logic;
+        Application_Server2-->|Process Request|Business_Logic;
+        Business_Logic-->|Query Database|Database;
+        Database-->|Return Data|Business_Logic;
+        Business_Logic-->|Return Response|Application_Server1;
+        Business_Logic-->|Return Response|Application_Server2;
+        Application_Server1-->|Return Response|Load_Balancer;
+        Application_Server2-->|Return Response|Load_Balancer;
+        Load_Balancer-->|Return Response|Web_Browser;
+        Web_Browser-->|Display Response|User;
+    end
+    subgraph Database
+        Database-->|Store/Retrieve Data|Data_Storage;
+    end
+    subgraph Security
+        Load_Balancer-->|Authenticate|Authentication_Service;
+        Application_Server1-->|Authorize|Authorization_Service;
+        Application_Server2-->|Authorize|Authorization_Service;
+    end
+    subgraph Messaging
+        Application_Server1-->|Send Message|Message_Broker;
+        Application_Server2-->|Send Message|Message_Broker;
+        Message_Broker-->|Route Message|Other_Services;
+    end
+    style Load_Balancer fill:#f9f,stroke:#333,stroke-width:2px
+    style Application_Server1 fill:#f9f,stroke:#333,stroke-width:2px
+    style Application_Server2 fill:#f9f,stroke:#333,stroke-width:2px
+    style Business_Logic fill:#f9f,stroke:#333,stroke-width:2px
+    style Database fill:#f9f,stroke:#333,stroke-width:2px
+    style Data_Storage fill:#f9f,stroke:#333,stroke-width:2px
+    style Authentication_Service fill:#f9f,stroke:#333,stroke-width:2px
+    style Authorization_Service fill:#f9f,stroke:#333,stroke-width:2px
+    style Message_Broker fill:#f9f,stroke:#333,stroke-width:2px
+    style Other_Services fill:#f9f,stroke:#333,stroke-width:2px
+
+    style Web_Browser fill:#ccf,stroke:#333,stroke-width:2px
+    style User fill:#ccf,stroke:#333,stroke-width:2px
+---
+
+
+### Example 12: Basic Client-Server Communication With Database Interaction
+
+The Mermaid code would be:
+graph TD;
+    Client-->|Request|Server;
+    Server-->|Process Request|Application;
+    Application-->|Query Database|Database;
+    Database-->|Return Data|Application;
+    Application-->|Return Response|Server;
+    Server-->|Return Response|Client;
+
+---
+
 ### Guidelines:
 - Always generate valid Mermaid.js code.
 - Ensure the output strictly follows Mermaid.js syntax.
