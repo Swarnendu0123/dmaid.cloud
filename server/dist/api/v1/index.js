@@ -48,7 +48,7 @@ router.post("/diagram/generate", (req, res) => __awaiter(void 0, void 0, void 0,
     try {
         const prompt = req.body.prompt;
         console.log(prompt);
-        const generated_diagram = yield (0, text_to_diagram_1.generateTextToDiagram)(prompt);
+        const generated_diagram = yield (0, text_to_diagram_1.generateTextToDiagramWithGorq)(prompt);
         const generated_title = yield (0, text_to_title_1.generateTextTotitle)(prompt);
         console.log(generated_diagram);
         console.log(generated_title);

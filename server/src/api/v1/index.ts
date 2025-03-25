@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { generateTextToDiagram } from "../../controllers/gen_ai/text_to_diagram";
+import { generateTextToDiagramWithGemini, generateTextToDiagramWithGorq } from "../../controllers/gen_ai/text_to_diagram";
 import { generateTextTotitle } from "../../controllers/gen_ai/text_to_title";
 import { generateDiagramToTitle } from "../../controllers/gen_ai/diagram_to_title";
 
@@ -49,7 +49,7 @@ router.post("/diagram/generate", async (req, res) => {
 
     console.log(prompt);
 
-    const generated_diagram = await generateTextToDiagram(prompt);
+    const generated_diagram = await generateTextToDiagramWithGorq(prompt);
     const generated_title = await generateTextTotitle(prompt);
 
     console.log(generated_diagram);
