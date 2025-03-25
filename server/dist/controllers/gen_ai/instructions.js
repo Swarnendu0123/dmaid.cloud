@@ -353,6 +353,8 @@ exports.instructions_diagram_to_title = `
     Given a Mermaid.js diagram, extract its key components and generate a descriptive title that accurately summarizes the diagram's purpose.
 
     ## Guidelines:
+    - You have to return the title as a string only
+    - Do not include '##' or any other speacial character in the title returning
     - Ensure the title is **clear, concise, and relevant** to the given diagram.
     - Use **Title Case** for proper formatting.
     - Avoid using **quotes (" or ')** in the output.
