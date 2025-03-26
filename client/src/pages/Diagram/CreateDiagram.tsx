@@ -30,7 +30,7 @@ const MermaidEditor = () => {
   const [owner, setOwner] = useState("swarno@admin.dmaid.cloud");
   const [prompt, setPrompt] = useState("");
   const [changePrompt, setChangePrompt] = useState("");
-  const [model, setModel] = useState("qwen-2.5-coder-32b");
+  const [model, setModel] = useState("llama-3.3-70b-specdec");
 
   // Modals
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
@@ -55,6 +55,7 @@ const MermaidEditor = () => {
     // "mistral-saba-24b", // chain of thoughts
     // "qwen-2.5-32b", // not good diagram generator
     // "deepseek-r1-distill-llama-70b", // chain of thoughts
+    { name: "gemma2-9b-it (Best for light tasks)", model: "gemma2-9b-it" }, // good for normal tasks
     {
       name: "qwen-2.5-coder-32b (Best for medium tasks)",
       model: "qwen-2.5-coder-32b",
@@ -72,7 +73,6 @@ const MermaidEditor = () => {
       model: "llama-3.3-70b-versatile",
     }, // can perform complex task
     // "distil-whisper-large-v3-en"
-    { name: "gemma2-9b-it (Best for light tasks)", model: "gemma2-9b-it" }, // good for normal tasks
     // "llama-3.1-8b-instant" // not very smart
     // "llama-guard-3-8b" // not sure
     // "mixtral-8x7b-32768" // not a text model
@@ -85,8 +85,8 @@ const MermaidEditor = () => {
 
     if (containerRef.current && !panzoomRef.current) {
       panzoomRef.current = Panzoom(containerRef.current, {
-        maxScale: 5,
-        minScale: 0.5,
+        maxScale: 10,
+        minScale: 0.1,
         contain: "outside",
       });
       containerRef.current.addEventListener(

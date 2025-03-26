@@ -315,11 +315,14 @@ gitGraph
 ---
 
 ### Guidelines:
+  - Always generate a valid mermaid syntax, cross verify the syntax is corrert or not.
   - Do not enclose Mermaid code within triple backticks.
   - Do not include specific terminology such as "mermaid" or any related keywords in the output.
   - Do not include 'branch main' in case of gitGraph.
   - Do not use 'tag' in gitGraph.
   - Do not use 'merge hotfix/bug-2 id: "Merge hotfix"' for gitGraph.
+  - Do not use 'Client-->|Request|>Server;' this type of invalid syntax
+  - Use 'Client-->|Request|Server;' type of syntax insted of 'Client-->|Request|>Server;'
 `;
 
 export const instructions_text_to_title = `
@@ -437,7 +440,83 @@ export const instructions_diagram_enhancer = `
   
   ## Examples:
   
-  ### Example 1: Make the flowchart more descriptive and visually appealing with better labels and node styling.
+  ### Example 1: make it complex
+  ---
+graph TD;
+    Start-->|Initialize|Step1;
+    Step1-->|Process|Step2;
+    Step2-->|Decision|Decision1;
+    Decision1-->|Yes|Step3;
+    Decision1-->|No|Step4;
+    Step3-->|Action|End;
+    Step4-->|Alternative Action|End;
+  ---
+  The output should be:  
+graph TD;
+    Start-->|Initialize|Step1;
+    Step1-->|Process|Step2;
+    Step2-->|Decision|Decision1;
+    Decision1-->|Yes|Step3;
+    Decision1-->|No|Step4;
+    Step3-->|Action|Step5;
+    Step3-->|Alternative Action|Step6;
+    Step4-->|Action|Step7;
+    Step4-->|Alternative Action|Step8;
+    Step5-->|Decision|Decision2;
+    Step5-->|Action|Step9;
+    Step6-->|Decision|Decision3;
+    Step6-->|Action|Step10;
+    Step7-->|Decision|Decision4;
+    Step7-->|Action|Step11;
+    Step8-->|Decision|Decision5;
+    Step8-->|Action|Step12;
+    Decision2-->|Yes|Step13;
+    Decision2-->|No|Step14;
+    Decision3-->|Yes|Step15;
+    Decision3-->|No|Step16;
+    Decision4-->|Yes|Step17;
+    Decision4-->|No|Step18;
+    Decision5-->|Yes|Step19;
+    Decision5-->|No|Step20;
+    Step9-->|Action|End;
+    Step10-->|Action|End;
+    Step11-->|Action|End;
+    Step12-->|Action|End;
+    Step13-->|Action|End;
+    Step14-->|Action|End;
+    Step15-->|Action|End;
+    Step16-->|Action|End;
+    Step17-->|Action|End;
+    Step18-->|Action|End;
+    Step19-->|Action|End;
+    Step20-->|Action|End;
+
+    ---
+  ### Example 2: change it into a startup starting process
+    ---
+graph TD;
+    Start-->|Initialize|Step1;
+    Step1-->|Process|Step2;
+    Step2-->|Decision|Decision1;
+    Decision1-->|Yes|Step3;
+    Decision1-->|No|Step4;
+    Step3-->|Action|End;
+    Step4-->|Alternative Action|End;
+  ---
+  The output should be:  
+graph TD;
+    Founder-->|Idea Generation|Market_Research;
+    Market_Research-->|Validate Idea|Business_Plan;
+    Business_Plan-->|Secure Funding|Investor_Pitch;
+    Investor_Pitch-->|Funding Decision|Product_Development;
+    Product_Development-->|Launch Product|Marketing_Strategy;
+    Marketing_Strategy-->|Gain Traction|Growth;
+    Growth-->|Scale Business|Exit_Strategy;
+    Exit_Strategy-->|Acquisition or IPO|Success;
+  
+  
+  ---  
+  ### Example 3: Make the flowchart more descriptive and visually appealing with better labels and node styling.
   ---
   graph TD;  
     A-->B;  
@@ -453,7 +532,7 @@ export const instructions_diagram_enhancer = `
   
   ---  
   
-  ### Example 2: Enhance the decision-making clarity in the flowchart.
+  ### Example 4: Enhance the decision-making clarity in the flowchart.
   
   ---
   graph TD;  
@@ -473,7 +552,7 @@ export const instructions_diagram_enhancer = `
   
   ---  
   
-  ### Example 3: Improve the readability of the sequence diagram and ensure clear interactions.
+  ### Example 5: Improve the readability of the sequence diagram and ensure clear interactions.
   ---
   sequenceDiagram  
   A->>B: Hello  
@@ -489,7 +568,7 @@ export const instructions_diagram_enhancer = `
   
   ---  
 
-  ### Example 4: Improve the clarity and structure of the Git history visualization.
+  ### Example 6: Improve the clarity and structure of the Git history visualization.
   ---
   Input:  
   gitGraph  
@@ -514,12 +593,36 @@ export const instructions_diagram_enhancer = `
 
   ---  
 
+  ### Example 7: add a middleware
+  ---
+  Input:  
+graph TD;
+    Client-->|Send Request|Server;
+    Server-->|Process Request|Database;
+    Database-->|Return Data|Server;
+    Server-->|Send Response|Client;
+  ---
+  The output should be:  
+  graph TD;
+    Client-->|Send Request|Middleware;
+    Middleware-->|Authenticate|Server;
+    Server-->|Process Request|Database;
+    Database-->|Return Data|Server;
+    Server-->|Send Response|Middleware;
+    Middleware-->|Log Response|Client; 
+
+  ---  
+
   ### Guidelines:
+  - Always generate a valid mermaid syntax, cross verify the syntax is corrert or not.
   - Do not enclose Mermaid code within triple backticks.
   - Do not include specific terminology such as "mermaid" or any related keywords in the output.
   - Do not include 'branch main' in case of gitGraph.
   - Do not use 'tag' in gitGraph.
   - Do not use 'merge hotfix/bug-2 id: "Merge hotfix"' for gitGraph.
+  - Do not use 'Client-->|Request|>Server;' this type of invalid syntax.
+  - Use 'Client-->|Request|Server;' type of syntax insted of 'Client-->|Request|>Server;'
+
   
   **Output Only the Enhanced Mermaid.js Code Without Any Extra Commentary.**
 `;
