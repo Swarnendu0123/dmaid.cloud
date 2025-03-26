@@ -55,7 +55,10 @@ const MermaidEditor = () => {
     // "mistral-saba-24b", // chain of thoughts
     // "qwen-2.5-32b", // not good diagram generator
     // "deepseek-r1-distill-llama-70b", // chain of thoughts
-    { name: "qwen-2.5-coder-32b (Best for medium tasks)", model: "qwen-2.5-coder-32b" },
+    {
+      name: "qwen-2.5-coder-32b (Best for medium tasks)",
+      model: "qwen-2.5-coder-32b",
+    },
     // "deepseek-r1-distill-llama-70b-specdec",
     // "deepseek-r1-distill-llama-70b", // chain of thoughts
     {
@@ -65,7 +68,7 @@ const MermaidEditor = () => {
     // "llama-3.2-1b-preview", // not efficient
     // "llama-3.2-3b-preview", // not efficient
     {
-      name: "llama-3.3-70b-versatile (Best for xomplex tasks)",
+      name: "llama-3.3-70b-versatile (Best for complex tasks)",
       model: "llama-3.3-70b-versatile",
     }, // can perform complex task
     // "distil-whisper-large-v3-en"
