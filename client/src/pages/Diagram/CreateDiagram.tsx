@@ -29,6 +29,7 @@ const MermaidEditor = () => {
   const [owner, setOwner] = useState("swarno@admin.dmaid.cloud");
   const [prompt, setPrompt] = useState("");
   const [changePrompt, setChangePrompt] = useState("");
+  const [model, setModel] = useState("qwen-2.5-coder-32b");
 
   // Modals
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
@@ -47,6 +48,33 @@ const MermaidEditor = () => {
   const diagramRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
+
+  const models = [
+    // "qwen-qwq-32b", // chain of thoughts
+    // "mistral-saba-24b", // chain of thoughts
+    // "qwen-2.5-32b", // not good diagram generator
+    // "deepseek-r1-distill-llama-70b", // chain of thoughts
+    { name: "qwen-2.5-coder-32b (Best for medium tasks)", model: "qwen-2.5-coder-32b" },
+    // "deepseek-r1-distill-llama-70b-specdec",
+    // "deepseek-r1-distill-llama-70b", // chain of thoughts
+    {
+      name: "llama-3.3-70b-specdec (Best for complex tasks)",
+      model: "llama-3.3-70b-specdec",
+    }, // fast
+    // "llama-3.2-1b-preview", // not efficient
+    // "llama-3.2-3b-preview", // not efficient
+    {
+      name: "llama-3.3-70b-versatile (Best for xomplex tasks)",
+      model: "llama-3.3-70b-versatile",
+    }, // can perform complex task
+    // "distil-whisper-large-v3-en"
+    { name: "gemma2-9b-it (Best for light tasks)", model: "gemma2-9b-it" }, // good for normal tasks
+    // "llama-3.1-8b-instant" // not very smart
+    // "llama-guard-3-8b" // not sure
+    // "mixtral-8x7b-32768" // not a text model
+    // "whisper-large-v3", // not a text model
+    // "whisper-large-v3-turbo" //not a text model
+  ];
 
   useEffect(() => {
     mermaid.initialize({ startOnLoad: false });
@@ -83,7 +111,7 @@ const MermaidEditor = () => {
     }
   }, []);
 
-  // function to render the diagram
+  // [CORE] function to render the diagram
   const renderDiagram = async () => {
     if (diagramRef.current) {
       try {
@@ -108,7 +136,7 @@ const MermaidEditor = () => {
     }
   };
 
-  // Code change Handeler
+  // [CORE] Code change Handeler
   const handleCodeChange = (value: string) => {
     setCode(value);
     localStorage.setItem("mermaid_code", value);
@@ -121,7 +149,7 @@ const MermaidEditor = () => {
     }, 500);
   };
 
-  // function to handel undo
+  // [CORE] function to handel undo
   const handleUndo = () => {
     if (history.length > 1) {
       setRedoStack((prevRedo) => [history[history.length - 1], ...prevRedo]);
@@ -133,7 +161,7 @@ const MermaidEditor = () => {
     }
   };
 
-  // function to handel redo
+  // [CORE] function to handel redo
   const handleRedo = () => {
     if (redoStack.length > 0) {
       setHistory((prevHistory) => {
@@ -145,7 +173,7 @@ const MermaidEditor = () => {
     }
   };
 
-  // function to download the image in SVG format
+  // [CORE] function to download the image in SVG format
   const handleDownloadSVG = () => {
     if (diagramRef.current) {
       const svgElement = diagramRef.current.querySelector("svg");
@@ -173,7 +201,7 @@ const MermaidEditor = () => {
     }
   };
 
-  // function to generate the code using AI
+  // [AI] function to generate the code using AI
   const generateAIDiagram = async () => {
     try {
       setLoading(true);
@@ -184,7 +212,7 @@ const MermaidEditor = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt, model: model }),
       });
 
       if (!response.ok) {
@@ -207,7 +235,7 @@ const MermaidEditor = () => {
     }
   };
 
-  // function to generate title from the diagram
+  // [AI] function to generate title from the diagram
   const generateAItitleWithDiagrams = async () => {
     try {
       setIsAIGeneratingTitle(true);
@@ -216,7 +244,7 @@ const MermaidEditor = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ diagram: code }),
+        body: JSON.stringify({ diagram: code, model: model }),
       });
 
       if (!response.ok) {
@@ -238,7 +266,7 @@ const MermaidEditor = () => {
     }
   };
 
-  // function to enhance code using AI
+  // [AI] function to enhance code using AI
   const enhanceTheDiagram = async () => {
     try {
       setIsAIEnhancingDiagram(true);
@@ -247,7 +275,11 @@ const MermaidEditor = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ diagram: code, prompt: changePrompt }),
+        body: JSON.stringify({
+          diagram: code,
+          prompt: changePrompt,
+          model: model,
+        }),
       });
 
       if (!response.ok) {
@@ -267,6 +299,8 @@ const MermaidEditor = () => {
       setIsAIEnhancingDiagram(false);
     }
   };
+
+  console.log(model);
 
   return (
     <div className="flex gap-4 p-4 items-start relative">
@@ -540,33 +574,50 @@ const MermaidEditor = () => {
                 <div className="flex items-center">
                   <textarea
                     name=""
-                    id=""
+                    id="prompt_to_generate_with_ai"
                     value={prompt}
-                    className="border p-2 m-1 rounded w-96"
+                    className="border p-2 m-1 rounded w-full"
                     onChange={(e) => setPrompt(e.target.value)}
                     placeholder="Create a client Server Architecture with Database and Middlewares"
                   />
                 </div>
 
-                <button
-                  className={`bg-black text-white px-4 py-2 rounded font-black text-sm m-0.5 my-1 mx-4 flex items-center justify-center ${
-                    isAIGeneratingDiagram ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
-                  onClick={generateAIDiagram}
-                  disabled={isAIGeneratingDiagram}
-                >
-                  {isAIGeneratingDiagram ? (
-                    <div className="flex items-center justify-center">
-                      <span className="animate-spin mr-2">⏳</span>{" "}
-                      Generating...
-                    </div>
-                  ) : (
-                    <>
-                      Generate With AI{" "}
-                      <Sparkles size={16} color="#ffffff" className="ml-2" />
-                    </>
-                  )}
-                </button>
+                <div className="flex">
+                  <select
+                    name="model"
+                    id=""
+                    className="`bg-black text-black rounded font-black text-sm m-0.5 my-1 flex items-center justify-center border w-64"
+                    value={model}
+                    onChange={(e) => setModel(e.target.value)}
+                  >
+                    {models.map((model) => (
+                      <option key={model.name} value={model.model}>
+                        {model.name}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    className={`bg-black text-white px-4 py-2 rounded font-black text-sm m-0.5 my-1 flex items-center justify-center ${
+                      isAIGeneratingDiagram
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
+                    }`}
+                    onClick={generateAIDiagram}
+                    disabled={isAIGeneratingDiagram}
+                  >
+                    {isAIGeneratingDiagram ? (
+                      <div className="flex items-center justify-center">
+                        <span className="animate-spin mr-2">⏳</span>{" "}
+                        Generating...
+                      </div>
+                    ) : (
+                      <>
+                        Generate With AI{" "}
+                        <Sparkles size={16} color="#ffffff" className="ml-2" />
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -586,7 +637,7 @@ const MermaidEditor = () => {
             <h2 className="text-xl mb-1 font-black">
               Enhance/Edit Diagrams with AI
             </h2>
-            <p className="mb-2 w-96 ">
+            <p className="mb-2 w-96">
               <span className="font-bold">Note:</span>
               It will change/edit your existing diagram, it will not completely
               overwrite your existing diagram
@@ -598,30 +649,47 @@ const MermaidEditor = () => {
                     name=""
                     id=""
                     value={changePrompt}
-                    className="border p-2 m-1 rounded w-96"
+                    className="border p-2 m-1 rounded w-full"
                     onChange={(e) => setChangePrompt(e.target.value)}
                     placeholder="Add the Database and Middleware Layer"
                   />
                 </div>
-
-                <button
-                  className={`bg-black text-white px-4 py-2 rounded font-black text-sm m-0.5 my-1 mx-4 flex items-center justify-center ${
-                    isAIEnhancingDiagram ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
-                  onClick={enhanceTheDiagram}
-                  disabled={isAIEnhancingDiagram}
-                >
-                  {isAIEnhancingDiagram ? (
-                    <div className="flex items-center justify-center">
-                      <span className="animate-spin mr-2">⏳</span> Enhancing...
-                    </div>
-                  ) : (
-                    <>
-                      Enhance/Edit With AI{" "}
-                      <Sparkles size={16} color="#ffffff" className="ml-2" />
-                    </>
-                  )}
-                </button>
+                <div className="flex">
+                  <select
+                    name="model"
+                    id=""
+                    className="`bg-black text-black rounded font-black m-0.5 my-1 flex items-center justify-center border text-sm w-64"
+                    value={model}
+                    onChange={(e) => setModel(e.target.value)}
+                  >
+                    {models.map((model) => (
+                      <option key={model.name} value={model.model}>
+                        {model.name}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    className={`bg-black text-white px-4 py-2 rounded font-black text-sm m-0.5 my-1 flex items-center justify-center ${
+                      isAIEnhancingDiagram
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
+                    }`}
+                    onClick={enhanceTheDiagram}
+                    disabled={isAIEnhancingDiagram}
+                  >
+                    {isAIEnhancingDiagram ? (
+                      <div className="flex items-center justify-center">
+                        <span className="animate-spin mr-2">⏳</span>{" "}
+                        Enhancing...
+                      </div>
+                    ) : (
+                      <>
+                        Enhance/Edit With AI{" "}
+                        <Sparkles size={16} color="#ffffff" className="ml-2" />
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
           </div>

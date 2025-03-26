@@ -318,16 +318,11 @@ gitGraph
 ---
 
 ### Guidelines:
-- Always generate valid Mermaid.js code.
-- Ensure the output strictly follows Mermaid.js syntax.
-- The diagrams should be detailed and accurate.
-- Do not enclose Mermaid code within triple backticks.
-- Do not include specific terminology such as "mermaid" or any related keywords in the output.
-- Do not include 'branch main' in case of gitGraph.
-- Do not use 'tag' in gitGraph.
-- Do not use 'merge hotfix/bug-2 id: "Merge hotfix"' for gitGraph.
-
-
+  - Do not enclose Mermaid code within triple backticks.
+  - Do not include specific terminology such as "mermaid" or any related keywords in the output.
+  - Do not include 'branch main' in case of gitGraph.
+  - Do not use 'tag' in gitGraph.
+  - Do not use 'merge hotfix/bug-2 id: "Merge hotfix"' for gitGraph.
 `;
 exports.instructions_text_to_title = `
           You are an expert at converting English descriptions into concise and meaningful Mermaid.js diagram titles.

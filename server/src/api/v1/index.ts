@@ -3,7 +3,7 @@ import { generateTextToDiagramWithGorq } from "../../controllers/gen_ai/text_to_
 import { generateTextToTitleWithGroq } from "../../controllers/gen_ai/text_to_title";
 import { generateDiagramToTitleWithGorq } from "../../controllers/gen_ai/diagram_to_title";
 import { diagramEnhancer } from "../../controllers/gen_ai/diagram_enhancer";
-import { model } from "mongoose";
+import { Model, model } from "mongoose";
 
 const router = Router();
 
@@ -44,29 +44,25 @@ router.get("/", (req, res) => {
   });
 });
 
-const ai_model = "gemma2-9b-it";
+const default_model = "gemma2-9b-it";
 
 // route to generate diagrams based on prompt
 router.post("/diagram/generate", async (req, res) => {
   try {
     const prompt = req.body.prompt;
+    const model = req.body.model;
 
-    console.log(prompt);
+    console.log({prompt: prompt, model: model});
 
-    console.log("__________________________________________");
-    console.log("generating diagram ...");
-    console.log("__________________________________________");
     const generated_diagram = await generateTextToDiagramWithGorq(
       prompt,
-      ai_model
+      model || default_model
     );
-    console.log(generated_diagram);
-    console.log("__________________________________________");
-    console.log("generating title...");
-    console.log("__________________________________________");
-    const generated_title = await generateTextToTitleWithGroq(prompt, ai_model);
-    console.log(generated_title);
-    console.log("__________________________________________");
+
+    const generated_title = await generateTextToTitleWithGroq(
+      prompt,
+      model || default_model
+    );
 
     res.send({
       messege: "Diagram generated",
@@ -88,11 +84,16 @@ router.post("/diagram/enhance", async (req, res) => {
   try {
     const diagram = req.body.diagram;
     const prompt = req.body.prompt;
+    const model = req.body.model;
 
     console.log(diagram);
     console.log(prompt);
 
-    const generated_diagram = await diagramEnhancer(prompt, diagram, ai_model);
+    const generated_diagram = await diagramEnhancer(
+      prompt,
+      diagram,
+      model || default_model
+    );
 
     console.log(generated_diagram);
 
@@ -110,12 +111,13 @@ router.post("/diagram/enhance", async (req, res) => {
 router.post("/title/generate", async (req, res) => {
   try {
     const diagram = req.body.diagram;
+    const model = req.body.model;
 
     console.log(diagram);
 
     const generated_title = await generateDiagramToTitleWithGorq(
       diagram,
-      ai_model
+      model || default_model
     );
 
     console.log(generated_title);
