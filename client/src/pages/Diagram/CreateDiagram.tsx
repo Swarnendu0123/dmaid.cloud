@@ -51,39 +51,31 @@ const MermaidEditor = () => {
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const models = [
-    // "qwen-qwq-32b", // chain of thoughts
-    // "mistral-saba-24b", // chain of thoughts
-    // "deepseek-r1-distill-llama-70b", // chain of thoughts
     {
-      name: "gemma2-9b-it (Best for light tasks) [9 Billion Parameters]",
+      name: "Gemma 2 [9B]",
+      description: "Fast and efficient text generation",
       model: "gemma2-9b-it",
-    }, // good for normal tasks
+    },
     {
-      name: "qwen-2.5-32b (Fast for medium tasks) [32 Billion Parameters]",
+      name: "Qwen 2.5 [32B]",
+      description: "GPT-4 level speed and accuracy",
       model: "qwen-2.5-32b",
-    }, // not good diagram generator
+    },
     {
-      name: "qwen-2.5-coder-32b (Best for medium tasks) [32 Billion Parameters]",
+      name: "Qwen 2.5 coder [32B]",
+      description: "Top-tier code generation",
       model: "qwen-2.5-coder-32b",
     },
-    // "deepseek-r1-distill-llama-70b-specdec",
-    // "deepseek-r1-distill-llama-70b", // chain of thoughts
     {
-      name: "llama-3.3-70b-specdec (Best for complex tasks) [70 Billion Parameters]",
+      name: "Llama Specdec 3.3 [70B]",
+      description: "Great for decision-making",
       model: "llama-3.3-70b-specdec",
-    }, // fast
-    // "llama-3.2-1b-preview", // not efficient
-    // "llama-3.2-3b-preview", // not efficient
+    },
     {
-      name: "llama-3.3-70b-versatile (Best for complex tasks) [70 Billion Parameters]",
+      name: "Llama Versatile 3.3 [70B]",
+      description: "Strong in coding and reasoning",
       model: "llama-3.3-70b-versatile",
-    }, // can perform complex task
-    // "distil-whisper-large-v3-en"
-    // "llama-3.1-8b-instant" // not very smart
-    // "llama-guard-3-8b" // not sure
-    // "mixtral-8x7b-32768" // not a text model
-    // "whisper-large-v3", // not a text model
-    // "whisper-large-v3-turbo" //not a text model
+    },
   ];
 
   useEffect(() => {
@@ -596,8 +588,7 @@ const MermaidEditor = () => {
                 <div className="flex">
                   <select
                     name="model"
-                    id=""
-                    className="`bg-black text-black rounded font-black text-sm m-0.5 my-1 flex items-center justify-center border w-64"
+                    className="bg-gradient-to-r from-pink-100 via-blue-100 to-green-100 text-black rounded-full font-bold m-0.5 my-1 flex items-center justify-center border text-sm w-56 p-2 transition-all duration-300"
                     value={model}
                     onChange={(e) => setModel(e.target.value)}
                   >
@@ -670,17 +661,21 @@ const MermaidEditor = () => {
                 <div className="flex">
                   <select
                     name="model"
-                    id=""
-                    className="`bg-black text-black rounded font-black m-0.5 my-1 flex items-center justify-center border text-sm w-64"
+                    className="bg-gradient-to-r from-pink-100 via-blue-100 to-green-100 text-black rounded-full font-bold m-0.5 my-1 flex items-center justify-center border text-sm w-56 p-2 transition-all duration-300"
                     value={model}
                     onChange={(e) => setModel(e.target.value)}
                   >
                     {models.map((model) => (
-                      <option key={model.name} value={model.model}>
+                      <option
+                        key={model.name}
+                        value={model.model}
+                        title={model.name}
+                      >
                         {model.name}
                       </option>
                     ))}
                   </select>
+
                   <button
                     className={`bg-black text-white px-4 py-2 rounded font-black text-sm m-0.5 my-1 flex items-center justify-center ${
                       isAIEnhancingDiagram
