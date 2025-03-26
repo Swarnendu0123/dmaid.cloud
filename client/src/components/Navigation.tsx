@@ -41,8 +41,8 @@ const Navigation = () => {
     try {
       signInWithPopup(auth, new GoogleAuthProvider());
       setIsAuthModalOpen(false);
-    } catch (e) {
-      console.log(e);
+    } catch (e: any) {
+      console.log(e.message);
     }
   };
 
@@ -175,7 +175,10 @@ const Navigation = () => {
                     </button>
                     <button
                       className="bg-red-600 text-white px-4 py-2 rounded  m-0.5 my-1 flex items-center"
-                      onClick={handleSignOut}
+                      onClick={() => {
+                        handleSignOut();
+                        setIsLogoutModalOpen(false);
+                      }}
                     >
                       Log out
                       <LogOutIcon size={16} color="#fff" className="ml-2" />

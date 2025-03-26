@@ -30,7 +30,7 @@ const MermaidEditor = () => {
   const [owner, setOwner] = useState("swarno@admin.dmaid.cloud");
   const [prompt, setPrompt] = useState("");
   const [changePrompt, setChangePrompt] = useState("");
-  const [model, setModel] = useState("llama-3.3-70b-specdec");
+  const [model, setModel] = useState("llama-3.3-70b-versatile");
 
   // Modals
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
@@ -53,23 +53,29 @@ const MermaidEditor = () => {
   const models = [
     // "qwen-qwq-32b", // chain of thoughts
     // "mistral-saba-24b", // chain of thoughts
-    // "qwen-2.5-32b", // not good diagram generator
     // "deepseek-r1-distill-llama-70b", // chain of thoughts
-    { name: "gemma2-9b-it (Best for light tasks)", model: "gemma2-9b-it" }, // good for normal tasks
     {
-      name: "qwen-2.5-coder-32b (Best for medium tasks)",
+      name: "gemma2-9b-it (Best for light tasks) [9 Billion Parameters]",
+      model: "gemma2-9b-it",
+    }, // good for normal tasks
+    {
+      name: "qwen-2.5-32b (Fast for medium tasks) [32 Billion Parameters]",
+      model: "qwen-2.5-32b",
+    }, // not good diagram generator
+    {
+      name: "qwen-2.5-coder-32b (Best for medium tasks) [32 Billion Parameters]",
       model: "qwen-2.5-coder-32b",
     },
     // "deepseek-r1-distill-llama-70b-specdec",
     // "deepseek-r1-distill-llama-70b", // chain of thoughts
     {
-      name: "llama-3.3-70b-specdec (Best for complex tasks)",
+      name: "llama-3.3-70b-specdec (Best for complex tasks) [70 Billion Parameters]",
       model: "llama-3.3-70b-specdec",
     }, // fast
     // "llama-3.2-1b-preview", // not efficient
     // "llama-3.2-3b-preview", // not efficient
     {
-      name: "llama-3.3-70b-versatile (Best for complex tasks)",
+      name: "llama-3.3-70b-versatile (Best for complex tasks) [70 Billion Parameters]",
       model: "llama-3.3-70b-versatile",
     }, // can perform complex task
     // "distil-whisper-large-v3-en"
@@ -258,7 +264,6 @@ const MermaidEditor = () => {
       const data = await response.json();
       if (data.title) {
         setExportSVGName(data.title);
-        console.log(data.title);
       } else {
         alert("No text code was generated.");
       }
@@ -274,6 +279,7 @@ const MermaidEditor = () => {
   const enhanceTheDiagram = async () => {
     try {
       setIsAIEnhancingDiagram(true);
+      setLoading(true);
       const response = await fetch(BACKEND_URL + "/diagram/enhance", {
         method: "POST",
         headers: {
@@ -301,10 +307,9 @@ const MermaidEditor = () => {
       alert("An error occurred while generating the title.");
     } finally {
       setIsAIEnhancingDiagram(false);
+      setLoading(false);
     }
   };
-
-  console.log(model);
 
   return (
     <div className="flex gap-4 p-4 items-start relative">
@@ -382,6 +387,8 @@ const MermaidEditor = () => {
           onChange={handleCodeChange}
         />
       </div>
+
+      {/* Rendering Canvas */}
       <div className="w-full max-w-2xl p-4 rounded-lg bg-slate-100 overflow-hidden relative">
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/80">
@@ -566,7 +573,7 @@ const MermaidEditor = () => {
               <X size={20} color="#fff" />
             </button>
             <h2 className="text-xl mb-1 font-black">
-              Generate Diagrams Template with AI
+              Generate Diagram Templates with AI
             </h2>
             <p className="mb-1 w-96 ">
               <span className="font-bold">Note:</span>
@@ -648,6 +655,7 @@ const MermaidEditor = () => {
             </p>
             <div className="flex flex-col gap-2">
               <div className="flex flex-col">
+                {/* Input text area */}
                 <div className="flex items-center">
                   <textarea
                     name=""
@@ -658,6 +666,7 @@ const MermaidEditor = () => {
                     placeholder="Add the Database and Middleware Layer"
                   />
                 </div>
+
                 <div className="flex">
                   <select
                     name="model"
@@ -678,7 +687,10 @@ const MermaidEditor = () => {
                         ? "opacity-50 cursor-not-allowed"
                         : ""
                     }`}
-                    onClick={enhanceTheDiagram}
+                    onClick={() => {
+                      enhanceTheDiagram();
+                      setEnhanceWithAIModalOpen(false);
+                    }}
                     disabled={isAIEnhancingDiagram}
                   >
                     {isAIEnhancingDiagram ? (
