@@ -314,6 +314,17 @@ gitGraph
 
 ---
 
+### Example 12: Generate a basic client server architecture
+
+The Mermaid code would be:
+graph TD;
+    Client-->|Request|Server;
+    Server-->|Process Request|Database;
+    Database-->|Retrieve Data|Server;
+    Server-->|Response|Client;
+
+---
+
 ### Guidelines:
   - Always generate a valid mermaid syntax, cross verify the syntax is corrert or not.
   - Do not enclose Mermaid code within triple backticks.
