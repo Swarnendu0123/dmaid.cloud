@@ -689,7 +689,6 @@ const MermaidEditor = () => {
                     }`}
                     onClick={() => {
                       enhanceTheDiagram();
-                      setEnhanceWithAIModalOpen(false);
                     }}
                     disabled={isAIEnhancingDiagram}
                   >
