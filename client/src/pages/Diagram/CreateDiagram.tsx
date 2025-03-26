@@ -8,6 +8,7 @@ import {
   Copy,
   Image,
   Lock,
+  Pencil,
   Plus,
   Redo,
   Sparkles,
@@ -340,7 +341,7 @@ const MermaidEditor = () => {
               setEnhanceWithAIModalOpen(true);
             }}
           >
-            <Sparkles size={16} color="#ffffff" />
+            <Pencil size={16} color="#ffffff" />
           </button>
 
           <button
