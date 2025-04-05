@@ -435,20 +435,6 @@ const MermaidEditor = () => {
 
                   {/* meta data with prompt */}
                   <div className="flex">
-                    {/* Mode selection */}
-                    <select
-                      name="edit/new"
-                      className="bg-black text-white rounded-full font-bold m-0.5 my-1 flex items-center justify-center border text-sm  p-2 transition-all duration-300"
-                      onChange={(e) => setMode(e.target.value)}
-                    >
-                      <option key={"new"} value={"new"}>
-                        New
-                      </option>
-                      <option key={"edit"} value={"edit"}>
-                        Editing
-                      </option>
-                    </select>
-
                     {/* Model Selection */}
                     <select
                       name="model"
@@ -461,6 +447,20 @@ const MermaidEditor = () => {
                           {model.name}
                         </option>
                       ))}
+                    </select>
+
+                    {/* Mode selection */}
+                    <select
+                      name="edit/new"
+                      className="bg-black text-white rounded-md font-bold m-0.5 my-1 flex items-center justify-center border text-sm  p-2 transition-all duration-300"
+                      onChange={(e) => setMode(e.target.value)}
+                    >
+                      <option key={"new"} value={"new"}>
+                        New
+                      </option>
+                      <option key={"edit"} value={"edit"}>
+                        Editing
+                      </option>
                     </select>
 
                     {/* generate button */}
