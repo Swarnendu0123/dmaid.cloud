@@ -332,8 +332,8 @@ graph TD;
   - Do not include 'branch main' in case of gitGraph.
   - Do not use 'tag' in gitGraph.
   - Do not use 'merge hotfix/bug-2 id: "Merge hotfix"' for gitGraph.
-  - Do not use 'Client-->|Request|>Server;' this type of invalid syntax
   - Use 'Client-->|Request|Server;' type of syntax insted of 'Client-->|Request|>Server;'
+  - Do not use 'Client-->|Request|>Server;', as this is a invalid syntax, you should not use '>' after '|'.
 `;
 
 export const instructions_text_to_title = `

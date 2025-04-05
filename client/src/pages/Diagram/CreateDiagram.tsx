@@ -5,11 +5,10 @@ import mermaid from "mermaid";
 import Panzoom from "@panzoom/panzoom";
 import {
   ArrowDownToLine,
+  Bug,
   Copy,
   Image,
   Lock,
-  Pencil,
-  Plus,
   Redo,
   Sparkles,
   Undo,
@@ -29,19 +28,17 @@ const MermaidEditor = () => {
   const [exportSVGName, setExportSVGName] = useState("Dmaid_" + uuidv4());
   const [owner, setOwner] = useState("swarno@admin.dmaid.cloud");
   const [prompt, setPrompt] = useState("");
-  const [changePrompt, setChangePrompt] = useState("");
-  const [model, setModel] = useState("llama-3.3-70b-versatile");
+  const [model, setModel] = useState("qwen-2.5-coder-32b");
+  const [mode, setMode] = useState("new");
 
   // Modals
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
-  const [isGenerateWithAIModalOpen, setIsGenerateWithAIModalOpen] =
-    useState(false);
-  const [isEnhanceWithAIModalOpen, setEnhanceWithAIModalOpen] = useState(false);
+  useState(false);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
 
   const [isDownloading, setIsDownloading] = useState(false);
   const [isAIGeneratingDiagram, setIsAIGeneratingDiagram] = useState(false);
-  const [isAIEnhancingDiagram, setIsAIEnhancingDiagram] = useState(false);
   const [isAIGeneratingTitle, setIsAIGeneratingTitle] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -132,6 +129,7 @@ const MermaidEditor = () => {
         }, 100);
       } catch (error) {
         diagramRef.current.innerHTML = `<p style="color: red;">Error rendering diagram</p>`;
+        console.log(error);
       } finally {
         setLoading(false);
       }
@@ -237,6 +235,42 @@ const MermaidEditor = () => {
     }
   };
 
+  // [AI] function to edit/enhance code using AI
+  const enhanceTheDiagram = async () => {
+    try {
+      setIsAIGeneratingDiagram(true);
+      setLoading(true);
+      const response = await fetch(BACKEND_URL + "/diagram/enhance", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          diagram: code,
+          prompt: prompt,
+          model: model,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate AI diagram");
+      }
+
+      const data = await response.json();
+      if (data.diagram) {
+        handleCodeChange(data.diagram);
+      } else {
+        alert("No text code was generated.");
+      }
+    } catch (error) {
+      console.error("Error generating AI title:", error);
+      alert("An error occurred while generating the title.");
+    } finally {
+      setIsAIGeneratingDiagram(false);
+      setLoading(false);
+    }
+  };
+
   // [AI] function to generate title from the diagram
   const generateAItitleWithDiagrams = async () => {
     try {
@@ -267,48 +301,26 @@ const MermaidEditor = () => {
     }
   };
 
-  // [AI] function to enhance code using AI
-  const enhanceTheDiagram = async () => {
-    try {
-      setIsAIEnhancingDiagram(true);
-      setLoading(true);
-      const response = await fetch(BACKEND_URL + "/diagram/enhance", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          diagram: code,
-          prompt: changePrompt,
-          model: model,
-        }),
-      });
+  // [CORE] function to switch b/w edit generate code using AI
+  const editOrGenerateWithAI = async () => {
+    console.log(mode);
 
-      if (!response.ok) {
-        throw new Error("Failed to generate AI diagram");
-      }
-
-      const data = await response.json();
-      if (data.diagram) {
-        handleCodeChange(data.diagram);
-      } else {
-        alert("No text code was generated.");
-      }
-    } catch (error) {
-      console.error("Error generating AI title:", error);
-      alert("An error occurred while generating the title.");
-    } finally {
-      setIsAIEnhancingDiagram(false);
-      setLoading(false);
+    if (mode == "new") {
+      generateAIDiagram();
+    } else {
+      enhanceTheDiagram();
     }
   };
 
+  // [CORE] function to import a diagram from upload and render over the canvas
+
   return (
     <div className="flex gap-4 p-4 items-start relative">
+      {/* Side bar */}
       <div>
-        {/* Side bar */}
         <div className="rounded-lg bg-slate-100 p-2 flex flex-col items-center my-5">
           <p className=" font-black my-2">{"</>"}</p>
+
           <button
             disabled={history.length <= 1}
             className={`bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1 ${
@@ -330,30 +342,19 @@ const MermaidEditor = () => {
           </button>
 
           <button
+            className={`bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1}`}
+            onClick={() => {
+              setIsEditorOpen(!isEditorOpen);
+            }}
+          >
+            <Bug size={16} color="#ffffff" />
+          </button>
+
+          <button
             className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1"
             onClick={() => setIsSettingsModalOpen(true)}
           >
             <Users size={16} color="#ffffff" />
-          </button>
-          <button
-            className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1"
-            onClick={() => {
-              setEnhanceWithAIModalOpen(true);
-            }}
-          >
-            <Pencil size={16} color="#ffffff" />
-          </button>
-
-          <button
-            disabled={code == ""}
-            className={`bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1 ${
-              code != "" ? "" : "opacity-50 cursor-not-allowed"
-            }`}
-            onClick={() => {
-              setIsGenerateWithAIModalOpen(true);
-            }}
-          >
-            <Plus size={16} color="#ffffff" />
           </button>
         </div>
 
@@ -370,18 +371,22 @@ const MermaidEditor = () => {
           </button>
         </div>
       </div>
-      <div className="w-full max-w-2xl p-2 bg-gray-900 rounded-lg">
-        <CodeMirror
-          value={code}
-          height="615px"
-          extensions={[markdown()]}
-          theme="dark"
-          onChange={handleCodeChange}
-        />
-      </div>
 
-      {/* Rendering Canvas */}
-      <div className="w-full max-w-2xl p-4 rounded-lg bg-slate-100 overflow-hidden relative">
+      {/* code editor */}
+      {isEditorOpen && (
+        <div className="w-full max-w-2xl p-2 bg-gray-900 rounded-lg">
+          <CodeMirror
+            value={code}
+            height="615px"
+            extensions={[markdown()]}
+            theme="dark"
+            onChange={handleCodeChange}
+          />
+        </div>
+      )}
+
+      {/* Canvas */}
+      <div className="w-full p-4 rounded-lg bg-slate-100 overflow-hidden relative">
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/80">
             <div className="animate-spin text-gray-600 text-4xl">⟳</div>
@@ -408,6 +413,86 @@ const MermaidEditor = () => {
             >
               -
             </button>
+          </div>
+        </div>
+
+        <div className="absolute bottom-4 justify-center flex flex-col items-center space-y-2  p-2 rounded-lg">
+          <div className="flex space-x-2">
+            <div className="bg-white p-6 rounded-lg shadow-lg relative">
+              <div className="flex flex-col gap-2">
+                <div className="flex flex-col">
+                  {/* prompt input */}
+                  <div className="flex items-center">
+                    <textarea
+                      name=""
+                      id="prompt_to_generate_with_ai"
+                      value={prompt}
+                      className="border p-2 m-1 rounded w-full"
+                      onChange={(e) => setPrompt(e.target.value)}
+                      placeholder="Create a client Server Architecture with Database and Middlewares"
+                    />
+                  </div>
+
+                  {/* meta data with prompt */}
+                  <div className="flex">
+                    {/* Mode selection */}
+                    <select
+                      name="edit/new"
+                      className="bg-black text-white rounded-full font-bold m-0.5 my-1 flex items-center justify-center border text-sm  p-2 transition-all duration-300"
+                      onChange={(e) => setMode(e.target.value)}
+                    >
+                      <option key={"new"} value={"new"}>
+                        New
+                      </option>
+                      <option key={"edit"} value={"edit"}>
+                        Editing
+                      </option>
+                    </select>
+
+                    {/* Model Selection */}
+                    <select
+                      name="model"
+                      className="bg-gradient-to-r from-pink-100 via-blue-100 to-green-100 text-black rounded-full font-bold m-0.5 my-1 flex items-center justify-center border text-sm w-56 p-2 transition-all duration-300"
+                      value={model}
+                      onChange={(e) => setModel(e.target.value)}
+                    >
+                      {models.map((model) => (
+                        <option key={model.name} value={model.model}>
+                          {model.name}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* generate button */}
+                    <button
+                      className={`bg-black text-white px-4 py-2 rounded font-black text-sm m-0.5 my-1 flex items-center justify-center ${
+                        isAIGeneratingDiagram
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }`}
+                      onClick={editOrGenerateWithAI}
+                      disabled={isAIGeneratingDiagram}
+                    >
+                      {isAIGeneratingDiagram ? (
+                        <div className="flex items-center justify-center">
+                          <span className="animate-spin mr-2">⏳</span>{" "}
+                          Generating...
+                        </div>
+                      ) : (
+                        <>
+                          Generate{" "}
+                          <Sparkles
+                            size={16}
+                            color="#ffffff"
+                            className="ml-2"
+                          />
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -547,158 +632,6 @@ const MermaidEditor = () => {
                   <div className="bg-black rounded text-sm p-2 m-1 flex justify-center items-center">
                     <Copy size={16} color="#ffffff" />
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* generate with AI Modal */}
-      {isGenerateWithAIModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50">
-          <div className="bg-white p-6 rounded-lg shadow-lg relative">
-            <button
-              className="absolute top-2 right-2 bg-black rounded"
-              onClick={() => setIsGenerateWithAIModalOpen(false)}
-            >
-              <X size={20} color="#fff" />
-            </button>
-            <h2 className="text-xl mb-1 font-black">
-              Generate Diagram Templates with AI
-            </h2>
-            <p className="mb-1 w-96 ">
-              <span className="font-bold">Note:</span>
-              The existing Diagram will completely be over written by the new
-              Diagram
-            </p>
-            <div className="flex flex-col gap-2">
-              <div className="flex flex-col">
-                <div className="flex items-center">
-                  <textarea
-                    name=""
-                    id="prompt_to_generate_with_ai"
-                    value={prompt}
-                    className="border p-2 m-1 rounded w-full"
-                    onChange={(e) => setPrompt(e.target.value)}
-                    placeholder="Create a client Server Architecture with Database and Middlewares"
-                  />
-                </div>
-
-                <div className="flex">
-                  <select
-                    name="model"
-                    className="bg-gradient-to-r from-pink-100 via-blue-100 to-green-100 text-black rounded-full font-bold m-0.5 my-1 flex items-center justify-center border text-sm w-56 p-2 transition-all duration-300"
-                    value={model}
-                    onChange={(e) => setModel(e.target.value)}
-                  >
-                    {models.map((model) => (
-                      <option key={model.name} value={model.model}>
-                        {model.name}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    className={`bg-black text-white px-4 py-2 rounded font-black text-sm m-0.5 my-1 flex items-center justify-center ${
-                      isAIGeneratingDiagram
-                        ? "opacity-50 cursor-not-allowed"
-                        : ""
-                    }`}
-                    onClick={generateAIDiagram}
-                    disabled={isAIGeneratingDiagram}
-                  >
-                    {isAIGeneratingDiagram ? (
-                      <div className="flex items-center justify-center">
-                        <span className="animate-spin mr-2">⏳</span>{" "}
-                        Generating...
-                      </div>
-                    ) : (
-                      <>
-                        Generate With AI{" "}
-                        <Sparkles size={16} color="#ffffff" className="ml-2" />
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* enhance with AI Modal */}
-      {isEnhanceWithAIModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50">
-          <div className="bg-white p-6 rounded-lg shadow-lg relative">
-            <button
-              className="absolute top-2 right-2 bg-black rounded"
-              onClick={() => setEnhanceWithAIModalOpen(false)}
-            >
-              <X size={20} color="#fff" />
-            </button>
-            <h2 className="text-xl mb-1 font-black">
-              Enhance/Edit Diagrams with AI
-            </h2>
-            <p className="mb-2 w-96">
-              <span className="font-bold">Note:</span>
-              It will change/edit your existing diagram, it will not completely
-              overwrite your existing diagram
-            </p>
-            <div className="flex flex-col gap-2">
-              <div className="flex flex-col">
-                {/* Input text area */}
-                <div className="flex items-center">
-                  <textarea
-                    name=""
-                    id=""
-                    value={changePrompt}
-                    className="border p-2 m-1 rounded w-full"
-                    onChange={(e) => setChangePrompt(e.target.value)}
-                    placeholder="Add the Database and Middleware Layer"
-                  />
-                </div>
-
-                <div className="flex">
-                  <select
-                    name="model"
-                    className="bg-gradient-to-r from-pink-100 via-blue-100 to-green-100 text-black rounded-full font-bold m-0.5 my-1 flex items-center justify-center border text-sm w-56 p-2 transition-all duration-300"
-                    value={model}
-                    onChange={(e) => setModel(e.target.value)}
-                  >
-                    {models.map((model) => (
-                      <option
-                        key={model.name}
-                        value={model.model}
-                        title={model.name}
-                      >
-                        {model.name}
-                      </option>
-                    ))}
-                  </select>
-
-                  <button
-                    className={`bg-black text-white px-4 py-2 rounded font-black text-sm m-0.5 my-1 flex items-center justify-center ${
-                      isAIEnhancingDiagram
-                        ? "opacity-50 cursor-not-allowed"
-                        : ""
-                    }`}
-                    onClick={() => {
-                      enhanceTheDiagram();
-                    }}
-                    disabled={isAIEnhancingDiagram}
-                  >
-                    {isAIEnhancingDiagram ? (
-                      <div className="flex items-center justify-center">
-                        <span className="animate-spin mr-2">⏳</span>{" "}
-                        Enhancing...
-                      </div>
-                    ) : (
-                      <>
-                        Enhance/Edit With AI{" "}
-                        <Sparkles size={16} color="#ffffff" className="ml-2" />
-                      </>
-                    )}
-                  </button>
                 </div>
               </div>
             </div>
