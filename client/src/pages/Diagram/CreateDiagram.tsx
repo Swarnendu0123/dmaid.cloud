@@ -28,7 +28,7 @@ const MermaidEditor = () => {
   const [exportSVGName, setExportSVGName] = useState("Dmaid_" + uuidv4());
   const [owner, setOwner] = useState("swarno@admin.dmaid.cloud");
   const [prompt, setPrompt] = useState("");
-  const [model, setModel] = useState("qwen-2.5-coder-32b");
+  const [model, setModel] = useState("llama-3.3-70b-versatile");
   const [mode, setMode] = useState("new");
 
   // Modals
@@ -48,26 +48,6 @@ const MermaidEditor = () => {
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const models = [
-    {
-      name: "Gemma 2 [9B]",
-      description: "Fast and efficient text generation",
-      model: "gemma2-9b-it",
-    },
-    {
-      name: "Qwen 2.5 [32B]",
-      description: "GPT-4 level speed and accuracy",
-      model: "qwen-2.5-32b",
-    },
-    {
-      name: "Qwen 2.5 coder [32B]",
-      description: "Top-tier code generation",
-      model: "qwen-2.5-coder-32b",
-    },
-    {
-      name: "Llama Specdec 3.3 [70B]",
-      description: "Great for decision-making",
-      model: "llama-3.3-70b-specdec",
-    },
     {
       name: "Llama Versatile 3.3 [70B]",
       description: "Strong in coding and reasoning",

@@ -20,18 +20,24 @@ export async function generateTextToDiagramWithGemini(prompt: string) {
 }
 
 // Gorq gen AI model
-export async function generateTextToDiagramWithGorq(prompt: any, ai_model: string) {
+export async function generateTextToDiagramWithGorq(
+  prompt: any,
+  ai_model: string
+) {
+  try {
+    const chatCompletion = await getGroqChatCompletion(prompt, ai_model);
 
-  const chatCompletion = await getGroqChatCompletion(prompt, ai_model);
+    console.log(chatCompletion.choices[0]?.message?.content);
 
-  console.log(chatCompletion.choices[0]?.message?.content);
-
-  // Print the completion returned by the LLM.
-  return chatCompletion.choices[0]?.message?.content || "";
+    // Print the completion returned by the LLM.
+    return chatCompletion.choices[0]?.message?.content || "";
+  } catch (error) {
+    console.log(error.message);
+  }
 }
 
 // grok config
-const getGroqChatCompletion = async (prompt: string, ai_model:string) => {
+const getGroqChatCompletion = async (prompt: string, ai_model: string) => {
   return groq.chat.completions.create({
     //
     // Required parameters
