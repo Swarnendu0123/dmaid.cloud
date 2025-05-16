@@ -2,6 +2,8 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import { connectToDB } from "./db";
 import v1router from "./api/v1";
+import userRoutes from "./api/users";
+
 const cors = require("cors");
 
 dotenv.config();
@@ -23,6 +25,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api/v1", v1router);
+app.use('/api/users', userRoutes)
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);

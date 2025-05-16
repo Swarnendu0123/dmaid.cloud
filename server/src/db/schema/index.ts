@@ -7,11 +7,44 @@ const diagramSchema = new Schema({
 });
 
 const userSchema = new Schema({
-  name: String,
-  email: String,
-  //   other details
+
+  name: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+    trim: true,
+  },
+
+  password: {
+    type: String,
+    required: true,
+  },
+
+  currentToken:{
+    type: String,
+    required: true,
+  },
+
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  }
+
 });
 
 
+
 export const EventModel = model("Diagram", diagramSchema);
-export const UserModel = model("User", userSchema);
+export const User = model("User", userSchema);
