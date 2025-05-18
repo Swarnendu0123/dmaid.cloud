@@ -17,6 +17,41 @@ import {
   UserCog,
   X,
 } from "lucide-react";
+import { BACKEND_URL } from "../config";
+
+
+
+
+
+
+async function registerUser(name:string,email:string,currentToken:string) {
+  try {
+    const response = await fetch(`${BACKEND_URL}/users/upsert/`, {
+      method: 'POST',
+      credentials: 'include',  
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name, email,currentToken }),
+    });
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error || `Request failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('Registration successful:', data);
+  } catch (error) {
+    console.error('Registration error:', error);
+  }
+}
+
+
+
+
+
+
 
 const Navigation = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -39,7 +74,12 @@ const Navigation = () => {
 
   const signInWithGoogle = async () => {
     try {
-      signInWithPopup(auth, new GoogleAuthProvider());
+      const data= await signInWithPopup(auth, new GoogleAuthProvider());
+      console.log(data)
+      const token= await data.user.getIdToken()
+      if(data.user.displayName && data.user.email){
+       registerUser(data.user.displayName, data.user.email,token)
+      }
       setIsAuthModalOpen(false);
     } catch (e: any) {
       console.log(e.message);

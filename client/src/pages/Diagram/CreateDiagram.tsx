@@ -187,7 +187,8 @@ const MermaidEditor = () => {
       setLoading(true);
       setIsAIGeneratingDiagram(true);
 
-      const response = await fetch(BACKEND_URL + "/diagram/generate", {
+      const response = await fetch(BACKEND_URL + "/v1/diagram/generate", {
+        credentials: 'include',  
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -220,7 +221,8 @@ const MermaidEditor = () => {
     try {
       setIsAIGeneratingDiagram(true);
       setLoading(true);
-      const response = await fetch(BACKEND_URL + "/diagram/enhance", {
+      const response = await fetch(BACKEND_URL + "/v1/diagram/enhance", {
+         credentials: 'include',  
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -255,7 +257,8 @@ const MermaidEditor = () => {
   const generateAItitleWithDiagrams = async () => {
     try {
       setIsAIGeneratingTitle(true);
-      const response = await fetch(BACKEND_URL + "/title/generate", {
+      const response = await fetch(BACKEND_URL + "/v1/title/generate", {
+        credentials: 'include',  
         method: "POST",
         headers: {
           "Content-Type": "application/json",
