@@ -20,6 +20,7 @@
   "license": "ISC",
   "dependencies": {
     "@google/generative-ai": "^0.24.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
@@ -29,6 +30,7 @@
     "rimraf": "^6.0.1"
   },
   "devDependencies": {
+    "@types/cookie-parser": "^1.4.8",
     "@types/express": "^5.0.0",
     "@types/mongoose": "^5.11.97",
     "@types/node": "^20.0.0",

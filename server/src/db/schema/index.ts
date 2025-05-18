@@ -22,11 +22,6 @@ const userSchema = new Schema({
     trim: true,
   },
 
-  password: {
-    type: String,
-    required: true,
-  },
-
   currentToken:{
     type: String,
     required: true,
