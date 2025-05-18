@@ -10,6 +10,7 @@ const v1_1 = __importDefault(require("./api/v1"));
 const users_1 = __importDefault(require("./api/users"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const middleware_1 = require("./middleware/middleware");
+const diagram_1 = __importDefault(require("./api/diagram"));
 const cors = require("cors");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -29,6 +30,7 @@ app.get("/", (req, res) => {
     res.redirect("/api/v1");
 });
 app.use("/api/v1", middleware_1.authenticateUser, v1_1.default);
+app.use("/api/diagrams", middleware_1.authenticateUser, diagram_1.default);
 app.use('/api/users', users_1.default);
 app.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`);

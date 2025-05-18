@@ -5,7 +5,7 @@ import v1router from "./api/v1";
 import userRoutes from "./api/users";
 import cookieParser from 'cookie-parser';
 import { authenticateUser } from "./middleware/middleware";
-
+import diagramRouter from "./api/diagram"
 const cors = require("cors");
 
 dotenv.config();
@@ -21,6 +21,7 @@ app.use(cors({
   origin: 'http://localhost:5173',  
   credentials: true,     
 }))
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -33,6 +34,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api/v1", authenticateUser,v1router);
+app.use("/api/diagrams",authenticateUser,diagramRouter)
 app.use('/api/users', userRoutes)
 
 app.listen(port, () => {
