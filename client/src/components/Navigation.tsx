@@ -21,9 +21,6 @@ import { BACKEND_URL } from "../config";
 
 
 
-
-
-
 async function registerUser(name:string,email:string,currentToken:string) {
   try {
     const response = await fetch(`${BACKEND_URL}/users/upsert/`, {
@@ -46,11 +43,6 @@ async function registerUser(name:string,email:string,currentToken:string) {
     console.error('Registration error:', error);
   }
 }
-
-
-
-
-
 
 
 const Navigation = () => {

@@ -3,11 +3,14 @@ import CodeMirror from "@uiw/react-codemirror";
 import { markdown } from "@codemirror/lang-markdown";
 import mermaid from "mermaid";
 import Panzoom from "@panzoom/panzoom";
+import { useParams } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import { auth } from "../../components/auth/firebase.config";
+import {User as UserType} from "firebase/auth";
 import {
   ArrowDownToLine,
   Bug,
   Copy,
-  Image,
   Lock,
   Redo,
   Sparkles,
@@ -19,8 +22,17 @@ import {
 import { default_code } from "./default_mermaid_code";
 import { v4 as uuidv4 } from "uuid";
 import { BACKEND_URL } from "../../config";
+import AccessControlModal from "./accessControl";
+
+
 
 const MermaidEditor = () => {
+  const { id, access } = useParams();
+  console.log(access)
+  // if(access!=='private' && access!=='public'){
+  //   return 
+  // }
+  const [user, setUser] = useState<UserType | null>(null);
   const [code, setCode] = useState(default_code);
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState<string[]>([default_code]);
@@ -34,7 +46,7 @@ const MermaidEditor = () => {
   // Modals
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
-  useState(false);
+
   const [isEditorOpen, setIsEditorOpen] = useState(false);
 
   const [isDownloading, setIsDownloading] = useState(false);
@@ -46,7 +58,7 @@ const MermaidEditor = () => {
   const diagramRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
-
+  const navigate= useNavigate()
   const models = [
     {
       name: "Llama Versatile 3.3 [70B]",
@@ -54,6 +66,18 @@ const MermaidEditor = () => {
       model: "llama-3.3-70b-versatile",
     },
   ];
+
+    useEffect(() => {
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+        if (user) {
+          setUser(user);
+        } else {
+          setUser(null);
+        }
+      });
+      return () => unsubscribe();
+    }, [user]);
+
 
   useEffect(() => {
     mermaid.initialize({ startOnLoad: false });
@@ -295,7 +319,70 @@ const MermaidEditor = () => {
     }
   };
 
+  const handleSaveRequest=async(e:any)=>{
+     const response = await fetch(`${BACKEND_URL}/diagrams/`, {
+    method: 'POST',
+    credentials: 'include', 
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      diagramName: prompt,
+      code: localStorage.getItem("mermaid_code"),
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    console.error('Failed to create diagram:', errorData.error);
+    return;
+  }
+  
+  const diagram = await response.json();
+  console.log('Diagram created:', diagram);
+  navigate(`/diagram/create/${diagram._id}/${diagram.mode}`)
+}
+
+useEffect(()=>{
+  if(access){
+   fetchNewDiagramById().then((e)=>{
+   })
+  }
+
+},[])
+
+
+const fetchNewDiagramById=async()=>{
+  try {
+    const response = await fetch(`${BACKEND_URL}/diagrams/${id}/${access}`, {
+      method: 'GET',
+      credentials: 'include', 
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to fetch diagram');
+    }
+    
+    const data = await response.json();
+    setPrompt(data.diagram.diagramName)
+    setCode(data.diagram.code)
+    console.log('Fetched diagram:', data);
+    setOwner(data.diagram.ownerEmail)
+  } catch (err:any) {
+    console.error('Error fetching diagram:', err.message);
+    navigate("/")
+  }
+}
+  
+
   // [CORE] function to import a diagram from upload and render over the canvas
+
+
+  const openConfig=id && owner===user?.email && isSettingsModalOpen
 
   return (
     <div className="flex gap-4 p-4 items-start relative">
@@ -334,7 +421,7 @@ const MermaidEditor = () => {
           </button>
 
           <button
-            className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1"
+            className={` text-white px-4 py-2 rounded font-extrabold m-0.5 my-1 bg-black ${(id && owner===user?.email) ? '' : 'opacity-50 cursor-not-allowed'}`}
             onClick={() => setIsSettingsModalOpen(true)}
           >
             <Users size={16} color="#ffffff" />
@@ -342,9 +429,11 @@ const MermaidEditor = () => {
         </div>
 
         <div className="rounded-lg bg-slate-100 p-2 flex flex-col items-center my-5">
-          <p className=" font-black my-2">
-            <Image size={16} color="#000" />
-          </p>
+          <button  className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1"
+          onClick={handleSaveRequest}
+          >
+            Save
+          </button>
 
           <button
             className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1"
@@ -569,60 +658,18 @@ const MermaidEditor = () => {
       )}
 
       {/* Settings Modal */}
-      {isSettingsModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50">
-          <div className="bg-white p-6 rounded-lg shadow-lg relative">
-            <button
-              className="absolute top-2 right-2 bg-black rounded"
-              onClick={() => setIsSettingsModalOpen(false)}
-            >
-              <X size={20} color="#fff" />
-            </button>
-            <h2 className="text-xl mb-4 font-black">Access Control Settings</h2>
-            <div className="flex flex-col gap-2">
-              <div className="flex flex-col">
-                <div className="flex items-center">
-                  <div className="text-sm p-2 m-1 font-bold w-72">
-                    Access Type
-                  </div>
-                  <div className="bg-black opacity-50 rounded text-white text-sm p-2 m-1 flex justify-center items-center w-full">
-                    Private <Lock size={16} color="#ffffff" className="ml-1" />
-                  </div>
-                  <div className="bg-black rounded text-white text-sm p-2 m-1 flex justify-center items-center w-full">
-                    Public <User size={16} color="#ffffff" className="ml-1" />
-                  </div>
-                </div>
-
-                <div className="flex items-center">
-                  <div className="text-sm p-2 m-1 font-bold">Owner</div>
-                  <input
-                    type="email"
-                    name=""
-                    id=""
-                    value={owner}
-                    className="border p-2 m-1 rounded w-full"
-                    onChange={(e) => setOwner(e.target.value)}
-                  />
-                  <button className="bg-black text-white rounded text-sm p-2 m-1 flex justify-center items-center">
-                    Save
-                  </button>
-                </div>
-
-                <div className="flex">
-                  <div className="bg-black rounded text-slate-200 text-sm p-2 m-1 w-full">
-                    https://chatgpt.com/?model=auto
-                  </div>
-                  <div className="bg-black rounded text-sm p-2 m-1 flex justify-center items-center">
-                    <Copy size={16} color="#ffffff" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+       <div>
+       {openConfig && (
+         <AccessControlModal
+           setIsSettingsModalOpen={setIsSettingsModalOpen} 
+           projectId={id} 
+           ownerEmail={owner}
+         />
+       )}
+     </div>
     </div>
   );
 };
 
 export default MermaidEditor;
+
