@@ -1,10 +1,10 @@
-import 'index';
+export {}
+
 declare global {
   namespace Express {
-    interface Request {
-      userId?: string; // or Types.ObjectId if you prefer
-      email?: string;
-      name?: string;
+    export interface Request {
+      email: string;
+      userId?: string;
     }
   }
 }

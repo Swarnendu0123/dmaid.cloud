@@ -1,7 +1,7 @@
 import {User} from '../db/schema/index'; // adjust path to your user model
 import { NextFunction,Response,Request } from 'express';
 
-interface AuthRequest extends Request {
+export interface AuthRequest extends Request {
   userId: string;
   email: string;
   name:  string;

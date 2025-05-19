@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { Diagram  } from '../../db/schema/index';
-import { authenticateUser } from '../../middleware/middleware'; // optional
+import { authenticateUser, AuthRequest } from '../../middleware/middleware'; // optional
 
 const router = Router();
 
@@ -20,7 +20,7 @@ enum Mode {
 }
 
 // Create a new diagram
-router.post('/', authenticateUser, async (req: Request, res: Response) => {
+router.post('/', authenticateUser, async (req: AuthRequest, res: Response) => {
   try {
     const payload = req.body as Partial<IDiagram>;
     const diagram = new Diagram({ ...payload, ownerEmail: req.email });
@@ -32,7 +32,7 @@ router.post('/', authenticateUser, async (req: Request, res: Response) => {
 });
 
 // Get all diagrams (optionally filter by owner)
-router.get('/', authenticateUser, async (req: Request, res: Response) => {
+router.get('/', authenticateUser, async (req: AuthRequest, res: Response) => {
   try {
     const filter = req.query.ownerEmail
       ? { ownerEmail: req.query.ownerEmail }
@@ -45,7 +45,7 @@ router.get('/', authenticateUser, async (req: Request, res: Response) => {
 });
 
 // Get a single diagram by ID
-router.get('/:id/:mode', authenticateUser, async (req: Request, res: Response) => {
+router.get('/:id/:mode', authenticateUser, async (req: AuthRequest, res: Response) => {
   try {
     const mode = req.params.mode
     const diagram = await Diagram.findById(req.params.id).exec();
@@ -100,7 +100,7 @@ router.get('/:id/:mode', authenticateUser, async (req: Request, res: Response) =
 });
 
 // Update an existing diagram
-router.put('/:id', authenticateUser, async (req: Request, res: Response) => {
+router.put('/:id', authenticateUser, async (req: AuthRequest, res: Response) => {
   try {
     const update = req.body as Partial<IDiagram>;
     const diagram = await Diagram.findByIdAndUpdate(
@@ -118,7 +118,7 @@ router.put('/:id', authenticateUser, async (req: Request, res: Response) => {
 });
 
 // Delete a diagram
-router.delete('/:id', authenticateUser, async (req: Request, res: Response) => {
+router.delete('/:id', authenticateUser, async (req: AuthRequest, res: Response) => {
   try {
     const result = await Diagram.findByIdAndDelete(req.params.id).exec();
     if (!result) {
@@ -131,7 +131,7 @@ router.delete('/:id', authenticateUser, async (req: Request, res: Response) => {
 });
 
 // Append a “view” entry
-router.post('/:id/views', authenticateUser, async (req: Request, res: Response) => {
+router.post('/:id/views', authenticateUser, async (req: AuthRequest, res: Response) => {
   try {
     const { viewerEmail } = req.body;
     const diagram = await Diagram.findByIdAndUpdate(
@@ -149,7 +149,7 @@ router.post('/:id/views', authenticateUser, async (req: Request, res: Response) 
 });
 
 // Append an “edit” entry
-router.post('/:id/edits', authenticateUser, async (req: Request, res: Response) => {
+router.post('/:id/edits', authenticateUser, async (req: AuthRequest, res: Response) => {
   try {
     const { editorEmail } = req.body;
     const diagram = await Diagram.findByIdAndUpdate(
