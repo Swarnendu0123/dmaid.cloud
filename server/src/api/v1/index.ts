@@ -358,7 +358,7 @@ router.post("/diagrams/:id/views",
       const { viewerEmail } = req.body;
       const diagram = await Diagram.findByIdAndUpdate(
         req.params.id,
-        { $addToSet: { edits: viewerEmail } },
+        { $addToSet: { views: viewerEmail } },
         { new: true }
       ).exec();
       if (!diagram) {
