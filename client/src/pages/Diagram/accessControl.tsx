@@ -37,7 +37,7 @@ const AccessControlModal: React.FC<AccessControlModalProps> = ({
 }) => {
   const [accessType, setAccessType] = useState<AccessType>("private");
   const [publicRole, setPublicRole] = useState<Role>("view");
-  const [owner, setOwner] = useState<string | undefined>(ownerEmail);
+  const [owner] = useState<string | undefined>(ownerEmail);
   const [users, setUsers] = useState<Collaborator[]>([]);
   const [newUserEmail, setNewUserEmail] = useState<string>("");
   const [newUserRole, setNewUserRole] = useState<Role>("view");
@@ -156,8 +156,12 @@ const AccessControlModal: React.FC<AccessControlModalProps> = ({
       const data = await response.json();
       console.log("Fetched diagram:", data);
       navigate(`/diagram/${Mode}/${projectId}/`);
-    } catch (err: any) {
-      console.error("Error fetching diagram:", err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error("Error fetching diagram:", err.message);
+      } else {
+        console.error("An unknown error occurred:", err);
+      }
     }
   };
 
