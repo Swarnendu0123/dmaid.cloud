@@ -230,33 +230,52 @@ enum Mode {
 }
 
 // Create a new diagram
-router.post("/diagrams/", authenticateUser, async (req: AuthRequest, res: Response) => {
-  try {
-    const payload = req.body as Partial<IDiagram>;
-    
-    const diagram = new Diagram({ ...payload, ownerEmail: req.email });
-    await diagram.save();
-    res.status(201).json(diagram);
-  } catch (err: any) {
-    res.status(400).json({ error: err.message });
+router.post(
+  "/diagrams/",
+  authenticateUser,
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const payload = req.body as Partial<IDiagram>;
+
+      const diagram = new Diagram({ ...payload, ownerEmail: req.email });
+      await diagram.save();
+
+      // at the same time, add the diagram id to the user
+      const user = await User.findOne({ email: req.email }).exec();
+      if (!user) {
+        res.status(404).json({ error: "User not found" });
+        return;
+      }
+      user.edits.push(diagram._id.toString());
+      await user.save();
+
+      res.status(201).json(diagram);
+    } catch (err: any) {
+      res.status(400).json({ error: err.message });
+    }
   }
-});
+);
 
 // Get all diagrams (optionally filter by owner)
-router.get("/diagrams/", authenticateUser, async (req: AuthRequest, res: Response) => {
-  try {
-    const filter = req.query.ownerEmail
-      ? { ownerEmail: req.query.ownerEmail }
-      : { ownerEmail: req.email };
-    const diagrams = await Diagram.find(filter).exec();
-    res.json(diagrams);
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
+router.get(
+  "/diagrams/",
+  authenticateUser,
+  async (req: AuthRequest, res: Response) => {
+    try {
+      const filter = req.query.ownerEmail
+        ? { ownerEmail: req.query.ownerEmail }
+        : { ownerEmail: req.email };
+      const diagrams = await Diagram.find(filter).exec();
+      res.json(diagrams);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
   }
-});
+);
 
 // Get a single diagram by ID
-router.get("/diagrams/:id/:mode",
+router.get(
+  "/diagrams/:id/:mode",
   authenticateUser,
   async (req: AuthRequest, res: Response) => {
     try {
@@ -313,7 +332,8 @@ router.get("/diagrams/:id/:mode",
 );
 
 // Update an existing diagram
-router.put("/diagrams/:id",
+router.put(
+  "/diagrams/:id",
   authenticateUser,
   async (req: AuthRequest, res: Response) => {
     try {
@@ -334,7 +354,8 @@ router.put("/diagrams/:id",
 );
 
 // Delete specific diagram by ID
-router.delete("/diagrams/:id",
+router.delete(
+  "/diagrams/:id",
   authenticateUser,
   async (req: AuthRequest, res: Response) => {
     try {
@@ -351,7 +372,8 @@ router.delete("/diagrams/:id",
 );
 
 // Append a “view” Diagram
-router.post("/diagrams/:id/views",
+router.post(
+  "/diagrams/:id/views",
   authenticateUser,
   async (req: AuthRequest, res: Response) => {
     try {
@@ -373,7 +395,8 @@ router.post("/diagrams/:id/views",
 );
 
 // Append an “edit” Diagram
-router.post("/diagrams/:id/edits",
+router.post(
+  "/diagrams/:id/edits",
   authenticateUser,
   async (req: AuthRequest, res: Response) => {
     try {
