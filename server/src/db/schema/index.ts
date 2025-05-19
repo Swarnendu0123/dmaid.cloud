@@ -24,12 +24,12 @@ const diagramSchema = new Schema({
 
   views:[{
   type : String,
-  trime: true,
+  trim: true,
   }],
 
   edits:[{
   type : String,
-  trime: true,
+  trim: true,
   }],
 
  

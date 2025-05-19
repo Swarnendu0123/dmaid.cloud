@@ -14,7 +14,6 @@ function App() {
 
         {/* Diagram */}
         <Route path="diagram/create" element={<CreateDiagramPage />} />
-        {/* <Route path="diagram/create/:id/:access" element={<CreateDiagramPage />} /> */}
         <Route path="diagram/:access/:id" element={<CreateDiagramPage />} />
 
         {/* Short URL Redirect */}
