@@ -65,13 +65,13 @@ router.get('/:id/:mode', authenticateUser, async (req: Request, res: Response) =
             access="owner"
             allowed=true
         }else if(diagram.views.includes(req.email)){
-            access="viewer"
+            access="view"
             allowed=true
         }else if(diagram.edits.includes(req.email)){
-            access="editor"
+            access="edit"
             allowed=true
         }else{
-            access="no-acess"
+            access="no-access"
             allowed=false
         }
     }else if(diagram.mode==='publicView'){
