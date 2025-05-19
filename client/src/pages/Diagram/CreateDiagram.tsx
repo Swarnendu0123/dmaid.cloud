@@ -53,6 +53,7 @@ const MermaidEditor = () => {
   const [owner, setOwner] = useState("");
   const [prompt, setPrompt] = useState("");
   const [model, setModel] = useState("llama-3.3-70b-versatile");
+  const [privellege, setPrivellege] = useState("")
   const [mode, setMode] = useState("new");
 
   // Modals
@@ -338,27 +339,50 @@ const MermaidEditor = () => {
   };
 
   const handleSaveRequest=async(e:any)=>{
-     const response = await fetch(`${BACKEND_URL}/diagrams/`, {
-    method: 'POST',
-    credentials: 'include', 
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      diagramName: prompt,
-      code: localStorage.getItem("mermaid_code"),
-    }),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    console.error('Failed to create diagram:', errorData.error);
-    return;
-  }
-  
-  const diagram = await response.json();
-  console.log('Diagram created:', diagram);
-  navigate(`/diagram/create/${diagram._id}/${diagram.mode}`)
+    if(access){
+      const response = await fetch(`${BACKEND_URL}/diagrams/`, {
+          method: 'POST',
+          credentials: 'include', 
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            diagramName: prompt,
+            code: localStorage.getItem("mermaid_code"),
+          }),
+        });
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error('Failed to create diagram:', errorData.error);
+          return;
+        }
+        
+        const diagram = await response.json();
+        console.log('Diagram created:', diagram);
+        navigate(`/diagram/create/${diagram._id}/${diagram.mode}`)
+    }else{
+  try {
+        const response = await fetch(`${BACKEND_URL}/diagrams/${id}`, {
+          method: 'PUT',
+          credentials: 'include', 
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            diagramName: prompt,
+            code: localStorage.getItem("mermaid_code"),
+          })
+        });
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to update diagram');
+        }
+        const updatedDiagram = await response.json();
+        console.log('Updated Diagram:', updatedDiagram);
+      } catch (error) {
+        console.error('Update failed:', error);
+      }
+    }
 }
 
 useEffect(()=>{
@@ -393,6 +417,7 @@ const fetchNewDiagramById=async()=>{
     setPrompt(data.diagram.diagramName)
     handleCodeChange(data.diagram.code); 
     console.log('Fetched diagram:', data);
+      setPrivellege(data.access)
     setOwner(data.diagram.ownerEmail)
   } catch (err:any) {
     console.error('Error fetching diagram:', err.message);
@@ -505,7 +530,7 @@ const fetchNewDiagramById=async()=>{
           </button>
 
           <button
-            className={`bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1`}
+            className={`bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1 ${(privellege==="owner" || privellege==="edit" || !access) ? '' : 'opacity-50 cursor-not-allowed'}`}
             onClick={() => {
               setIsEditorOpen(!isEditorOpen);
             }}
@@ -586,7 +611,7 @@ const fetchNewDiagramById=async()=>{
           </div>
         </div>
 
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex flex-col items-center space-y-2 p-2 rounded-lg">
+        {(privellege==="owner" || privellege==="edit" || !access) && <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex flex-col items-center space-y-2 p-2 rounded-lg">
           <div className="flex space-x-2">
             <div className="bg-white p-6 rounded-lg shadow-lg relative">
               <div className="flex flex-col gap-2">
@@ -662,7 +687,7 @@ const fetchNewDiagramById=async()=>{
               </div>
             </div>
           </div>
-        </div>
+        </div>}
       </div>
 
       {/* Download Modal */}
