@@ -19,17 +19,17 @@ import {
 } from "lucide-react";
 import { BACKEND_URL } from "../config";
 
+async function registerUser(name: string, email: string, currentToken: string) {
+  console.log(currentToken);
 
-
-async function registerUser(name:string,email:string,currentToken:string) {
   try {
     const response = await fetch(`${BACKEND_URL}/users/upsert/`, {
-      method: 'POST',
-      credentials: 'include',  
+      method: "POST",
+      credentials: "include",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name, email,currentToken }),
+      body: JSON.stringify({ name, email, currentToken }),
     });
 
     if (!response.ok) {
@@ -38,12 +38,11 @@ async function registerUser(name:string,email:string,currentToken:string) {
     }
 
     const data = await response.json();
-    console.log('Registration successful:', data);
+    console.log("Registration successful:", data);
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error("Registration error:", error);
   }
 }
-
 
 const Navigation = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -64,28 +63,38 @@ const Navigation = () => {
     return () => unsubscribe();
   }, [user]);
 
+  // [CORE] function to handle sign in with Google
   const signInWithGoogle = async () => {
     try {
-      const data= await signInWithPopup(auth, new GoogleAuthProvider());
-      console.log(data)
-      const token= await data.user.getIdToken()
-      if(data.user.displayName && data.user.email){
-       registerUser(data.user.displayName, data.user.email,token)
+      const data = await signInWithPopup(auth, new GoogleAuthProvider());
+      console.log(data);
+      const token = await data.user.getIdToken();
+      if (data.user.displayName && data.user.email) {
+        registerUser(data.user.displayName, data.user.email, token);
       }
       setIsAuthModalOpen(false);
-    } catch (e: any) {
-      console.log(e.message);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.log(e.message);
+      } else {
+        console.log("An unknown error occurred.");
+      }
     }
   };
 
+  // [CORE] function to handle sign out
   const handleSignOut = async () => {
     try {
       const res = await signOut(auth);
       if (res === undefined) {
         setUser(null);
       }
-    } catch (err: any) {
-      console.log(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.log(err.message);
+      } else {
+        console.log("An unknown error occurred.");
+      }
     }
   };
 
