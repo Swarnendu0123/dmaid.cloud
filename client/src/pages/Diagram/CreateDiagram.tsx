@@ -362,6 +362,7 @@ const MermaidEditor = () => {
       body: JSON.stringify({
         diagramName: exportSVGName,
         code: localStorage.getItem("mermaid_code"),
+        email: user?.email,
       }),
     });
     if (!response.ok) {
@@ -381,7 +382,11 @@ const MermaidEditor = () => {
       fetchNewDiagramById().then(() => {});
     }
     fetchPreviousCreatedDiagrams().then(() => {});
-  }, [id, access]); // Add id and access to dependency array
+  }, [id, access]); 
+
+  useEffect(() => {
+    fetchPreviousCreatedDiagrams().then(() => {});
+  }, [auth]);
 
   // [CORE] function to fetch the diagram by id
   const fetchNewDiagramById = async () => {
@@ -421,6 +426,7 @@ const MermaidEditor = () => {
     navigate(`/diagram/${mode}/${id}/`);
   };
 
+  // [CORE] function to fetch all the previously created diagram
   const fetchPreviousCreatedDiagrams = async () => {
     try {
       const response = await fetch(`${BACKEND_URL}/diagrams/`, {

@@ -50,7 +50,7 @@ router.get("/", (req, res) => {
 
 const default_model = "gemma2-9b-it";
 
-// AI Routes
+/*************************** AI Routes ***************************/ 
 // route to generate diagrams based on prompt
 router.post("/diagram/generate", async (req, res) => {
   try {
@@ -137,7 +137,7 @@ router.post("/title/generate", async (req, res) => {
   }
 });
 
-// User routes
+/*************************** USER Routes ***************************/ 
 // function to upsert user
 router.post("/users/upsert", async (req, res) => {
   try {
@@ -213,7 +213,7 @@ router.put("/users/:id", authenticateUser, async (req, res) => {
   }
 });
 
-// Diagram route configuration
+/*************************** Diagram Routes ***************************/ 
 export interface IDiagram extends Document {
   diagramName: string;
   code: string;
@@ -237,11 +237,12 @@ router.post(
     try {
       const payload = req.body as Partial<IDiagram>;
 
-      const diagram = new Diagram({ ...payload, ownerEmail: req.email });
+      const diagram = new Diagram({ ...payload, edits: [req.body.email] });
       await diagram.save();
 
       // at the same time, add the diagram id to the user
-      const user = await User.findOne({ email: req.email }).exec();
+      const user = await User.findOne({ email: req.body.email }).exec();
+
       if (!user) {
         res.status(404).json({ error: "User not found" });
         return;
@@ -262,6 +263,9 @@ router.get(
   authenticateUser,
   async (req: AuthRequest, res: Response) => {
     try {
+
+      console.log("hit");
+      
       const filter = req.query.ownerEmail
         ? { ownerEmail: req.query.ownerEmail }
         : { ownerEmail: req.email };
