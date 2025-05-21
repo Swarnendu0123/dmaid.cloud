@@ -21,7 +21,7 @@ import {
 import { default_code } from "./default_mermaid_code";
 import { v4 as uuidv4 } from "uuid";
 import { BACKEND_URL } from "../../config";
-import AccessControlModal from "./AccessControl";
+import AccessControlModal from "./AccessControlModal";
 
 
 type DiagramData = {
