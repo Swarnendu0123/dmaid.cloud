@@ -36,10 +36,16 @@ function generateTextToDiagramWithGemini(prompt) {
 function generateTextToDiagramWithGorq(prompt, ai_model) {
     return __awaiter(this, void 0, void 0, function* () {
         var _a, _b, _c, _d;
-        const chatCompletion = yield getGroqChatCompletion(prompt, ai_model);
-        console.log((_b = (_a = chatCompletion.choices[0]) === null || _a === void 0 ? void 0 : _a.message) === null || _b === void 0 ? void 0 : _b.content);
-        // Print the completion returned by the LLM.
-        return ((_d = (_c = chatCompletion.choices[0]) === null || _c === void 0 ? void 0 : _c.message) === null || _d === void 0 ? void 0 : _d.content) || "";
+        console.log(ai_model);
+        try {
+            const chatCompletion = yield getGroqChatCompletion(prompt, ai_model);
+            console.log((_b = (_a = chatCompletion.choices[0]) === null || _a === void 0 ? void 0 : _a.message) === null || _b === void 0 ? void 0 : _b.content);
+            // Print the completion returned by the LLM.
+            return ((_d = (_c = chatCompletion.choices[0]) === null || _c === void 0 ? void 0 : _c.message) === null || _d === void 0 ? void 0 : _d.content) || "";
+        }
+        catch (error) {
+            console.log(error.message);
+        }
     });
 }
 // grok config

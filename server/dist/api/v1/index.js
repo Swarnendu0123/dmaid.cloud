@@ -14,6 +14,7 @@ const text_to_diagram_1 = require("../../controllers/gen_ai/text_to_diagram");
 const text_to_title_1 = require("../../controllers/gen_ai/text_to_title");
 const diagram_to_title_1 = require("../../controllers/gen_ai/diagram_to_title");
 const diagram_enhancer_1 = require("../../controllers/gen_ai/diagram_enhancer");
+const prompt_enhancer_1 = require("../../controllers/gen_ai/prompt_enhancer");
 const router = (0, express_1.Router)();
 router.get("/", (req, res) => {
     res.send({
@@ -44,18 +45,20 @@ router.get("/", (req, res) => {
         },
     });
 });
-const default_model = "meta-llama/llama-4-scout-17b-16e-instruct";
+const default_model = "llama3-70b-8192";
 // route to generate diagrams based on prompt
 router.post("/diagram/generate", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const prompt = req.body.prompt;
+        let prompt = req.body.prompt;
         const model = req.body.model;
-        console.log({ prompt: prompt, model: model });
-        const generated_diagram = yield (0, text_to_diagram_1.generateTextToDiagramWithGorq)(prompt, model || default_model);
-        const generated_title = yield (0, text_to_title_1.generateTextToTitleWithGroq)(prompt, model || default_model);
+        console.log("init prompt", prompt);
+        prompt = yield (0, prompt_enhancer_1.enhancePromptWithGroq)(prompt);
+        console.log("Enhanced prompt", prompt);
+        const chat = yield (0, text_to_diagram_1.generateTextToDiagramWithGorq)(prompt, model || default_model);
+        const generated_title = yield (0, text_to_title_1.generateTextToTitleWithGroq)(prompt);
         res.send({
             messege: "Diagram generated",
-            diagram: generated_diagram,
+            chat: chat,
             title: generated_title,
             success: true,
         });
@@ -76,11 +79,10 @@ router.post("/diagram/enhance", (req, res) => __awaiter(void 0, void 0, void 0, 
         const model = req.body.model;
         console.log(diagram);
         console.log(prompt);
-        const generated_diagram = yield (0, diagram_enhancer_1.diagramEnhancer)(prompt, diagram, model || default_model);
-        console.log(generated_diagram);
+        const chat = yield (0, diagram_enhancer_1.diagramEnhancer)(prompt, diagram, model || default_model);
         res.send({
             messege: "Diagram enhanced",
-            diagram: generated_diagram,
+            chat: chat,
             success: true,
         });
     }
@@ -94,7 +96,7 @@ router.post("/title/generate", (req, res) => __awaiter(void 0, void 0, void 0, f
         const diagram = req.body.diagram;
         const model = req.body.model;
         console.log(diagram);
-        const generated_title = yield (0, diagram_to_title_1.generateDiagramToTitleWithGorq)(diagram, model || default_model);
+        const generated_title = yield (0, diagram_to_title_1.generateDiagramToTitleWithGorq)(diagram);
         console.log(generated_title);
         res.send({
             messege: "Title generated",

@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateTextTotitleWithGemini = generateTextTotitleWithGemini;
-exports.generateTextToTitleWithGroq = generateTextToTitleWithGroq;
+exports.enhancePromptWithGroq = enhancePromptWithGroq;
 const generative_ai_1 = require("@google/generative-ai");
 const dotenv = require("dotenv");
 const groq_sdk_1 = __importDefault(require("groq-sdk"));
@@ -26,19 +26,18 @@ const groq = new groq_sdk_1.default({ apiKey: process.env.GROQ_API_KEY });
 function generateTextTotitleWithGemini(prompt) {
     return __awaiter(this, void 0, void 0, function* () {
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-        const result = yield model.generateContent([instructions_1.instructions_text_to_title, prompt]);
+        const result = yield model.generateContent([instructions_1.instructions_prompt_enhancer, prompt]);
         return result.response.text();
     });
 }
 // Gorq gen AI model
-function generateTextToTitleWithGroq(prompt) {
+function enhancePromptWithGroq(prompt) {
     return __awaiter(this, void 0, void 0, function* () {
-        var _a, _b, _c, _d;
+        var _a, _b;
         const ai_model = "meta-llama/llama-4-scout-17b-16e-instruct";
         const chatCompletion = yield getGroqChatCompletion(prompt, ai_model);
-        console.log((_b = (_a = chatCompletion.choices[0]) === null || _a === void 0 ? void 0 : _a.message) === null || _b === void 0 ? void 0 : _b.content);
         // Print the completion returned by the LLM.
-        return ((_d = (_c = chatCompletion.choices[0]) === null || _c === void 0 ? void 0 : _c.message) === null || _d === void 0 ? void 0 : _d.content) || "";
+        return ((_b = (_a = chatCompletion.choices[0]) === null || _a === void 0 ? void 0 : _a.message) === null || _b === void 0 ? void 0 : _b.content) || "";
     });
 }
 // grok config
@@ -53,7 +52,7 @@ const getGroqChatCompletion = (prompt, ai_model) => __awaiter(void 0, void 0, vo
             // how it should behave throughout the conversation.
             {
                 role: "system",
-                content: instructions_1.instructions_text_to_title,
+                content: instructions_1.instructions_prompt_enhancer,
             },
             // Set a user message for the assistant to respond to.
             {
@@ -85,4 +84,4 @@ const getGroqChatCompletion = (prompt, ai_model) => __awaiter(void 0, void 0, vo
         stream: false,
     });
 });
-//# sourceMappingURL=text_to_title.js.map
+//# sourceMappingURL=prompt_enhancer.js.map
