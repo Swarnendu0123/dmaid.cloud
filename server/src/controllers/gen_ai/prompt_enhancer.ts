@@ -1,42 +1,28 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import Groq from "groq-sdk";
-
-import { instructions_text_to_diagram as instructions } from "./instructions";
-
 const dotenv = require("dotenv");
+import Groq from "groq-sdk";
+import { instructions_prompt_enhancer as instructions } from "./instructions";
 
-// config
 dotenv.config();
+
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 // prompt: user question
 //  instruction: how to behave
-// Google Gen AI Model
-export async function generateTextToDiagramWithGemini(prompt: string) {
+export async function generateTextTotitleWithGemini(prompt: string) {
   const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
   const result = await model.generateContent([instructions, prompt]);
   return result.response.text();
 }
 
 // Gorq gen AI model
-export async function generateTextToDiagramWithGorq(
-  prompt: any,
-  ai_model: string
-) {
+export async function enhancePromptWithGroq(prompt: any) {
+  const ai_model = "meta-llama/llama-4-scout-17b-16e-instruct";
+  const chatCompletion = await getGroqChatCompletion(prompt, ai_model);
 
-  console.log(ai_model);
-  
-  try {
-    const chatCompletion = await getGroqChatCompletion(prompt, ai_model);
-
-    console.log(chatCompletion.choices[0]?.message?.content);
-
-    // Print the completion returned by the LLM.
-    return chatCompletion.choices[0]?.message?.content || "";
-  } catch (error) {
-    console.log(error.message);
-  }
+  // Print the completion returned by the LLM.
+  return chatCompletion.choices[0]?.message?.content || "";
 }
 
 // grok config

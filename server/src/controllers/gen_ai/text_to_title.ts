@@ -17,7 +17,8 @@ export async function generateTextTotitleWithGemini(prompt: string) {
 }
 
 // Gorq gen AI model
-export async function generateTextToTitleWithGroq(prompt: any, ai_model: string) {
+export async function generateTextToTitleWithGroq(prompt: any) {
+  const ai_model = "meta-llama/llama-4-scout-17b-16e-instruct";
   const chatCompletion = await getGroqChatCompletion(prompt, ai_model);
 
   console.log(chatCompletion.choices[0]?.message?.content);

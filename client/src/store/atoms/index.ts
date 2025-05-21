@@ -6,9 +6,17 @@ export const userState = atom<User | null>({
   default: null,
 });
 
-
 export const cartState = atom({
-    key: "cartState",
-    default: [],
-    });
+  key: "cartState",
+  default: [],
+});
 
+export const codeState = atom({
+  key: "codeState",
+  default: "",
+});
+
+export const chatState = atom({
+  key: "chatState",
+  default: "",
+});

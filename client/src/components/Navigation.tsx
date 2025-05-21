@@ -41,8 +41,12 @@ const Navigation = () => {
     try {
       signInWithPopup(auth, new GoogleAuthProvider());
       setIsAuthModalOpen(false);
-    } catch (e: any) {
-      console.log(e.message);
+    } catch (e: unknown) {
+      if (e instanceof Error) {
+        console.log(e.message);
+      } else {
+        console.log("An unknown error occurred.");
+      }
     }
   };
 
@@ -52,8 +56,12 @@ const Navigation = () => {
       if (res === undefined) {
         setUser(null);
       }
-    } catch (err: any) {
-      console.log(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.log(err.message);
+      } else {
+        console.log("An unknown error occurred.");
+      }
     }
   };
 

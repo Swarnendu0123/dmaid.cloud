@@ -3,7 +3,7 @@ import { generateTextToDiagramWithGorq } from "../../controllers/gen_ai/text_to_
 import { generateTextToTitleWithGroq } from "../../controllers/gen_ai/text_to_title";
 import { generateDiagramToTitleWithGorq } from "../../controllers/gen_ai/diagram_to_title";
 import { diagramEnhancer } from "../../controllers/gen_ai/diagram_enhancer";
-import { Model, model } from "mongoose";
+import { enhancePromptWithGroq } from "../../controllers/gen_ai/prompt_enhancer";
 
 const router = Router();
 
@@ -44,29 +44,29 @@ router.get("/", (req, res) => {
   });
 });
 
-const default_model = "gemma2-9b-it";
+const default_model = "llama3-70b-8192";
 
 // route to generate diagrams based on prompt
 router.post("/diagram/generate", async (req, res) => {
   try {
-    const prompt = req.body.prompt;
+    let prompt = req.body.prompt;
     const model = req.body.model;
 
-    console.log({prompt: prompt, model: model});
+    console.log("init prompt", prompt);
+    prompt = await enhancePromptWithGroq(prompt);
 
-    const generated_diagram = await generateTextToDiagramWithGorq(
+    console.log("Enhanced prompt", prompt);
+
+    const chat = await generateTextToDiagramWithGorq(
       prompt,
       model || default_model
     );
 
-    const generated_title = await generateTextToTitleWithGroq(
-      prompt,
-      model || default_model
-    );
+    const generated_title = await generateTextToTitleWithGroq(prompt);
 
     res.send({
       messege: "Diagram generated",
-      diagram: generated_diagram,
+      chat: chat,
       title: generated_title,
       success: true,
     });
@@ -89,17 +89,11 @@ router.post("/diagram/enhance", async (req, res) => {
     console.log(diagram);
     console.log(prompt);
 
-    const generated_diagram = await diagramEnhancer(
-      prompt,
-      diagram,
-      model || default_model
-    );
-
-    console.log(generated_diagram);
+    const chat = await diagramEnhancer(prompt, diagram, model || default_model);
 
     res.send({
       messege: "Diagram enhanced",
-      diagram: generated_diagram,
+      chat: chat,
       success: true,
     });
   } catch (e) {
@@ -115,10 +109,7 @@ router.post("/title/generate", async (req, res) => {
 
     console.log(diagram);
 
-    const generated_title = await generateDiagramToTitleWithGorq(
-      diagram,
-      model || default_model
-    );
+    const generated_title = await generateDiagramToTitleWithGorq(diagram);
 
     console.log(generated_title);
 

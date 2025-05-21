@@ -5,6 +5,7 @@ import mermaid from "mermaid";
 import Panzoom from "@panzoom/panzoom";
 import {
   ArrowDownToLine,
+  Bot,
   Bug,
   Copy,
   Image,
@@ -19,23 +20,29 @@ import {
 import { default_code } from "./default_mermaid_code";
 import { v4 as uuidv4 } from "uuid";
 import { BACKEND_URL } from "../../config";
+import Markdown from "../../components/Markdown";
+import { useRecoilState } from "recoil";
+import { chatState, codeState } from "../../store/atoms";
 
 const MermaidEditor = () => {
-  const [code, setCode] = useState(default_code);
+  const [code, setCode] = useRecoilState<string>(codeState);
+  const [chat, setChat] = useRecoilState<string>(chatState);
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState<string[]>([default_code]);
   const [redoStack, setRedoStack] = useState<string[]>([]);
   const [exportSVGName, setExportSVGName] = useState("Dmaid_" + uuidv4());
   const [owner, setOwner] = useState("swarno@admin.dmaid.cloud");
   const [prompt, setPrompt] = useState("");
-  const [model, setModel] = useState("llama-3.3-70b-versatile");
+  const [model, setModel] = useState(
+    "meta-llama/llama-4-maverick-17b-128e-instruct"
+  );
   const [mode, setMode] = useState("new");
 
   // Modals
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
-  useState(false);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(true);
 
   const [isDownloading, setIsDownloading] = useState(false);
   const [isAIGeneratingDiagram, setIsAIGeneratingDiagram] = useState(false);
@@ -49,9 +56,14 @@ const MermaidEditor = () => {
 
   const models = [
     {
-      name: "Llama Versatile 3.3 [70B]",
+      name: "Llama 4 [17B]",
       description: "Strong in coding and reasoning",
-      model: "llama-3.3-70b-versatile",
+      model: "meta-llama/llama-4-maverick-17b-128e-instruct",
+    },
+    {
+      name: "DeepSeek R1 Distill Llama [70B]",
+      description: "Strong in coding and reasoning",
+      model: "deepseek-r1-distill-llama-70b",
     },
   ];
 
@@ -87,6 +99,11 @@ const MermaidEditor = () => {
     if (savedCode) {
       setCode(savedCode);
       setHistory([savedCode]);
+    }
+
+    const chatCode = localStorage.getItem("chat");
+    if (chatCode) {
+      setChat(chatCode);
     }
   }, []);
 
@@ -184,7 +201,6 @@ const MermaidEditor = () => {
   // [AI] function to generate the code using AI
   const generateAIDiagram = async () => {
     try {
-      setLoading(true);
       setIsAIGeneratingDiagram(true);
 
       const response = await fetch(BACKEND_URL + "/diagram/generate", {
@@ -200,8 +216,9 @@ const MermaidEditor = () => {
       }
 
       const data = await response.json();
-      if (data.diagram) {
-        handleCodeChange(data.diagram); // Update the editor with the AI-generated code
+      if (data.chat) {
+        setChat(data.chat);
+        localStorage.setItem("chat", data.chat);
         setExportSVGName(data.title);
       } else {
         alert("No diagram code was generated.");
@@ -210,7 +227,6 @@ const MermaidEditor = () => {
       console.error("Error generating AI diagram:", error);
       alert("An error occurred while generating the diagram.");
     } finally {
-      setLoading(false); // Hide loading indicator
       setIsAIGeneratingDiagram(false);
     }
   };
@@ -219,7 +235,6 @@ const MermaidEditor = () => {
   const enhanceTheDiagram = async () => {
     try {
       setIsAIGeneratingDiagram(true);
-      setLoading(true);
       const response = await fetch(BACKEND_URL + "/diagram/enhance", {
         method: "POST",
         headers: {
@@ -237,8 +252,8 @@ const MermaidEditor = () => {
       }
 
       const data = await response.json();
-      if (data.diagram) {
-        handleCodeChange(data.diagram);
+      if (data.chat) {
+        setChat(data.chat);
       } else {
         alert("No text code was generated.");
       }
@@ -247,7 +262,6 @@ const MermaidEditor = () => {
       alert("An error occurred while generating the title.");
     } finally {
       setIsAIGeneratingDiagram(false);
-      setLoading(false);
     }
   };
 
@@ -331,6 +345,15 @@ const MermaidEditor = () => {
           </button>
 
           <button
+            className={`bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1}`}
+            onClick={() => {
+              setIsChatOpen(!isChatOpen);
+            }}
+          >
+            <Bot size={16} color="#ffffff" />
+          </button>
+
+          <button
             className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1"
             onClick={() => setIsSettingsModalOpen(true)}
           >
@@ -366,7 +389,7 @@ const MermaidEditor = () => {
       )}
 
       {/* Canvas */}
-      <div className="w-full p-4 rounded-lg bg-slate-100 overflow-hidden relative">
+      <div className="w-full p-4 rounded-lg bg-dot-grid bg-dot-grid-size overflow-hidden relative">
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/80">
             <div className="animate-spin text-gray-600 text-4xl">⟳</div>
@@ -396,85 +419,102 @@ const MermaidEditor = () => {
           </div>
         </div>
 
-        <div className="absolute bottom-4 justify-center flex flex-col items-center space-y-2  p-2 rounded-lg">
-          <div className="flex space-x-2">
-            <div className="bg-white p-6 rounded-lg shadow-lg relative">
-              <div className="flex flex-col gap-2">
-                <div className="flex flex-col">
-                  {/* prompt input */}
-                  <div className="flex items-center">
-                    <textarea
-                      name=""
-                      id="prompt_to_generate_with_ai"
-                      value={prompt}
-                      className="border p-2 m-1 rounded w-full"
-                      onChange={(e) => setPrompt(e.target.value)}
-                      placeholder="Create a client Server Architecture with Database and Middlewares"
-                    />
-                  </div>
+        {/* Chat Box */}
+        {isChatOpen && (
+          <div className="absolute bottom-4 justify-center flex flex-col items-center space-y-2  p-2 rounded-lg">
+            <div className="flex space-x-2">
+              <div className="bg-white p-6 rounded-lg shadow-lg relative">
+                <div className="">
+                  <button
+                    className="absolute top-2 right-2 bg-black rounded"
+                    onClick={() => setIsChatOpen(false)}
+                  >
+                    <X size={20} color="#fff" />
+                  </button>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-col">
+                    {chat && (
+                      <div className="max-w-full sm:max-w-md max-h-[400px] overflow-y-auto p-4 rounded-lg">
+                        <Markdown markdownString={chat} />
+                      </div>
+                    )}
 
-                  {/* meta data with prompt */}
-                  <div className="flex">
-                    {/* Model Selection */}
-                    <select
-                      name="model"
-                      className="bg-gradient-to-r from-pink-100 via-blue-100 to-green-100 text-black rounded-full font-bold m-0.5 my-1 flex items-center justify-center border text-sm w-56 p-2 transition-all duration-300"
-                      value={model}
-                      onChange={(e) => setModel(e.target.value)}
-                    >
-                      {models.map((model) => (
-                        <option key={model.name} value={model.model}>
-                          {model.name}
+                    {/* prompt input */}
+                    <div className="flex items-center">
+                      <textarea
+                        name=""
+                        id="prompt_to_generate_with_ai"
+                        value={prompt}
+                        className="border p-2 m-1 rounded w-full"
+                        onChange={(e) => setPrompt(e.target.value)}
+                        placeholder="Create a client Server Architecture with Database and Middlewares"
+                      />
+                    </div>
+
+                    {/* meta data with prompt */}
+                    <div className="flex">
+                      {/* Model Selection */}
+                      <select
+                        name="model"
+                        className="bg-gradient-to-r from-pink-100 via-blue-100 to-green-100 text-black rounded-full font-bold m-0.5 my-1 flex items-center justify-center border text-sm w-56 p-2 transition-all duration-300"
+                        value={model}
+                        onChange={(e) => setModel(e.target.value)}
+                      >
+                        {models.map((model) => (
+                          <option key={model.name} value={model.model}>
+                            {model.name}
+                          </option>
+                        ))}
+                      </select>
+
+                      {/* Mode selection */}
+                      <select
+                        name="edit/new"
+                        className="bg-black text-white rounded-md font-bold m-0.5 my-1 flex items-center justify-center border text-sm  p-2 transition-all duration-300"
+                        onChange={(e) => setMode(e.target.value)}
+                      >
+                        <option key={"new"} value={"new"}>
+                          New
                         </option>
-                      ))}
-                    </select>
+                        <option key={"edit"} value={"edit"}>
+                          Editing
+                        </option>
+                      </select>
 
-                    {/* Mode selection */}
-                    <select
-                      name="edit/new"
-                      className="bg-black text-white rounded-md font-bold m-0.5 my-1 flex items-center justify-center border text-sm  p-2 transition-all duration-300"
-                      onChange={(e) => setMode(e.target.value)}
-                    >
-                      <option key={"new"} value={"new"}>
-                        New
-                      </option>
-                      <option key={"edit"} value={"edit"}>
-                        Editing
-                      </option>
-                    </select>
-
-                    {/* generate button */}
-                    <button
-                      className={`bg-black text-white px-4 py-2 rounded font-black text-sm m-0.5 my-1 flex items-center justify-center ${
-                        isAIGeneratingDiagram
-                          ? "opacity-50 cursor-not-allowed"
-                          : ""
-                      }`}
-                      onClick={editOrGenerateWithAI}
-                      disabled={isAIGeneratingDiagram}
-                    >
-                      {isAIGeneratingDiagram ? (
-                        <div className="flex items-center justify-center">
-                          <span className="animate-spin mr-2">⏳</span>{" "}
-                          Generating...
-                        </div>
-                      ) : (
-                        <>
-                          Generate{" "}
-                          <Sparkles
-                            size={16}
-                            color="#ffffff"
-                            className="ml-2"
-                          />
-                        </>
-                      )}
-                    </button>
+                      {/* generate button */}
+                      <button
+                        className={`bg-black text-white px-4 py-2 rounded font-black text-sm m-0.5 my-1 flex items-center justify-center ${
+                          isAIGeneratingDiagram
+                            ? "opacity-50 cursor-not-allowed"
+                            : ""
+                        }`}
+                        onClick={editOrGenerateWithAI}
+                        disabled={isAIGeneratingDiagram}
+                      >
+                        {isAIGeneratingDiagram ? (
+                          <div className="flex items-center justify-center">
+                            <span className="animate-spin mr-2">⏳</span>{" "}
+                            Generating...
+                          </div>
+                        ) : (
+                          <>
+                            Generate{" "}
+                            <Sparkles
+                              size={16}
+                              color="#ffffff"
+                              className="ml-2"
+                            />
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Download Modal */}

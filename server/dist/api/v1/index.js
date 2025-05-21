@@ -44,7 +44,7 @@ router.get("/", (req, res) => {
         },
     });
 });
-const default_model = "gemma2-9b-it";
+const default_model = "meta-llama/llama-4-scout-17b-16e-instruct";
 // route to generate diagrams based on prompt
 router.post("/diagram/generate", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
