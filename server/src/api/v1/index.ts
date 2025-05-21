@@ -50,7 +50,7 @@ router.get("/", (req, res) => {
 
 const default_model = "gemma2-9b-it";
 
-/*************************** AI Routes ***************************/ 
+/*************************** AI Routes ***************************/
 // route to generate diagrams based on prompt
 router.post("/diagram/generate", async (req, res) => {
   try {
@@ -137,7 +137,7 @@ router.post("/title/generate", async (req, res) => {
   }
 });
 
-/*************************** USER Routes ***************************/ 
+/*************************** USER Routes ***************************/
 // function to upsert user
 router.post("/users/upsert", async (req, res) => {
   try {
@@ -213,7 +213,7 @@ router.put("/users/:id", authenticateUser, async (req, res) => {
   }
 });
 
-/*************************** Diagram Routes ***************************/ 
+/*************************** Diagram Routes ***************************/
 export interface IDiagram extends Document {
   diagramName: string;
   code: string;
@@ -263,9 +263,8 @@ router.get(
   authenticateUser,
   async (req: AuthRequest, res: Response) => {
     try {
-
       console.log("hit");
-      
+
       const filter = req.query.ownerEmail
         ? { ownerEmail: req.query.ownerEmail }
         : { ownerEmail: req.email };
