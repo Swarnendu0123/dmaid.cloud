@@ -1,0 +1,39 @@
+1. **Full-stack product pipeline­ (flowchart)**
+
+ Draw a top-to-bottom flowchart showing a five-stage SaaS pipeline: *User* ➜ *React Frontend* ➜ *API Gateway* ➜ *Node.js Micro-service Cluster* ➜ *MongoDB Replica Set*, with success and error branches styled in green and red.
+
+2. **Crypto transaction life-cycle (sequence diagram)**
+
+Create a left-to-right sequence diagram for a blockchain transaction: *User Wallet* → *Metamask* → *Smart Contract* → *Validator Node* → *Block Finality*. Include an alt block for ‘insufficient gas’ that returns an error to the wallet.
+
+3. **University semester planner (Gantt)**
+
+Generate a four-month Gantt chart labelled *Semester Plan* with swim-lanes for *Classes*, *Projects*, *Exams*, *Chill*. Fill in weekly tasks, milestone markers for mid-sem and end-sem exams, and color code projects in gold.
+
+4. **Git branching strategy (gitGraph)**
+
+Show a gitGraph with a long-running *main* branch, feature branches *feat/auth* and *feat/ui-revamp* merging via pull requests, plus a hotfix branch off the last release tag.
+
+5. **Hospital ERP data flow (C4 container diagram)**
+
+Sketch a C4 level-2 container diagram of a hospital ERP: *Web Client*, *Mobile Client*, *API Gateway*, *Auth Service*, *Inventory Service*, *Billing Service*, all talking to a shared *PostgreSQL Cluster*—secure lines for sensitive data, dashed lines for public APIs.
+
+6. **Algorithm decision tree (mindmap)**
+
+Build a radial mind map called *Sorting Algorithms* with the root node splitting into *Comparison-based* and *Non-comparison-based*; under comparison-based add *QuickSort*, *MergeSort*, *HeapSort*; under non-comparison-based add *Radix*, *Counting*, *Bucket*.
+
+7. **State machine for a to-do app (state diagram)**
+
+Draw a state diagram with states: *Idle*, *Creating*, *Editing*, *Completed*, *Deleted*. Highlight transitions on hover and show an ‘Undo’ event looping back from *Deleted* to *Idle*.
+
+8. **Distributed micro-frontends architecture (flowchart)**
+
+Create a left-to-right flowchart titled *Micro-Frontends* showing three SPA fragments—*Navbar*, *Dashboard*, *Settings*—all loaded through a *Single-SPA Root* which fetches bundles from a *CDN* and shares a *Design System* library.
+
+9. **DevOps CI/CD pipeline (timeline diagram)**
+
+Render a timeline diagram with stages: *Commit* ➜ *GitHub Actions* ➜ *Unit Tests* ➜ *Docker Build* ➜ *Security Scan* ➜ *K8s Deploy*. Include optional parallel ‘Manual QA’ lane.
+
+10. **Career-path roadmap (timeline / swim-lane)**
+
+Produce a multi-lane timeline called *Career Roadmap* spanning 2025-2030, lanes for *Education*, *Projects*, *Certifications*, *Networking*, with emoji markers for key wins (🎓, 🏆, 🤝).
