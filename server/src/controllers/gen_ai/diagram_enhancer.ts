@@ -12,6 +12,8 @@ export async function diagramEnhancer(prompt: string, old_diagram: string, ai_mo
   try {
     const chatCompletion = await getGroqChatCompletion(prompt, old_diagram, ai_model);
 
+    console.log(ai_model);
+    
     console.log(chatCompletion.choices[0]?.message?.content);
 
     // Print the completion returned by the LLM.

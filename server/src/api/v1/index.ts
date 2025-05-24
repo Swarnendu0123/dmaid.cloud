@@ -52,10 +52,11 @@ router.post("/diagram/generate", async (req, res) => {
     let prompt = req.body.prompt;
     const model = req.body.model;
 
-    console.log("init prompt", prompt);
+    console.log("Enhancing Prompt ... \n\n\n");
     prompt = await enhancePromptWithGroq(prompt);
+    console.log(prompt);
 
-    console.log("Enhanced prompt", prompt);
+    console.log("Generating Diagram ... \n\n\n");
 
     const chat = await generateTextToDiagramWithGorq(
       prompt,
@@ -82,14 +83,12 @@ router.post("/diagram/generate", async (req, res) => {
 // route to enhance diagrams based on prompts
 router.post("/diagram/enhance", async (req, res) => {
   try {
+    let chat = req.body.chat;
     const diagram = req.body.diagram;
-    const prompt = req.body.prompt;
+    let prompt = req.body.prompt;
     const model = req.body.model;
 
-    console.log(diagram);
-    console.log(prompt);
-
-    const chat = await diagramEnhancer(prompt, diagram, model || default_model);
+    chat = await diagramEnhancer(prompt, chat, model || default_model);
 
     res.send({
       messege: "Diagram enhanced",

@@ -89,7 +89,7 @@ const MermaidEditor = () => {
     setLoading(true);
     timerRef.current = setTimeout(() => {
       renderDiagram();
-    }, 1000);
+    }, 10);
 
     return () => clearTimeout(timerRef.current as NodeJS.Timeout);
   }, [code]);
@@ -242,6 +242,7 @@ const MermaidEditor = () => {
         },
         body: JSON.stringify({
           diagram: code,
+          chat: chat,
           prompt: prompt,
           model: model,
         }),
@@ -391,7 +392,7 @@ const MermaidEditor = () => {
       {/* Canvas */}
       <div className="w-full p-4 rounded-lg bg-dot-grid bg-dot-grid-size overflow-hidden relative">
         {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-white/80">
+          <div className="absolute inset-0 flex items-center justify-center bg-dot-grid bg-dot-grid-size">
             <div className="animate-spin text-gray-600 text-4xl">⟳</div>
           </div>
         )}
