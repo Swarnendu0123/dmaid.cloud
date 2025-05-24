@@ -1,6 +1,6 @@
 1. **Full-stack product pipeline­ (flowchart)**
 
- Draw a top-to-bottom flowchart showing a five-stage SaaS pipeline: *User* ➜ *React Frontend* ➜ *API Gateway* ➜ *Node.js Micro-service Cluster* ➜ *MongoDB Replica Set*, with success and error branches styled in green and red.
+Draw a top-to-bottom flowchart showing a five-stage SaaS pipeline: *User* ➜ *React Frontend* ➜ *API Gateway* ➜ *Node.js Micro-service Cluster* ➜ *MongoDB Replica Set*, with success and error branches styled in green and red.
 
 2. **Crypto transaction life-cycle (sequence diagram)**
 
