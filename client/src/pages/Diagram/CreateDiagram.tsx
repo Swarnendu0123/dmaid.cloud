@@ -48,7 +48,7 @@ const MermaidEditor = () => {
   // Modals
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
-  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [isEditorOpen, setIsEditorOpen] = useState(true);
   const [isChatOpen, setIsChatOpen] = useState(true);
 
   const [isDownloading, setIsDownloading] = useState(false);
