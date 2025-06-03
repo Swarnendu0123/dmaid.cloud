@@ -35,11 +35,12 @@ export const examples = [
       "Complex ERD showing user-to-order relationships, many-to-many product ordering, and address linkage.",
   },
   {
-    "id": "6",
-    "name": "Gantt Chart",
-    "code": "gantt\n  title Project Timeline\n  dateFormat  YYYY-MM-DD\n  section Planning\n  Requirements Gathering :done, a1, 2025-05-01, 7d\n  Design :a2, after a1, 5d\n  section Development\n  Frontend :active, a3, after a2, 10d\n  Backend :a4, after a2, 10d\n  section Testing\n  Unit Tests :a5, after a4, 5d\n  Integration Tests :a6, after a5, 5d\n  section Deployment\n  Deploy to Staging :a7, after a6, 2d\n  Deploy to Production :a8, after a7, 1d",
-    "description": "Multi-phase Gantt chart showing dependencies and parallel execution across different project stages."
-  },  
+    id: "6",
+    name: "Gantt Chart",
+    code: "gantt\n  title Project Timeline\n  dateFormat  YYYY-MM-DD\n  section Planning\n  Requirements Gathering :done, a1, 2025-05-01, 7d\n  Design :a2, after a1, 5d\n  section Development\n  Frontend :active, a3, after a2, 10d\n  Backend :a4, after a2, 10d\n  section Testing\n  Unit Tests :a5, after a4, 5d\n  Integration Tests :a6, after a5, 5d\n  section Deployment\n  Deploy to Staging :a7, after a6, 2d\n  Deploy to Production :a8, after a7, 1d",
+    description:
+      "Multi-phase Gantt chart showing dependencies and parallel execution across different project stages.",
+  },
   {
     id: "7",
     name: "Pie Chart",
@@ -88,9 +89,24 @@ export const examples = [
       "Decision-making tool for feature prioritization based on value and effort.",
   },
   {
-    "id": "14",
-    "name": "C4 Context Diagram",
-    "code": "C4Context\n  Person(customer, \"Customer\", \"Uses the banking system to manage accounts and transactions\")\n  System(bankingSystem, \"Banking System\", \"Allows customers to view balances, transfer funds, and pay bills\")\n  System_Ext(paymentGateway, \"Payment Gateway\", \"Third-party service for processing payments\")\n  System_Ext(notificationService, \"Notification Service\", \"Sends SMS and email alerts\")\n\n  Rel(customer, bankingSystem, \"Uses for account management and transactions\")\n  Rel(bankingSystem, paymentGateway, \"Integrates with for payment processing\")\n  Rel(bankingSystem, notificationService, \"Sends transaction alerts via\")",
-    "description": "A C4 Context diagram showing the Customer, the core Banking System, and its integrations with a Payment Gateway and a Notification Service."
-  }  
+    id: "14",
+    name: "C4 Context Diagram",
+    code: 'C4Context\n  Person(customer, "Customer", "Uses the banking system to manage accounts and transactions")\n  System(bankingSystem, "Banking System", "Allows customers to view balances, transfer funds, and pay bills")\n  System_Ext(paymentGateway, "Payment Gateway", "Third-party service for processing payments")\n  System_Ext(notificationService, "Notification Service", "Sends SMS and email alerts")\n\n  Rel(customer, bankingSystem, "Uses for account management and transactions")\n  Rel(bankingSystem, paymentGateway, "Integrates with for payment processing")\n  Rel(bankingSystem, notificationService, "Sends transaction alerts via")',
+    description:
+      "A C4 Context diagram showing the Customer, the core Banking System, and its integrations with a Payment Gateway and a Notification Service.",
+  },
+  {
+    id: "15",
+    name: "Multiplayer Game Sequence Diagram",
+    code: 'sequenceDiagram\n  participant Client1 as "Game Client 1"\n  participant Client2 as "Game Client 2"\n  participant Server as "Game Server"\n  participant SignalingServer as "Signaling Server for WebRTC"\n\n  Note over Client1,Server: Establish WebSocket Connection\n  Client1->>Server: WebSocket Handshake\n  Server->>Client1: WebSocket Connection Established\n\n  Note over Client2,Server: Establish WebSocket Connection\n  Client2->>Server: WebSocket Handshake\n  Server->>Client2: WebSocket Connection Established\n\n  Note over Client1,SignalingServer: Discover and Connect via WebRTC (Signaling)\n  Client1->>SignalingServer: WebRTC Offer (via Signaling Server)\n  SignalingServer->>Client2: Forward WebRTC Offer\n  Client2->>SignalingServer: WebRTC Answer\n  SignalingServer->>Client1: Forward WebRTC Answer\n  Client1->>SignalingServer: WebRTC Ice Candidates\n  SignalingServer->>Client2: Forward WebRTC Ice Candidates\n  Client2->>SignalingServer: WebRTC Ice Candidates\n  SignalingServer->>Client1: Forward WebRTC Ice Candidates\n\n  Note over Client1,Server: Synchronize Game State via WebSocket\n  Client1->>Server: Game State Update\n  Server->>Client1: Game State Update\n  Server->>Client2: Game State Update (Broadcast)\n\n  Note over Client2,Server: Synchronize Game State via WebSocket\n  Client2->>Server: Game State Update\n  Server->>Client2: Game State Update\n  Server->>Client1: Game State Update (Broadcast)\n\n  Note over Client1,Client2: Exchange Game Data via WebRTC\n  Client1->>Client2: Game Data (Peer-to-Peer)\n  Client2->>Client1: Game Data (Peer-to-Peer)\n\n  Note over Client1,Server: Additional Data Exchange (Optional)\n  Client1->>Server: Additional Data (e.g., chat, score)\n  Server->>Client1: Additional Data (e.g., chat, score)\n  Server->>Client2: Additional Data (Broadcast)',
+    description:
+      "Shows how two game clients establish WebSocket connections with the game server, set up WebRTC via a signaling server for peer-to-peer game data, and synchronize game state and additional data (e.g., chat, scores).",
+  },
+  {
+    id: "16",
+    name: "ERP ER Diagram",
+    code: "erDiagram\n    USERS {\n        int user_id PK\n        string username\n        string password\n        string role\n    }\n    CUSTOMERS {\n        int customer_id PK\n        string customer_name\n        string email\n        string phone\n    }\n    PRODUCTS {\n        int product_id PK\n        string product_name\n        decimal price\n        string description\n    }\n    ORDERS {\n        int order_id PK\n        int customer_id FK\n        date order_date\n        decimal total\n    }\n    ORDER_ITEMS {\n        int order_item_id PK\n        int order_id FK\n        int product_id FK\n        int quantity\n    }\n    INVENTORY {\n        int inventory_id PK\n        int product_id FK\n        int quantity\n    }\n    SUPPLIERS {\n        int supplier_id PK\n        string supplier_name\n        string email\n        string phone\n    }\n    PURCHASE_ORDERS {\n        int purchase_order_id PK\n        int supplier_id FK\n        date purchase_order_date\n        decimal total\n    }\n    PURCHASE_ORDER_ITEMS {\n        int purchase_order_item_id PK\n        int purchase_order_id FK\n        int product_id FK\n        int quantity\n    }\n\n    USERS ||--o{ ORDERS : places\n    CUSTOMERS ||--o{ ORDERS : places\n    ORDERS ||--o{ ORDER_ITEMS : contains\n    PRODUCTS ||--o{ ORDER_ITEMS : contains\n    PRODUCTS ||--o{ INVENTORY : has\n    SUPPLIERS ||--o{ PURCHASE_ORDERS : places\n    PURCHASE_ORDERS ||--o{ PURCHASE_ORDER_ITEMS : contains\n    PRODUCTS ||--o{ PURCHASE_ORDER_ITEMS : contains",
+    description:
+      "ER diagram modeling an e-commerce system with users, customers, products, orders, order items, inventory, suppliers, purchase orders, and purchase order items, showing primary and foreign keys and their relationships.",
+  },
 ];

@@ -11,6 +11,7 @@ import {
   ArrowDownToLine,
   Bot,
   Bug,
+  Check,
   Copy,
   Image,
   Lock,
@@ -31,6 +32,7 @@ import { myHighlightStyle } from "./theme";
 
 const MermaidEditor = () => {
   const [code, setCode] = useRecoilState<string>(codeState);
+  const [copiedToClipboard, setCopiedToClipboard] = useState(false);
   const [chat, setChat] = useRecoilState<string>(chatState);
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState<string[]>([default_code]);
@@ -111,6 +113,19 @@ const MermaidEditor = () => {
       setChat(chatCode);
     }
   }, []);
+
+  // [CORE] function to copy code to clipboard
+  const copyToClipboard = () => {
+    navigator.clipboard
+      .writeText(code)
+      .then(() => {
+        setCopiedToClipboard(true);
+        setTimeout(() => setCopiedToClipboard(false), 2000); // reset after 2 seconds
+      })
+      .catch((err) => {
+        console.error("Failed to copy!", err);
+      });
+  };
 
   // [CORE] function to render the diagram
   const renderDiagram = async () => {
@@ -512,6 +527,16 @@ const MermaidEditor = () => {
                   onClick={handleRedo}
                 >
                   <Redo size={16} color="#ffffff" />
+                </button>
+                <button
+                  className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1"
+                  onClick={copyToClipboard}
+                >
+                  {copiedToClipboard ? (
+                    <Check size={16} color="#ffffff" />
+                  ) : (
+                    <Copy size={16} color="#ffffff" />
+                  )}
                 </button>
 
                 <button
