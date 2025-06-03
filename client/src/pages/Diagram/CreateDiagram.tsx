@@ -3,7 +3,7 @@ import CodeMirror from "@uiw/react-codemirror";
 import { basicLight } from "@uiw/codemirror-theme-basic";
 import { foldByIndent, mermaid as mermaidLang } from "codemirror-lang-mermaid";
 import { syntaxHighlighting } from "@codemirror/language";
-import { examples } from "./examples";
+import ExampleList from "./ExampleList";
 
 import mermaid from "mermaid";
 import Panzoom from "@panzoom/panzoom";
@@ -507,7 +507,7 @@ const MermaidEditor = () => {
         {/* code editor */}
         {isEditorOpen && (
           <div>
-            <div className="absolute top-4 justify-center flex flex-col items-center space-y-2 p-2 rounded-lg  bg-white h-[450px] w-[460px] shadow-lg">
+            <div className="absolute top-4 justify-center flex flex-col items-center space-y-2 p-2 rounded-lg  bg-white h-[400px] w-[460px] shadow-lg">
               <div className="drag-handle cursor-move">
                 <button
                   disabled={history.length <= 1}
@@ -548,7 +548,7 @@ const MermaidEditor = () => {
               </div>
               <CodeMirror
                 value={code}
-                height="385px"
+                height="335px"
                 width="450px"
                 className="rounded-lg border border-gray-300"
                 extensions={[
@@ -560,19 +560,10 @@ const MermaidEditor = () => {
                 onChange={handleCodeChange}
               />
             </div>
-            <div className="absolute bottom-1 border border-gray-300 bg-white w-[460px] h-[150px] p-2 scroll-y overflow-y-auto rounded-lg">
-              <h2 className="text-lg font-black mb-2">Quick Examples</h2>
+            <div className="absolute bottom-1 border border-gray-300 bg-white w-[600px] h-[200px] p-2 scroll-y overflow-y-auto rounded-lg">
 
-              <div>
-                {examples.map((example) => (
-                  <button
-                    key={example.id}
-                    onClick={() => handleCodeChange(example.code)}
-                    className="bg-pink-200 text-sm px-4 py-2 rounded m-1 hover:bg-blue-300 transition-colors"
-                  >
-                    {example.name}
-                  </button>
-                ))}
+              <div className="flex flex-wrap gap-2">
+               <ExampleList/>
               </div>
             </div>
           </div>
