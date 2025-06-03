@@ -1,6 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import CodeMirror from "@uiw/react-codemirror";
-import { markdown } from "@codemirror/lang-markdown";
+import { basicLight } from "@uiw/codemirror-theme-basic";
+import { foldByIndent, mermaid as mermaidLang } from "codemirror-lang-mermaid";
+import { syntaxHighlighting } from "@codemirror/language";
+import { examples } from "./examples";
+
 import mermaid from "mermaid";
 import Panzoom from "@panzoom/panzoom";
 import {
@@ -14,7 +18,7 @@ import {
   Sparkles,
   Undo,
   User,
-  Users,
+  // Users,
   X,
 } from "lucide-react";
 import { default_code } from "./default_mermaid_code";
@@ -23,6 +27,7 @@ import { BACKEND_URL } from "../../config";
 import Markdown from "../../components/Markdown";
 import { useRecoilState } from "recoil";
 import { chatState, codeState } from "../../store/atoms";
+import { myHighlightStyle } from "./theme";
 
 const MermaidEditor = () => {
   const [code, setCode] = useRecoilState<string>(codeState);
@@ -57,12 +62,12 @@ const MermaidEditor = () => {
   const models = [
     {
       name: "Llama 4 [17B]",
-      description: "Strong in coding and reasoning",
+      description: "",
       model: "meta-llama/llama-4-maverick-17b-128e-instruct",
     },
     {
-      name: "DeepSeek R1 Distill Llama [70B]",
-      description: "Strong in coding and reasoning",
+      name: "DeepSeek R1 [70B]",
+      description: "",
       model: "deepseek-r1-distill-llama-70b",
     },
   ];
@@ -317,26 +322,6 @@ const MermaidEditor = () => {
           <p className=" font-black my-2">{"</>"}</p>
 
           <button
-            disabled={history.length <= 1}
-            className={`bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1 ${
-              history.length > 1 ? "" : "opacity-50 cursor-not-allowed"
-            }`}
-            onClick={handleUndo}
-          >
-            <Undo size={16} color="#ffffff" />
-          </button>
-
-          <button
-            disabled={redoStack.length === 0}
-            className={`bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1 ${
-              redoStack.length > 0 ? "" : "opacity-50 cursor-not-allowed"
-            }`}
-            onClick={handleRedo}
-          >
-            <Redo size={16} color="#ffffff" />
-          </button>
-
-          <button
             className={`bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1}`}
             onClick={() => {
               setIsEditorOpen(!isEditorOpen);
@@ -354,12 +339,12 @@ const MermaidEditor = () => {
             <Bot size={16} color="#ffffff" />
           </button>
 
-          <button
+          {/* <button
             className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1"
             onClick={() => setIsSettingsModalOpen(true)}
           >
             <Users size={16} color="#ffffff" />
-          </button>
+          </button> */}
         </div>
 
         <div className="rounded-lg bg-slate-100 p-2 flex flex-col items-center my-5">
@@ -375,19 +360,6 @@ const MermaidEditor = () => {
           </button>
         </div>
       </div>
-
-      {/* code editor */}
-      {isEditorOpen && (
-        <div className="w-full max-w-2xl p-2 bg-gray-900 rounded-lg">
-          <CodeMirror
-            value={code}
-            height="615px"
-            extensions={[markdown()]}
-            theme="dark"
-            onChange={handleCodeChange}
-          />
-        </div>
-      )}
 
       {/* Canvas */}
       <div className="w-full p-4 rounded-lg bg-dot-grid bg-dot-grid-size overflow-hidden relative">
@@ -422,12 +394,12 @@ const MermaidEditor = () => {
 
         {/* Chat Box */}
         {isChatOpen && (
-          <div className="absolute bottom-4 justify-center flex flex-col items-center space-y-2  p-2 rounded-lg">
+          <div className="absolute bottom-4 justify-center flex flex-col items-center space-y-2  p-2 rounded-lg right-4">
             <div className="flex space-x-2">
               <div className="bg-white p-6 rounded-lg shadow-lg relative">
                 <div className="">
                   <button
-                    className="absolute top-2 right-2 bg-black rounded"
+                    className="absolute top-2 right-2 bg-black rounded px-4 py-2 my-1 m-0.5"
                     onClick={() => setIsChatOpen(false)}
                   >
                     <X size={20} color="#fff" />
@@ -512,6 +484,70 @@ const MermaidEditor = () => {
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* code editor */}
+        {isEditorOpen && (
+          <div>
+            <div className="absolute top-4 justify-center flex flex-col items-center space-y-2 p-2 rounded-lg border border-gray-300 bg-white h-[450px] w-[460px]">
+              <div className="drag-handle cursor-move">
+                <button
+                  disabled={history.length <= 1}
+                  className={`bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1 ${
+                    history.length > 1 ? "" : "opacity-50 cursor-not-allowed"
+                  }`}
+                  onClick={handleUndo}
+                >
+                  <Undo size={16} color="#ffffff" />
+                </button>
+
+                <button
+                  disabled={redoStack.length === 0}
+                  className={`bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1 ${
+                    redoStack.length > 0 ? "" : "opacity-50 cursor-not-allowed"
+                  }`}
+                  onClick={handleRedo}
+                >
+                  <Redo size={16} color="#ffffff" />
+                </button>
+
+                <button
+                  className="absolute top-2 right-2 bg-black rounded px-4 py-2 my-1 m-0.5"
+                  onClick={() => setIsEditorOpen(false)}
+                >
+                  <X size={20} color="#fff" />
+                </button>
+              </div>
+              <CodeMirror
+                value={code}
+                height="385px"
+                width="450px"
+                className="rounded-lg border border-gray-300"
+                extensions={[
+                  mermaidLang(),
+                  syntaxHighlighting(myHighlightStyle),
+                  foldByIndent(),
+                ]}
+                theme={basicLight}
+                onChange={handleCodeChange}
+              />
+            </div>
+            <div className="absolute bottom-1 border border-gray-300 bg-white w-[460px] h-[150px] p-2 scroll-y overflow-y-auto rounded-lg">
+              <h2 className="text-lg font-black mb-2">Examples</h2>
+
+              <div>
+                {examples.map((example) => (
+                  <button
+                    key={example.id}
+                    onClick={() => handleCodeChange(example.code)}
+                    className="bg-pink-200 text-sm px-4 py-2 rounded m-1 hover:bg-blue-300 transition-colors"
+                  >
+                    {example.name}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
