@@ -507,7 +507,7 @@ const MermaidEditor = () => {
         {/* code editor */}
         {isEditorOpen && (
           <div>
-            <div className="absolute top-4 justify-center flex flex-col items-center space-y-2 p-2 rounded-lg border border-gray-300 bg-white h-[450px] w-[460px]">
+            <div className="absolute top-4 justify-center flex flex-col items-center space-y-2 p-2 rounded-lg  bg-white h-[450px] w-[460px] shadow-lg">
               <div className="drag-handle cursor-move">
                 <button
                   disabled={history.length <= 1}
