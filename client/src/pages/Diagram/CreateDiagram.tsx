@@ -561,7 +561,7 @@ const MermaidEditor = () => {
               />
             </div>
             <div className="absolute bottom-1 border border-gray-300 bg-white w-[460px] h-[150px] p-2 scroll-y overflow-y-auto rounded-lg">
-              <h2 className="text-lg font-black mb-2">Examples</h2>
+              <h2 className="text-lg font-black mb-2">Quick Examples</h2>
 
               <div>
                 {examples.map((example) => (

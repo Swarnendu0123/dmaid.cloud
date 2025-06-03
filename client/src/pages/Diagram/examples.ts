@@ -109,4 +109,31 @@ export const examples = [
     description:
       "ER diagram modeling an e-commerce system with users, customers, products, orders, order items, inventory, suppliers, purchase orders, and purchase order items, showing primary and foreign keys and their relationships.",
   },
+  {
+    id: "17",
+    name: "Packet Diagram",
+    code: 'packet-beta\n  0-15: "Source Port"\n  16-31: "Destination Port"\n  32-63: "Sequence Number"\n  64-95: "Acknowledgment Number"\n  96-99: "Data Offset"\n  100-105: "Reserved"\n  106: "URG"\n  107: "ACK"\n  108: "PSH"\n  109: "RST"\n  110: "SYN"\n  111: "FIN"\n  112-127: "Window"\n  128-143: "Checksum"\n  144-159: "Urgent Pointer"\n  160-191: "(Options and Padding)"\n  192-255: "Data (variable length)"',
+    description:
+      "Detailed breakdown of the TCP packet structure showing bit ranges and field names.",
+  },
+  {
+    id: "19",
+    name: "Block Diagram",
+    code: 'block-beta\n  columns 3\n  doc>"Document"]:3\n  space down1<[" "]>(down) space\n\n  block:e:3\n          l["left"]\n          m("A wide one in the middle")\n          r["right"]\n  end\n    space down2<[" "]>(down) space\n    db[("DB")]:3\n    space:3\n    D space C\n    db --> D\n    C --> db\n    D --> C\n    style m fill:#d6d,stroke:#333,stroke-width:4px',
+    description:
+      "A block diagram with 3 columns featuring a document, a middle wide block styled distinctly, and a database block with bidirectional connections.",
+  },
+  {
+    "id": "20",
+    "name": "Basic Decision Flowchart",
+    "code": "graph TD\n  A[Start] --> B{Decision}\n  B -->|Yes| C[Process 1]\n  B -->|No| D[Process 2]\n  C --> E[End]\n  D --> E[End]",
+    "description": "A simple top-down flowchart showing a decision and two possible outcomes leading to an end."
+  },
+  {
+    "id": "21",
+    "name": "Sales Revenue XY Chart",
+    "code": "xychart-beta\n  title \"Sales Revenue\"\n  x-axis [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec]\n  y-axis \"Revenue (in $)\" 4000 --> 11000\n  bar [5000, 6000, 7500, 8200, 9500, 10500, 11000, 10200, 9200, 8500, 7000, 6000]\n  line [5000, 6000, 7500, 8200, 9500, 10500, 11000, 10200, 9200, 8500, 7000, 6000]",
+    "description": "A combined bar and line XY chart depicting monthly sales revenue with the y-axis range from 4000 to 11000 dollars."
+  }
+  
 ];
