@@ -13,17 +13,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateTextToDiagramWithGemini = generateTextToDiagramWithGemini;
-exports.generateTextToDiagramWithGorq = generateTextToDiagramWithGorq;
+exports.generateTextToDiagramWithGroq = generateTextToDiagramWithGroq;
+exports.generateTextToDiagramWithAnthropic = generateTextToDiagramWithAnthropic;
 const generative_ai_1 = require("@google/generative-ai");
 const groq_sdk_1 = __importDefault(require("groq-sdk"));
+const sdk_1 = __importDefault(require("@anthropic-ai/sdk"));
 const instructions_1 = require("./instructions");
 const dotenv = require("dotenv");
 // config
 dotenv.config();
 const genAI = new generative_ai_1.GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
 const groq = new groq_sdk_1.default({ apiKey: process.env.GROQ_API_KEY });
-// prompt: user question
-//  instruction: how to behave
+const anthropic = new sdk_1.default({ apiKey: process.env.ANTHROPIC_API_KEY });
+console.log(process.env.ANTHROPIC_API_KEY);
 // Google Gen AI Model
 function generateTextToDiagramWithGemini(prompt) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -32,8 +34,8 @@ function generateTextToDiagramWithGemini(prompt) {
         return result.response.text();
     });
 }
-// Gorq gen AI model
-function generateTextToDiagramWithGorq(prompt, ai_model) {
+// Groq gen AI model
+function generateTextToDiagramWithGroq(prompt, ai_model) {
     return __awaiter(this, void 0, void 0, function* () {
         var _a, _b, _c, _d;
         console.log(ai_model);
@@ -48,7 +50,24 @@ function generateTextToDiagramWithGorq(prompt, ai_model) {
         }
     });
 }
-// grok config
+// Anthropic AI model
+function generateTextToDiagramWithAnthropic(prompt_1) {
+    return __awaiter(this, arguments, void 0, function* (prompt, ai_model = "claude-sonnet-4-20250514") {
+        console.log(ai_model);
+        try {
+            const chatCompletion = yield getAnthropicChatCompletion(prompt, ai_model);
+            // Extract text from the response array
+            const responseText = chatCompletion;
+            console.log(responseText);
+            // Print the completion returned by the LLM.
+            return responseText;
+        }
+        catch (error) {
+            console.log(error.message);
+        }
+    });
+}
+// Groq config
 const getGroqChatCompletion = (prompt, ai_model) => __awaiter(void 0, void 0, void 0, function* () {
     return groq.chat.completions.create({
         //
@@ -90,6 +109,26 @@ const getGroqChatCompletion = (prompt, ai_model) => __awaiter(void 0, void 0, vo
         stop: null,
         // If set, partial message deltas will be sent.
         stream: false,
+    });
+});
+// Anthropic config
+const getAnthropicChatCompletion = (prompt, ai_model) => __awaiter(void 0, void 0, void 0, function* () {
+    return anthropic.messages.create({
+        model: ai_model,
+        max_tokens: 1024,
+        temperature: 0.5,
+        system: instructions_1.instructions_text_to_diagram,
+        messages: [
+            {
+                role: "user",
+                content: [
+                    {
+                        type: "text",
+                        text: prompt
+                    }
+                ]
+            }
+        ]
     });
 });
 //# sourceMappingURL=text_to_diagram.js.map

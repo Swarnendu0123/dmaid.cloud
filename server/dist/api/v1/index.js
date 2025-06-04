@@ -55,7 +55,8 @@ router.post("/diagram/generate", (req, res) => __awaiter(void 0, void 0, void 0,
         prompt = yield (0, prompt_enhancer_1.enhancePromptWithGroq)(prompt);
         console.log(prompt);
         console.log("Generating Diagram ... \n\n\n");
-        const chat = yield (0, text_to_diagram_1.generateTextToDiagramWithGorq)(prompt, model || default_model);
+        const chat = yield (0, text_to_diagram_1.generateTextToDiagramWithGroq)(prompt, model || default_model);
+        console.log("chat:", chat);
         const generated_title = yield (0, text_to_title_1.generateTextToTitleWithGroq)(prompt);
         res.send({
             messege: "Diagram generated",
@@ -96,7 +97,7 @@ router.post("/title/generate", (req, res) => __awaiter(void 0, void 0, void 0, f
         const diagram = req.body.diagram;
         const model = req.body.model;
         console.log(diagram);
-        const generated_title = yield (0, diagram_to_title_1.generateDiagramToTitleWithGorq)(diagram);
+        const generated_title = yield (0, diagram_to_title_1.generateDiagramToTitleWithGroq)(diagram);
         console.log(generated_title);
         res.send({
             messege: "Title generated",

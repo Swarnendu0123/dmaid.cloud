@@ -12,25 +12,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateDiagramToTitleWithGemini = generateDiagramToTitleWithGemini;
-exports.generateDiagramToTitleWithGorq = generateDiagramToTitleWithGorq;
-const generative_ai_1 = require("@google/generative-ai");
+exports.generateDiagramToTitleWithGroq = generateDiagramToTitleWithGroq;
+exports.generateDiagramToTitleWithAnthropic = generateDiagramToTitleWithAnthropic;
 const groq_sdk_1 = __importDefault(require("groq-sdk"));
+const sdk_1 = __importDefault(require("@anthropic-ai/sdk"));
 const dotenv = require("dotenv");
 const instructions_1 = require("./instructions");
 dotenv.config();
-const genAI = new generative_ai_1.GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
 const groq = new groq_sdk_1.default({ apiKey: process.env.GROQ_API_KEY });
-// Gemini AI API config
-function generateDiagramToTitleWithGemini(diagram) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-        const result = yield model.generateContent([instructions_1.instructions_diagram_to_title, diagram]);
-        return result.response.text();
-    });
-}
-// Gorq gen AI model
-function generateDiagramToTitleWithGorq(prompt) {
+const anthropic = new sdk_1.default({ apiKey: process.env.ANTHROPIC_API_KEY });
+// Groq AI model function
+function generateDiagramToTitleWithGroq(prompt) {
     return __awaiter(this, void 0, void 0, function* () {
         var _a, _b, _c, _d;
         const ai_model = "meta-llama/llama-4-scout-17b-16e-instruct";
@@ -40,7 +32,19 @@ function generateDiagramToTitleWithGorq(prompt) {
         return ((_d = (_c = chatCompletion.choices[0]) === null || _c === void 0 ? void 0 : _c.message) === null || _d === void 0 ? void 0 : _d.content) || "";
     });
 }
-// grok config
+// Anthropic AI model function
+function generateDiagramToTitleWithAnthropic(prompt) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const ai_model = "claude-sonnet-4-20250514"; // or claude-opus-4-20250514
+        const chatCompletion = yield getAnthropicChatCompletion(prompt, ai_model);
+        // Extract text from the response array
+        const responseText = chatCompletion;
+        console.log(responseText);
+        // Print the completion returned by the LLM.
+        return responseText;
+    });
+}
+// Groq config
 const getGroqChatCompletion = (prompt, ai_model) => __awaiter(void 0, void 0, void 0, function* () {
     return groq.chat.completions.create({
         //
@@ -84,4 +88,27 @@ const getGroqChatCompletion = (prompt, ai_model) => __awaiter(void 0, void 0, vo
         stream: false,
     });
 });
+// Anthropic config
+const getAnthropicChatCompletion = (prompt, ai_model) => __awaiter(void 0, void 0, void 0, function* () {
+    return anthropic.messages.create({
+        model: ai_model,
+        max_tokens: 1024,
+        temperature: 0.5,
+        system: instructions_1.instructions_diagram_to_title,
+        messages: [
+            {
+                role: "user",
+                content: [
+                    {
+                        type: "text",
+                        text: prompt
+                    }
+                ]
+            }
+        ]
+    });
+});
+// Example usage:
+// const groqResult = await generateDiagramToTitleWithGroq("Your prompt here");
+// const anthropicResult = await generateDiagramToTitleWithAnthropic("Your prompt here");
 //# sourceMappingURL=diagram_to_title.js.map
