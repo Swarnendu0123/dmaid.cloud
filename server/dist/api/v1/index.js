@@ -51,9 +51,10 @@ router.post("/diagram/generate", (req, res) => __awaiter(void 0, void 0, void 0,
     try {
         let prompt = req.body.prompt;
         const model = req.body.model;
-        console.log("init prompt", prompt);
+        console.log("Enhancing Prompt ... \n\n\n");
         prompt = yield (0, prompt_enhancer_1.enhancePromptWithGroq)(prompt);
-        console.log("Enhanced prompt", prompt);
+        console.log(prompt);
+        console.log("Generating Diagram ... \n\n\n");
         const chat = yield (0, text_to_diagram_1.generateTextToDiagramWithGorq)(prompt, model || default_model);
         const generated_title = yield (0, text_to_title_1.generateTextToTitleWithGroq)(prompt);
         res.send({
@@ -74,12 +75,11 @@ router.post("/diagram/generate", (req, res) => __awaiter(void 0, void 0, void 0,
 // route to enhance diagrams based on prompts
 router.post("/diagram/enhance", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        let chat = req.body.chat;
         const diagram = req.body.diagram;
-        const prompt = req.body.prompt;
+        let prompt = req.body.prompt;
         const model = req.body.model;
-        console.log(diagram);
-        console.log(prompt);
-        const chat = yield (0, diagram_enhancer_1.diagramEnhancer)(prompt, diagram, model || default_model);
+        chat = yield (0, diagram_enhancer_1.diagramEnhancer)(prompt, chat, model || default_model);
         res.send({
             messege: "Diagram enhanced",
             chat: chat,

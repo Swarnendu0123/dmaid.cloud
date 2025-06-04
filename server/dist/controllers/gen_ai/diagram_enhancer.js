@@ -24,6 +24,7 @@ function diagramEnhancer(prompt, old_diagram, ai_model) {
         var _a, _b, _c, _d;
         try {
             const chatCompletion = yield getGroqChatCompletion(prompt, old_diagram, ai_model);
+            console.log(ai_model);
             console.log((_b = (_a = chatCompletion.choices[0]) === null || _a === void 0 ? void 0 : _a.message) === null || _b === void 0 ? void 0 : _b.content);
             // Print the completion returned by the LLM.
             return ((_d = (_c = chatCompletion.choices[0]) === null || _c === void 0 ? void 0 : _c.message) === null || _d === void 0 ? void 0 : _d.content) || "";

@@ -282,6 +282,7 @@ export const examples = [
         description:
           "Visual timeline showing phases from research to launch and iteration.",
       },
+      
     ],
   },
   {
