@@ -1,23 +1,16 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import Groq from "groq-sdk";
+import Anthropic from "@anthropic-ai/sdk";
 
 const dotenv = require("dotenv");
 import { instructions_diagram_to_title as instructions } from "./instructions";
 
 dotenv.config();
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-// Gemini AI API config
-export async function generateDiagramToTitleWithGemini(diagram: string) {
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-  const result = await model.generateContent([instructions, diagram]);
-  return result.response.text();
-}
-
-// Gorq gen AI model
-export async function generateDiagramToTitleWithGorq(prompt: any) {
+// Groq AI model function
+export async function generateDiagramToTitleWithGroq(prompt: any) {
   const ai_model = "meta-llama/llama-4-scout-17b-16e-instruct";
   const chatCompletion = await getGroqChatCompletion(prompt, ai_model);
 
@@ -27,7 +20,20 @@ export async function generateDiagramToTitleWithGorq(prompt: any) {
   return chatCompletion.choices[0]?.message?.content || "";
 }
 
-// grok config
+// Anthropic AI model function
+export async function generateDiagramToTitleWithAnthropic(prompt: string) {
+  const ai_model = "claude-sonnet-4-20250514"; // or claude-opus-4-20250514
+  const chatCompletion = await getAnthropicChatCompletion(prompt, ai_model);
+
+  // Extract text from the response array
+  const responseText = chatCompletion;
+  console.log(responseText);
+
+  // Print the completion returned by the LLM.
+  return responseText;
+}
+
+// Groq config
 const getGroqChatCompletion = async (prompt: string, ai_model: string) => {
   return groq.chat.completions.create({
     //
@@ -78,3 +84,28 @@ const getGroqChatCompletion = async (prompt: string, ai_model: string) => {
     stream: false,
   });
 };
+
+// Anthropic config
+const getAnthropicChatCompletion = async (prompt: string, ai_model: string) => {
+  return anthropic.messages.create({
+    model: ai_model,
+    max_tokens: 1024,
+    temperature: 0.5,
+    system: instructions,
+    messages: [
+      {
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: prompt
+          }
+        ]
+      }
+    ]
+  });
+};
+
+// Example usage:
+// const groqResult = await generateDiagramToTitleWithGroq("Your prompt here");
+// const anthropicResult = await generateDiagramToTitleWithAnthropic("Your prompt here");

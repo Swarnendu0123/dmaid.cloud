@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { generateTextToDiagramWithGorq } from "../../controllers/gen_ai/text_to_diagram";
+import { generateTextToDiagramWithGroq } from "../../controllers/gen_ai/text_to_diagram";
 import { generateTextToTitleWithGroq } from "../../controllers/gen_ai/text_to_title";
-import { generateDiagramToTitleWithGorq } from "../../controllers/gen_ai/diagram_to_title";
+import { generateDiagramToTitleWithGroq } from "../../controllers/gen_ai/diagram_to_title";
 import { diagramEnhancer } from "../../controllers/gen_ai/diagram_enhancer";
 import { enhancePromptWithGroq } from "../../controllers/gen_ai/prompt_enhancer";
 
@@ -58,10 +58,11 @@ router.post("/diagram/generate", async (req, res) => {
 
     console.log("Generating Diagram ... \n\n\n");
 
-    const chat = await generateTextToDiagramWithGorq(
+    const chat = await generateTextToDiagramWithGroq(
       prompt,
       model || default_model
     );
+    console.log("chat:", chat);
 
     const generated_title = await generateTextToTitleWithGroq(prompt);
 
@@ -108,7 +109,7 @@ router.post("/title/generate", async (req, res) => {
 
     console.log(diagram);
 
-    const generated_title = await generateDiagramToTitleWithGorq(diagram);
+    const generated_title = await generateDiagramToTitleWithGroq(diagram);
 
     console.log(generated_title);
 

@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Groq from "groq-sdk";
+import Anthropic from "@anthropic-ai/sdk";
 
 import { instructions_text_to_diagram as instructions } from "./instructions";
 
@@ -9,9 +10,11 @@ const dotenv = require("dotenv");
 dotenv.config();
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-// prompt: user question
-//  instruction: how to behave
+console.log(process.env.ANTHROPIC_API_KEY);
+
+
 // Google Gen AI Model
 export async function generateTextToDiagramWithGemini(prompt: string) {
   const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
@@ -19,12 +22,11 @@ export async function generateTextToDiagramWithGemini(prompt: string) {
   return result.response.text();
 }
 
-// Gorq gen AI model
-export async function generateTextToDiagramWithGorq(
+// Groq gen AI model
+export async function generateTextToDiagramWithGroq(
   prompt: any,
   ai_model: string
 ) {
-
   console.log(ai_model);
   
   try {
@@ -39,7 +41,28 @@ export async function generateTextToDiagramWithGorq(
   }
 }
 
-// grok config
+// Anthropic AI model
+export async function generateTextToDiagramWithAnthropic(
+  prompt: string,
+  ai_model: string = "claude-sonnet-4-20250514"
+) {
+  console.log(ai_model);
+  
+  try {
+    const chatCompletion = await getAnthropicChatCompletion(prompt, ai_model);
+
+    // Extract text from the response array
+    const responseText = chatCompletion;
+    console.log(responseText);
+
+    // Print the completion returned by the LLM.
+    return responseText;
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+// Groq config
 const getGroqChatCompletion = async (prompt: string, ai_model: string) => {
   return groq.chat.completions.create({
     //
@@ -88,5 +111,26 @@ const getGroqChatCompletion = async (prompt: string, ai_model: string) => {
 
     // If set, partial message deltas will be sent.
     stream: false,
+  });
+};
+
+// Anthropic config
+const getAnthropicChatCompletion = async (prompt: string, ai_model: string) => {
+  return anthropic.messages.create({
+    model: ai_model,
+    max_tokens: 1024,
+    temperature: 0.5,
+    system: instructions,
+    messages: [
+      {
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: prompt
+          }
+        ]
+      }
+    ]
   });
 };

@@ -91,6 +91,11 @@ const MermaidEditor = () => {
       model: "meta-llama/llama-4-maverick-17b-128e-instruct",
     },
     {
+      name: "Llama 3.3 [70B]",
+      description: "",
+      model: "llama-3.3-70b-versatile",
+    },
+    {
       name: "DeepSeek R1 [70B]",
       description: "",
       model: "deepseek-r1-distill-llama-70b",
@@ -691,7 +696,8 @@ const MermaidEditor = () => {
                       </button>
                     </div>
                     <div className="text-[10px] text-gray-500 text-center w-full">
-                      (Note: Dmaid can do mistakes. Please review and edit as necessary.)
+                      (Note: Dmaid can do mistakes. Please review and edit as
+                      necessary.)
                     </div>
                   </div>
                 </div>

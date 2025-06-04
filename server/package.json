@@ -19,6 +19,7 @@
   "author": "Swarnendu0123",
   "license": "ISC",
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.52.0",
     "@google/generative-ai": "^0.24.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
