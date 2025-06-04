@@ -38,7 +38,7 @@ interface ApiResponse {
 }
 
 interface ErrorState {
-  type: 'render' | 'api' | 'clipboard' | 'download' | null;
+  type: "render" | "api" | "clipboard" | "download" | null;
   message: string;
 }
 
@@ -58,9 +58,11 @@ const MermaidEditor = () => {
   const [exportSVGName, setExportSVGName] = useState("Dmaid_" + uuidv4());
   const [owner, setOwner] = useState("swarno@admin.dmaid.cloud");
   const [prompt, setPrompt] = useState("");
-  const [model, setModel] = useState("meta-llama/llama-4-maverick-17b-128e-instruct");
+  const [model, setModel] = useState(
+    "meta-llama/llama-4-maverick-17b-128e-instruct"
+  );
   const [mode, setMode] = useState("new");
-  
+
   // Error state
   const [error, setError] = useState<ErrorState>({ type: null, message: "" });
 
@@ -96,7 +98,7 @@ const MermaidEditor = () => {
   ];
 
   // Error handling utility
-  const showError = useCallback((type: ErrorState['type'], message: string) => {
+  const showError = useCallback((type: ErrorState["type"], message: string) => {
     setError({ type, message });
     setTimeout(() => setError({ type: null, message: "" }), 5000);
   }, []);
@@ -117,7 +119,7 @@ const MermaidEditor = () => {
           minScale: 0.1,
           contain: "outside",
         });
-        
+
         const handleWheel = (e: WheelEvent) => {
           try {
             panzoomRef.current?.zoomWithWheel(e);
@@ -127,13 +129,13 @@ const MermaidEditor = () => {
         };
 
         containerRef.current.addEventListener("wheel", handleWheel);
-        
+
         return () => {
           containerRef.current?.removeEventListener("wheel", handleWheel);
         };
       }
     } catch (err) {
-      showError('render', 'Failed to initialize diagram editor');
+      showError("render", "Failed to initialize diagram editor");
       console.error("Initialization error:", err);
     }
   }, [showError]);
@@ -160,14 +162,9 @@ const MermaidEditor = () => {
         setCode(savedCode);
         setHistory([savedCode]);
       }
-
-      const chatCode = localStorage.getItem("chat");
-      if (chatCode) {
-        setChat(chatCode);
-      }
     } catch (err) {
       console.warn("Failed to load saved data:", err);
-      showError('render', 'Failed to load saved data');
+      showError("render", "Failed to load saved data");
     }
   }, [setCode, setChat, showError]);
 
@@ -177,20 +174,23 @@ const MermaidEditor = () => {
       if (!navigator.clipboard) {
         throw new Error("Clipboard API not supported");
       }
-      
+
       await navigator.clipboard.writeText(code);
       setCopiedToClipboard(true);
       setTimeout(() => setCopiedToClipboard(false), 2000);
     } catch (err) {
       console.error("Failed to copy:", err);
-      showError('clipboard', 'Failed to copy to clipboard. Please try selecting and copying manually.');
+      showError(
+        "clipboard",
+        "Failed to copy to clipboard. Please try selecting and copying manually."
+      );
     }
   }, [code, showError]);
 
   // Render diagram with proper error handling
   const renderDiagram = useCallback(async () => {
     if (!diagramRef.current) return;
-    
+
     try {
       // Store zoom and pan state
       const currentZoom = panzoomRef.current?.getScale() || 1;
@@ -210,10 +210,11 @@ const MermaidEditor = () => {
           console.warn("Failed to restore zoom/pan:", err);
         }
       }, 100);
-      
+
       clearError();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error occurred";
       diagramRef.current.innerHTML = `
         <div style="color: red; padding: 20px; text-align: center; font-family: monospace;">
           <p><strong>Error rendering diagram:</strong></p>
@@ -221,7 +222,7 @@ const MermaidEditor = () => {
           <p style="margin-top: 10px; font-size: 0.9em;">Please check your Mermaid syntax</p>
         </div>
       `;
-      showError('render', `Diagram rendering failed: ${errorMessage}`);
+      showError("render", `Diagram rendering failed: ${errorMessage}`);
       console.error("Render error:", error);
     } finally {
       setLoading(false);
@@ -229,22 +230,25 @@ const MermaidEditor = () => {
   }, [code, showError, clearError]);
 
   // Code change handler with error handling
-  const handleCodeChange = useCallback((value: string) => {
-    try {
-      setCode(value);
-      localStorage.setItem("mermaid_code", value);
+  const handleCodeChange = useCallback(
+    (value: string) => {
+      try {
+        setCode(value);
+        localStorage.setItem("mermaid_code", value);
 
-      if (debounceRef.current) clearTimeout(debounceRef.current);
+        if (debounceRef.current) clearTimeout(debounceRef.current);
 
-      debounceRef.current = setTimeout(() => {
-        setHistory((prev) => [...prev, value]);
-        setRedoStack([]);
-      }, 500);
-    } catch (err) {
-      console.error("Failed to save code:", err);
-      showError('render', 'Failed to save changes');
-    }
-  }, [setCode, showError]);
+        debounceRef.current = setTimeout(() => {
+          setHistory((prev) => [...prev, value]);
+          setRedoStack([]);
+        }, 500);
+      } catch (err) {
+        console.error("Failed to save code:", err);
+        showError("render", "Failed to save changes");
+      }
+    },
+    [setCode, showError]
+  );
 
   // Undo functionality
   const handleUndo = useCallback(() => {
@@ -261,7 +265,7 @@ const MermaidEditor = () => {
       }
     } catch (err) {
       console.error("Undo failed:", err);
-      showError('render', 'Undo operation failed');
+      showError("render", "Undo operation failed");
     }
   }, [history, setCode, showError]);
 
@@ -277,7 +281,7 @@ const MermaidEditor = () => {
       }
     } catch (err) {
       console.error("Redo failed:", err);
-      showError('render', 'Redo operation failed');
+      showError("render", "Redo operation failed");
     }
   }, [redoStack, setCode, showError]);
 
@@ -290,7 +294,9 @@ const MermaidEditor = () => {
 
       const svgElement = diagramRef.current.querySelector("svg");
       if (!svgElement) {
-        throw new Error("No valid diagram to download. Please ensure your diagram renders correctly.");
+        throw new Error(
+          "No valid diagram to download. Please ensure your diagram renders correctly."
+        );
       }
 
       setIsDownloading(true);
@@ -302,73 +308,79 @@ const MermaidEditor = () => {
 
       const blob = new Blob([svgContent], { type: "image/svg+xml" });
       const url = URL.createObjectURL(blob);
-      
+
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${exportSVGName || 'diagram'}.svg`;
+      a.download = `${exportSVGName || "diagram"}.svg`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown download error';
+      const errorMessage =
+        err instanceof Error ? err.message : "Unknown download error";
       console.error("Download failed:", err);
-      showError('download', errorMessage);
+      showError("download", errorMessage);
     } finally {
       setTimeout(() => setIsDownloading(false), 1000);
     }
   }, [exportSVGName, showError]);
 
   // API call wrapper with proper error handling
-  const makeApiCall = useCallback(async (
-    endpoint: string, 
-    body: object, 
-    errorContext: string
-  ): Promise<ApiResponse> => {
-    try {
-      if (!BACKEND_URL) {
-        throw new Error("Backend URL is not configured");
+  const makeApiCall = useCallback(
+    async (
+      endpoint: string,
+      body: object,
+      errorContext: string
+    ): Promise<ApiResponse> => {
+      try {
+        if (!BACKEND_URL) {
+          throw new Error("Backend URL is not configured");
+        }
+
+        const response = await fetch(`${BACKEND_URL}${endpoint}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(
+            `HTTP ${response.status}: ${errorText || response.statusText}`
+          );
+        }
+
+        const data = await response.json();
+
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        return data;
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Unknown API error";
+        console.error(`${errorContext} failed:`, err);
+        showError("api", `${errorContext} failed: ${errorMessage}`);
+        throw err;
       }
-
-      const response = await fetch(`${BACKEND_URL}${endpoint}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP ${response.status}: ${errorText || response.statusText}`);
-      }
-
-      const data = await response.json();
-      
-      if (data.error) {
-        throw new Error(data.error);
-      }
-
-      return data;
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown API error';
-      console.error(`${errorContext} failed:`, err);
-      showError('api', `${errorContext} failed: ${errorMessage}`);
-      throw err;
-    }
-  }, [showError]);
+    },
+    [showError]
+  );
 
   // Generate AI diagram with error handling
   const generateAIDiagram = useCallback(async () => {
     if (!prompt.trim()) {
-      showError('api', 'Please enter a prompt to generate a diagram');
+      showError("api", "Please enter a prompt to generate a diagram");
       return;
     }
 
     try {
       setIsAIGeneratingDiagram(true);
-      
+
       const data = await makeApiCall(
         "/diagram/generate",
         { prompt, model },
@@ -377,7 +389,7 @@ const MermaidEditor = () => {
 
       if (data.chat) {
         setChat(data.chat);
-        localStorage.setItem("chat", data.chat);
+
         if (data.title) {
           setExportSVGName(data.title);
         }
@@ -394,18 +406,18 @@ const MermaidEditor = () => {
   // Enhance diagram with error handling
   const enhanceTheDiagram = useCallback(async () => {
     if (!prompt.trim()) {
-      showError('api', 'Please enter instructions to enhance the diagram');
+      showError("api", "Please enter instructions to enhance the diagram");
       return;
     }
 
     if (!code.trim()) {
-      showError('api', 'No diagram code found to enhance');
+      showError("api", "No diagram code found to enhance");
       return;
     }
 
     try {
       setIsAIGeneratingDiagram(true);
-      
+
       const data = await makeApiCall(
         "/diagram/enhance",
         { diagram: code, chat, prompt, model },
@@ -414,7 +426,6 @@ const MermaidEditor = () => {
 
       if (data.chat) {
         setChat(data.chat);
-        localStorage.setItem("chat", data.chat);
       } else {
         throw new Error("No enhanced diagram was generated");
       }
@@ -428,13 +439,13 @@ const MermaidEditor = () => {
   // Generate AI title with error handling
   const generateAItitleWithDiagrams = useCallback(async () => {
     if (!code.trim()) {
-      showError('api', 'No diagram found to generate title from');
+      showError("api", "No diagram found to generate title from");
       return;
     }
 
     try {
       setIsAIGeneratingTitle(true);
-      
+
       const data = await makeApiCall(
         "/title/generate",
         { diagram: code, model },
@@ -494,7 +505,7 @@ const MermaidEditor = () => {
   return (
     <div className="flex gap-4 p-4 items-start relative">
       <ErrorNotification />
-      
+
       {/* Side bar */}
       <div>
         <div className="rounded-lg bg-slate-100 p-2 flex flex-col items-center my-5">
@@ -539,14 +550,14 @@ const MermaidEditor = () => {
             <div className="animate-spin text-gray-600 text-4xl">⟳</div>
           </div>
         )}
-        
+
         <div
           ref={containerRef}
           className="p-4 cursor-grab h-[600px] flex justify-center items-center relative"
         >
           <div ref={diagramRef} className="transform scale-75"></div>
         </div>
-        
+
         {/* Zoom & Pan Controls */}
         <div className="absolute bottom-4 right-4 flex flex-col items-center space-y-2 p-2 rounded-lg">
           <div className="flex space-x-2">
@@ -585,6 +596,9 @@ const MermaidEditor = () => {
             <div className="flex space-x-2">
               <div className="bg-white p-6 rounded-lg shadow-lg relative max-w-md">
                 <div className="z-10 drag-handle cursor-move">
+                  <p className="text-lg font-black mb-2 flex items-center gap-2">
+                    Dmaid AI
+                  </p>
                   <button
                     className="absolute top-2 right-2 bg-black rounded px-4 py-2 my-1 m-0.5 hover:bg-gray-800 transition-colors"
                     onClick={() => setIsChatOpen(false)}
@@ -593,7 +607,7 @@ const MermaidEditor = () => {
                     <X size={20} color="#fff" />
                   </button>
                 </div>
-                
+
                 <div className="flex flex-col gap-2">
                   <div className="flex flex-col">
                     {chat && (
@@ -624,7 +638,10 @@ const MermaidEditor = () => {
                         onChange={(e) => setModel(e.target.value)}
                       >
                         {models.map((modelOption) => (
-                          <option key={modelOption.name} value={modelOption.model}>
+                          <option
+                            key={modelOption.name}
+                            value={modelOption.model}
+                          >
                             {modelOption.name}
                           </option>
                         ))}
@@ -650,7 +667,11 @@ const MermaidEditor = () => {
                         }`}
                         onClick={editOrGenerateWithAI}
                         disabled={isAIGeneratingDiagram || !prompt.trim()}
-                        title={!prompt.trim() ? "Please enter a prompt" : "Generate diagram"}
+                        title={
+                          !prompt.trim()
+                            ? "Please enter a prompt"
+                            : "Generate diagram"
+                        }
                       >
                         {isAIGeneratingDiagram ? (
                           <div className="flex items-center justify-center">
@@ -660,7 +681,11 @@ const MermaidEditor = () => {
                         ) : (
                           <>
                             Generate
-                            <Sparkles size={16} color="#ffffff" className="ml-2" />
+                            <Sparkles
+                              size={16}
+                              color="#ffffff"
+                              className="ml-2"
+                            />
                           </>
                         )}
                       </button>
@@ -682,8 +707,8 @@ const MermaidEditor = () => {
                     <button
                       disabled={history.length <= 1}
                       className={`bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 transition-all duration-200 ${
-                        history.length > 1 
-                          ? "hover:bg-gray-800" 
+                        history.length > 1
+                          ? "hover:bg-gray-800"
                           : "opacity-50 cursor-not-allowed"
                       }`}
                       onClick={handleUndo}
@@ -695,8 +720,8 @@ const MermaidEditor = () => {
                     <button
                       disabled={redoStack.length === 0}
                       className={`bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 transition-all duration-200 ${
-                        redoStack.length > 0 
-                          ? "hover:bg-gray-800" 
+                        redoStack.length > 0
+                          ? "hover:bg-gray-800"
                           : "opacity-50 cursor-not-allowed"
                       }`}
                       onClick={handleRedo}
@@ -727,7 +752,7 @@ const MermaidEditor = () => {
                   </button>
                 </div>
               </div>
-              
+
               <CodeMirror
                 value={code}
                 height="335px"
@@ -742,7 +767,7 @@ const MermaidEditor = () => {
                 onChange={handleCodeChange}
               />
             </div>
-            
+
             <div className="absolute bottom-1 border border-gray-300 bg-white w-[600px] h-[200px] p-2 overflow-y-auto rounded-lg">
               <div className="flex flex-wrap gap-2">
                 <ExampleList />
@@ -763,7 +788,7 @@ const MermaidEditor = () => {
             >
               <X size={20} color="#fff" />
             </button>
-            
+
             <h2 className="text-xl mb-4 font-black">Export Diagram</h2>
 
             <div className="flex flex-col gap-4">
@@ -786,7 +811,11 @@ const MermaidEditor = () => {
                   }`}
                   onClick={generateAItitleWithDiagrams}
                   disabled={isAIGeneratingTitle || !code.trim()}
-                  title={!code.trim() ? "No diagram to generate title from" : "Generate title with AI"}
+                  title={
+                    !code.trim()
+                      ? "No diagram to generate title from"
+                      : "Generate title with AI"
+                  }
                 >
                   {isAIGeneratingTitle ? (
                     <span className="animate-spin">⏳</span>
@@ -802,7 +831,8 @@ const MermaidEditor = () => {
                   className="overflow-auto max-h-60 p-4"
                   style={{ whiteSpace: "nowrap" }}
                   dangerouslySetInnerHTML={{
-                    __html: diagramRef.current?.innerHTML || 
+                    __html:
+                      diagramRef.current?.innerHTML ||
                       "<p style='color: gray; text-align: center; padding: 40px;'>No diagram available for preview</p>",
                   }}
                 />
@@ -810,10 +840,14 @@ const MermaidEditor = () => {
 
               {/* Download button */}
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Export as SVG format</span>
+                <span className="text-sm text-gray-600">
+                  Export as SVG format
+                </span>
                 <button
                   className={`bg-black text-white px-6 py-2 rounded font-black text-sm flex items-center transition-all duration-200 ${
-                    isDownloading ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-800"
+                    isDownloading
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-gray-800"
                   }`}
                   onClick={handleDownloadSVG}
                   disabled={isDownloading}
@@ -827,7 +861,11 @@ const MermaidEditor = () => {
                   ) : (
                     <>
                       Download
-                      <ArrowDownToLine size={16} color="#ffffff" className="ml-2" />
+                      <ArrowDownToLine
+                        size={16}
+                        color="#ffffff"
+                        className="ml-2"
+                      />
                     </>
                   )}
                 </button>
@@ -848,9 +886,9 @@ const MermaidEditor = () => {
             >
               <X size={20} color="#fff" />
             </button>
-            
+
             <h2 className="text-xl mb-4 font-black">Access Control Settings</h2>
-            
+
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-bold">Access Type</label>
@@ -875,7 +913,7 @@ const MermaidEditor = () => {
                     placeholder="Enter owner email"
                     maxLength={100}
                   />
-                  <button 
+                  <button
                     className="bg-black text-white rounded text-sm p-2 hover:bg-gray-800 transition-colors"
                     onClick={() => {
                       try {
@@ -883,7 +921,7 @@ const MermaidEditor = () => {
                         console.log("Saving owner:", owner);
                         showError(null, "Settings saved successfully!");
                       } catch (err) {
-                        showError('api', 'Failed to save settings');
+                        showError("api", "Failed to save settings");
                       }
                     }}
                   >
@@ -898,14 +936,14 @@ const MermaidEditor = () => {
                   <div className="bg-gray-100 rounded text-gray-700 text-sm p-2 flex-1 font-mono break-all">
                     {window.location.href}
                   </div>
-                  <button 
+                  <button
                     className="bg-black text-white rounded text-sm p-2 hover:bg-gray-800 transition-colors"
                     onClick={() => {
                       try {
                         navigator.clipboard.writeText(window.location.href);
                         // You could add a temporary success state here
                       } catch (err) {
-                        showError('clipboard', 'Failed to copy URL');
+                        showError("clipboard", "Failed to copy URL");
                       }
                     }}
                     title="Copy URL"

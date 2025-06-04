@@ -28,6 +28,7 @@ import "prismjs/themes/prism.css";
 const Markdown = ({ markdownString }: { markdownString: string }) => {
   const setCode = useSetRecoilState(codeState);
   const [htmlContent, setHtmlContent] = useState("");
+  const [isContentReady, setIsContentReady] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Initialize Mermaid once
@@ -42,23 +43,27 @@ const Markdown = ({ markdownString }: { markdownString: string }) => {
   // Configure marked to use Prism for code highlighting using a custom renderer
   useEffect(() => {
     const renderer = new marked.Renderer();
-    
+
     // Override the code renderer to add proper language classes
     // @ts-expect-error Prism types are not fully compatible with marked's renderer
-    renderer.code = function(code: string, language?: string) {
-      const validLang = language && Prism.languages[language] ? language : '';
-      const langClass = validLang ? ` class="language-${validLang}"` : '';
-      
+    renderer.code = function (code: string, language?: string) {
+      const validLang = language && Prism.languages[language] ? language : "";
+      const langClass = validLang ? ` class="language-${validLang}"` : "";
+
       let highlightedCode = code;
       if (validLang) {
         try {
-          highlightedCode = Prism.highlight(code, Prism.languages[validLang], validLang);
+          highlightedCode = Prism.highlight(
+            code,
+            Prism.languages[validLang],
+            validLang
+          );
         } catch (err) {
           console.warn("Prism highlighting failed:", err);
           highlightedCode = code;
         }
       }
-      
+
       return `<pre><code${langClass}>${highlightedCode}</code></pre>`;
     };
 
@@ -69,6 +74,7 @@ const Markdown = ({ markdownString }: { markdownString: string }) => {
 
   // 1. Convert <think>…</think> → <div class="thinking">…</div>, handle Mermaid, then sanitize the HTML
   useEffect(() => {
+    setIsContentReady(false);
     const parseAndSanitize = async () => {
       let transformedMarkdown = markdownString.replace(
         /<think>([\s\S]*?)<\/think>/gi,
@@ -97,7 +103,7 @@ const Markdown = ({ markdownString }: { markdownString: string }) => {
 
   // 2. Once we have HTML, attach "Try This" buttons to every <pre>…</pre> (non-Mermaid code blocks) and apply syntax highlighting
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || !htmlContent) return;
 
     // Remove existing buttons
     containerRef.current
@@ -176,164 +182,194 @@ const Markdown = ({ markdownString }: { markdownString: string }) => {
 
   // 3. Render Mermaid diagrams with controls
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || !htmlContent) return;
 
     const mermaidElements =
       containerRef.current.querySelectorAll(".mermaid-diagram");
 
-    mermaidElements.forEach(async (element) => {
-      const code = decodeURIComponent(
-        element.getAttribute("data-mermaid-code") || ""
-      );
-      const id = element.id;
+    const processMermaidElements = async () => {
+      for (const element of Array.from(mermaidElements)) {
+        const code = decodeURIComponent(
+          element.getAttribute("data-mermaid-code") || ""
+        );
+        const id = element.id;
 
-      if (code && id) {
-        try {
-          const { svg } = await mermaid.render(`${id}-svg`, code);
+        if (code && id) {
+          try {
+            const { svg } = await mermaid.render(`${id}-svg`, code);
 
-          // Create wrapper with controls
-          const wrapper = document.createElement("div");
-          wrapper.className =
-            "mermaid-diagram-wrapper my-4 border border-gray-200 rounded-lg overflow-hidden shadow-sm";
+            // Create wrapper with controls
+            const wrapper = document.createElement("div");
+            wrapper.className =
+              "mermaid-diagram-wrapper my-4 border border-gray-200 rounded-lg overflow-hidden shadow-sm";
 
-          // Create control bar
-          const controlBar = document.createElement("div");
-          controlBar.className =
-            "flex justify-end gap-2 p-2 bg-gray-50 border-b border-gray-200";
+            // Create control bar
+            const controlBar = document.createElement("div");
+            controlBar.className =
+              "flex justify-end gap-2 p-2 bg-gray-50 border-b border-gray-200";
 
-          // Copy to Editor button
-          const copyButton = document.createElement("button");
-          copyButton.innerText = "Copy to Canvas";
-          copyButton.className =
-            "px-3 py-1 text-sm bg-gray-500 text-white rounded hover:bg-black transition-colors";
-          copyButton.onclick = () => {
-            setCode(code);
-            localStorage.setItem("mermaid_code", code);
-            copyButton.innerText = "Copied!";
-            setTimeout(() => (copyButton.innerText = "Copy to Canvas"), 1500);
-          };
+            // Copy to Editor button
+            const copyButton = document.createElement("button");
+            copyButton.innerText = "Copy to Canvas";
+            copyButton.className =
+              "px-3 py-1 text-sm bg-gray-500 text-white rounded hover:bg-black transition-colors";
+            copyButton.onclick = () => {
+              setCode(code);
+              localStorage.setItem("mermaid_code", code);
+              copyButton.innerText = "Copied!";
+              setTimeout(() => (copyButton.innerText = "Copy to Canvas"), 1500);
+            };
 
-          // Switch to Code button
-          const codeToggleButton = document.createElement("button");
-          codeToggleButton.innerText = "Show Code";
-          codeToggleButton.className =
-            "px-3 py-1 text-sm bg-gray-500 text-white rounded hover:bg-black transition-colors";
+            // Switch to Code button
+            const codeToggleButton = document.createElement("button");
+            codeToggleButton.innerText = "Show Code";
+            codeToggleButton.className =
+              "px-3 py-1 text-sm bg-gray-500 text-white rounded hover:bg-black transition-colors";
 
-          // Create content container for diagram
-          const diagramContent = document.createElement("div");
-          diagramContent.className = "flex justify-center p-4 bg-white";
-          diagramContent.innerHTML = svg;
+            // Create content container for diagram
+            const diagramContent = document.createElement("div");
+            diagramContent.className = "flex justify-center p-4 bg-white";
+            diagramContent.innerHTML = svg;
 
-          // Create code container (initially hidden) with syntax highlighting
-          const codeContent = document.createElement("div");
-          codeContent.className = "hidden bg-gray-900 text-gray-100 p-4";
-          const codeElement = document.createElement("pre");
-          codeElement.className = "text-sm overflow-x-auto language-mermaid";
-          const codeText = document.createElement("code");
-          codeText.className = "language-mermaid";
+            // Create code container (initially hidden) with syntax highlighting
+            const codeContent = document.createElement("div");
+            codeContent.className = "hidden bg-gray-900 text-gray-100 p-4";
+            const codeElement = document.createElement("pre");
+            codeElement.className = "text-sm overflow-x-auto language-mermaid";
+            const codeText = document.createElement("code");
+            codeText.className = "language-mermaid";
 
-          // Apply syntax highlighting to Mermaid code if available
-          if (Prism.languages.mermaid) {
-            try {
-              codeText.innerHTML = Prism.highlight(
-                code,
-                Prism.languages.mermaid,
-                "mermaid"
-              );
-            } catch (err) {
+            // Apply syntax highlighting to Mermaid code if available
+            if (Prism.languages.mermaid) {
+              try {
+                codeText.innerHTML = Prism.highlight(
+                  code,
+                  Prism.languages.mermaid,
+                  "mermaid"
+                );
+              } catch (err) {
+                codeText.textContent = code;
+              }
+            } else {
               codeText.textContent = code;
             }
-          } else {
-            codeText.textContent = code;
+
+            codeElement.appendChild(codeText);
+            codeContent.appendChild(codeElement);
+
+            // Toggle functionality
+            let showingCode = false;
+            codeToggleButton.onclick = () => {
+              showingCode = !showingCode;
+              if (showingCode) {
+                diagramContent.classList.add("hidden");
+                codeContent.classList.remove("hidden");
+                codeToggleButton.innerText = "Show Diagram";
+              } else {
+                diagramContent.classList.remove("hidden");
+                codeContent.classList.add("hidden");
+                codeToggleButton.innerText = "Show Code";
+              }
+            };
+
+            // Assemble the components
+            controlBar.appendChild(copyButton);
+            controlBar.appendChild(codeToggleButton);
+            wrapper.appendChild(controlBar);
+            wrapper.appendChild(diagramContent);
+            wrapper.appendChild(codeContent);
+
+            // Replace the original element
+            element.parentNode?.replaceChild(wrapper, element);
+          } catch (error) {
+            console.error("Error rendering Mermaid diagram:", error);
+            element.innerHTML = `
+              <div class="text-red-500 p-4 border border-red-300 rounded bg-red-50">
+                <strong>Error rendering diagram:</strong><br>
+                <code class="text-sm">${
+                  error instanceof Error ? error.message : "Unknown error"
+                }</code>
+              </div>
+            `;
           }
-
-          codeElement.appendChild(codeText);
-          codeContent.appendChild(codeElement);
-
-          // Toggle functionality
-          let showingCode = false;
-          codeToggleButton.onclick = () => {
-            showingCode = !showingCode;
-            if (showingCode) {
-              diagramContent.classList.add("hidden");
-              codeContent.classList.remove("hidden");
-              codeToggleButton.innerText = "Show Diagram";
-            } else {
-              diagramContent.classList.remove("hidden");
-              codeContent.classList.add("hidden");
-              codeToggleButton.innerText = "Show Code";
-            }
-          };
-
-          // Assemble the components
-          controlBar.appendChild(copyButton);
-          controlBar.appendChild(codeToggleButton);
-          wrapper.appendChild(controlBar);
-          wrapper.appendChild(diagramContent);
-          wrapper.appendChild(codeContent);
-
-          // Replace the original element
-          element.parentNode?.replaceChild(wrapper, element);
-        } catch (error) {
-          console.error("Error rendering Mermaid diagram:", error);
-          element.innerHTML = `
-            <div class="text-red-500 p-4 border border-red-300 rounded bg-red-50">
-              <strong>Error rendering diagram:</strong><br>
-              <code class="text-sm">${error instanceof Error ? error.message : "Unknown error"}</code>
-            </div>
-          `;
         }
       }
-    });
+      // Mark content as ready for typing effect after all Mermaid diagrams are processed
+      setIsContentReady(true);
+    };
+
+    processMermaidElements();
   }, [htmlContent, setCode]);
 
-  // 4. Typing‐effect for all text nodes. After each .thinking block finishes, append "Thought for n seconds."
+  // 4. Typing effect for all text nodes - only runs after content is fully ready
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || !isContentReady) return;
 
-    // Wait a bit for Mermaid to render first
-    setTimeout(() => {
+    // Wait a bit more to ensure all DOM manipulations are complete
+    const timeoutId = setTimeout(() => {
       if (!containerRef.current) return;
 
-      // Gather every text node under containerRef
+      // Helper function to check if a node should be excluded from typing effect
+      const shouldExcludeNode = (node: Node): boolean => {
+        if (!node.parentElement) return false;
+
+        // Exclude nodes inside code blocks, buttons, and other interactive elements
+        const excludeSelectors = [
+          "pre code",
+          "button",
+          ".copy-button",
+          ".mermaid-diagram-wrapper",
+          "code:not(.thinking code)", // Exclude inline code but allow code inside thinking blocks
+        ];
+
+        return excludeSelectors.some(
+          (selector) => node.parentElement!.closest(selector) !== null
+        );
+      };
+
+      // Gather text nodes that should have typing effect
       const walker = document.createTreeWalker(
         containerRef.current,
         NodeFilter.SHOW_TEXT,
-        null
+        {
+          acceptNode: (node) => {
+            const text = node.textContent?.trim();
+            if (!text || text.length === 0) return NodeFilter.FILTER_REJECT;
+            if (shouldExcludeNode(node)) return NodeFilter.FILTER_REJECT;
+            return NodeFilter.FILTER_ACCEPT;
+          },
+        }
       );
+
       const textNodes: Text[] = [];
       let node = walker.nextNode();
       while (node) {
-        if (node.textContent && node.textContent.trim().length > 0) {
-          textNodes.push(node as Text);
-        }
+        textNodes.push(node as Text);
         node = walker.nextNode();
       }
 
-      const CHAR_INTERVAL = 1; // ms per character (faster type)
+      const CHAR_INTERVAL = 1; // ms per character
       let cumulativeDelay = 0;
 
-      // Keep track of which .thinking elements we've already inserted a "Thought for…" note under
+      // Keep track of thinking elements for adding timing notes
       const handledThinking = new Set<HTMLElement>();
 
       textNodes.forEach((textNode) => {
         const fullText = textNode.textContent || "";
-        // Clear it immediately
+        // Store original text and clear it
+        const originalText = fullText;
         textNode.textContent = "";
 
-        // When to start typing this particular node
         const startTime = cumulativeDelay;
-        // How long typing this node takes
         const nodeDuration = fullText.length * CHAR_INTERVAL;
-        // When typing this node finishes
         const finishTime = startTime + nodeDuration;
 
-        // Schedule the character‐by‐character typing
+        // Schedule typing animation
         setTimeout(() => {
           let i = 0;
           const typer = setInterval(() => {
-            if (i < fullText.length) {
-              textNode.textContent += fullText.charAt(i);
+            if (i < originalText.length && textNode.parentNode) {
+              textNode.textContent += originalText.charAt(i);
               i++;
             } else {
               clearInterval(typer);
@@ -341,32 +377,30 @@ const Markdown = ({ markdownString }: { markdownString: string }) => {
           }, CHAR_INTERVAL);
         }, startTime);
 
-        // If this textNode is inside a .thinking container, schedule its "Thought for n seconds" note
-        // right when it finishes typing.
-        const thinkElem = ((): HTMLElement | null => {
-          if (!textNode.parentElement) return null;
-          return textNode.parentElement.closest(".thinking");
-        })();
-
+        // Handle thinking block timing notes
+        const thinkElem = textNode.parentElement?.closest(
+          ".thinking"
+        ) as HTMLElement;
         if (thinkElem && !handledThinking.has(thinkElem)) {
           handledThinking.add(thinkElem);
-          // Compute seconds, rounded to 2 decimals
           const seconds = +(nodeDuration / 1000).toFixed(2);
 
           setTimeout(() => {
-            // Create and insert the note right after the .thinking div
-            const note = document.createElement("div");
-            note.className = "mt-1 text-sm text-gray-500 italic";
-            note.innerText = `Thought for ${seconds} seconds`;
-            thinkElem.insertAdjacentElement("afterend", note);
+            if (thinkElem.parentNode) {
+              const note = document.createElement("div");
+              note.className = "mt-1 text-sm text-gray-500 italic";
+              note.innerText = `Thought for ${seconds} seconds`;
+              thinkElem.insertAdjacentElement("afterend", note);
+            }
           }, finishTime);
         }
 
-        // Increase cumulativeDelay so the next text node types *after* this one finishes
         cumulativeDelay += nodeDuration;
       });
-    }, 100); // Small delay to let Mermaid render first
-  }, [htmlContent]);
+    }, 200); // Increased delay to ensure all DOM manipulations are complete
+
+    return () => clearTimeout(timeoutId);
+  }, [isContentReady]);
 
   return (
     <article
