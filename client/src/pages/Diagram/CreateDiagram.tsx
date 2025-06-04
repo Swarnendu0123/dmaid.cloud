@@ -597,7 +597,7 @@ const MermaidEditor = () => {
 
         {/* Chat Box */}
         {isChatOpen && (
-          <div className="absolute bottom-4 justify-center flex flex-col items-center space-y-2 p-2 rounded-lg right-4 h-[600px] w-[460px] bg-white shadow-lg z-20">
+          <div className="absolute justify-center flex flex-col items-center space-y-2 p-2 rounded-lg right-4 bottom-10 h-[560px] bg-white shadow-sm">
             <div className="flex space-x-2">
               <div className="bg-white p-6 rounded-lg shadow-lg relative max-w-md">
                 <div className="z-10 drag-handle cursor-move">
