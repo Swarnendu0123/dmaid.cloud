@@ -11,7 +11,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const text_to_diagram_1 = require("../../controllers/gen_ai/text_to_diagram");
-const text_to_title_1 = require("../../controllers/gen_ai/text_to_title");
 const diagram_to_title_1 = require("../../controllers/gen_ai/diagram_to_title");
 const diagram_enhancer_1 = require("../../controllers/gen_ai/diagram_enhancer");
 const prompt_enhancer_1 = require("../../controllers/gen_ai/prompt_enhancer");
@@ -57,7 +56,7 @@ router.post("/diagram/generate", (req, res) => __awaiter(void 0, void 0, void 0,
         console.log("Generating Diagram ... \n\n\n");
         const chat = yield (0, text_to_diagram_1.generateTextToDiagramWithGroq)(prompt, model || default_model);
         console.log("chat:", chat);
-        const generated_title = yield (0, text_to_title_1.generateTextToTitleWithGroq)(prompt);
+        const generated_title = yield (0, diagram_to_title_1.generateDiagramToTitleWithGroq)(chat);
         res.send({
             messege: "Diagram generated",
             chat: chat,

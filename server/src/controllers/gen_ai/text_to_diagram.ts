@@ -12,8 +12,6 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-console.log(process.env.ANTHROPIC_API_KEY);
-
 
 // Google Gen AI Model
 export async function generateTextToDiagramWithGemini(prompt: string) {

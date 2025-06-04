@@ -25,7 +25,6 @@ dotenv.config();
 const genAI = new generative_ai_1.GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY);
 const groq = new groq_sdk_1.default({ apiKey: process.env.GROQ_API_KEY });
 const anthropic = new sdk_1.default({ apiKey: process.env.ANTHROPIC_API_KEY });
-console.log(process.env.ANTHROPIC_API_KEY);
 // Google Gen AI Model
 function generateTextToDiagramWithGemini(prompt) {
     return __awaiter(this, void 0, void 0, function* () {
