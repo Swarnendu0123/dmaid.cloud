@@ -18,5 +18,6 @@ export const codeState = atom({
 
 export const chatState = atom({
   key: "chatState",
-  default: "## Hello, I am `Dmaid AI` :)\n\nI can help you create diagrams using Mermaid. I can Generate Multiple types of diagrams for you.\n\nYou can also use the examples provided to get started quickly.\n\n **Happy diagramming!** \n\n ~ from [Swarnendu](https://www.linkedin.com/in/swarnendu-bhandari/)",
+  default:
+    `## Hello, I am \`Dmaid AI\` :) \n\nProfessional \`Mermaid diagram generation\` platform for creating high-quality technical diagrams.\n\n**Supported Diagram Types:**\nFlowchart, Sequence, Class, State, Entity Relationship, Gantt Charts, Pie Charts, Requirement, User Journey, Git Graph, Mindmaps, Timeline, Quadrant Chart, Packet, C4 Context, Block, Bar Graph\n\nProvide your specifications and receive production-ready diagrams instantly.\n\n*Developed by*\n\n~ [Swarnendu](https://www.linkedin.com/in/swarnendu-bhandari/)`,
 });

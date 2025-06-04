@@ -690,6 +690,9 @@ const MermaidEditor = () => {
                         )}
                       </button>
                     </div>
+                    <div className="text-[10px] text-gray-500 text-center w-full">
+                      (Note: Dmaid can do mistakes. Please review and edit as necessary.)
+                    </div>
                   </div>
                 </div>
               </div>

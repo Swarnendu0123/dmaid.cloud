@@ -379,7 +379,7 @@ export const examples = [
     ],
   },
   {
-    category: "C4 Context Diagram",
+    category: "Packet Diagram",
     diagrams: [
       {
         id: "17",
