@@ -18,5 +18,5 @@ export const codeState = atom({
 
 export const chatState = atom({
   key: "chatState",
-  default: "## Hello, I am `Dmaid AI` :)\n\nI can help you create diagrams using Mermaid syntax. I can Generate Multiple types of diagrams for you.\n\nYou can also use the examples provided to get started quickly.\n\n **Happy diagramming!** \n\n ~ from [Swarnendu](https://www.linkedin.com/in/swarnendu-bhandari/)",
+  default: "## Hello, I am `Dmaid AI` :)\n\nI can help you create diagrams using Mermaid. I can Generate Multiple types of diagrams for you.\n\nYou can also use the examples provided to get started quickly.\n\n **Happy diagramming!** \n\n ~ from [Swarnendu](https://www.linkedin.com/in/swarnendu-bhandari/)",
 });
