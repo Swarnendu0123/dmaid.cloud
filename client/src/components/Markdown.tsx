@@ -310,7 +310,7 @@ const Markdown = ({ markdownString }: { markdownString: string }) => {
         node = walker.nextNode();
       }
 
-      const CHAR_INTERVAL = 2; // ms per character (faster type)
+      const CHAR_INTERVAL = 1; // ms per character (faster type)
       let cumulativeDelay = 0;
 
       // Keep track of which .thinking elements we've already inserted a "Thought for…" note under
