@@ -1,4 +1,4 @@
-import Markdown from "../components/Markdown";
+import Markdown from "../components/EditorPage/Markdown";
 
 const Landing = () => {
   const content =

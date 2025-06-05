@@ -2,7 +2,7 @@ import { marked } from "marked";
 import DOMPurify from "dompurify";
 import { useEffect, useState, useRef } from "react";
 import { useSetRecoilState } from "recoil";
-import { codeState } from "../store/atoms";
+import { codeState } from "../../store/atoms";
 import mermaid from "mermaid";
 import Prism from "prismjs";
 // Import core languages

@@ -41,7 +41,7 @@ export const examples = [
   },
 
   {
-    category: "Sequence Diagram",
+    category: "Sequence Diagram [Canvas Editable]",
     diagrams: [
       {
         id: "2",
@@ -135,7 +135,7 @@ export const examples = [
     ],
   },
   {
-    category: "ER Diagram",
+    category: "ER Diagram [Canvas Editable]",
     diagrams: [
       {
         id: "5",
@@ -154,7 +154,7 @@ export const examples = [
     ],
   },
   {
-    category: "Gantt Diagram",
+    category: "Gantt Diagram [Canvas Editable]",
     diagrams: [
       {
         id: "6",
@@ -180,7 +180,7 @@ export const examples = [
     ],
   },
   {
-    category: "Pie Chart",
+    category: "Pie Chart [Canvas Editable]",
     diagrams: [
       {
         id: "7",
@@ -257,7 +257,7 @@ export const examples = [
     ],
   },
   {
-    category: "Git Graph",
+    category: "Git Graph [Canvas Editable]",
     diagrams: [
       {
         id: "10",
@@ -276,7 +276,7 @@ export const examples = [
     ],
   },
   {
-    category: "Mindmap",
+    category: "Mindmap [Canvas Editable]",
     diagrams: [
       {
         id: "11",
@@ -302,7 +302,7 @@ export const examples = [
     ],
   },
   {
-    category: "Timeline",
+    category: "Timeline [Canvas Editable]",
     diagrams: [
       {
         id: "12",
@@ -327,7 +327,7 @@ export const examples = [
     ],
   },
   {
-    category: "Quadrant Chart",
+    category: "Quadrant Chart [Canvas Editable]",
     diagrams: [
       {
         id: "13",
@@ -360,7 +360,7 @@ export const examples = [
     ],
   },
   {
-    category: "C4 Context Diagram",
+    category: "C4 Context Diagram [Canvas Editable]",
     diagrams: [
       {
         id: "14",
@@ -379,7 +379,7 @@ export const examples = [
     ],
   },
   {
-    category: "Packet Diagram",
+    category: "Packet Diagram [Canvas Editable]",
     diagrams: [
       {
         id: "17",
@@ -417,7 +417,7 @@ export const examples = [
     ],
   },
   {
-    category: "Bar Graph",
+    category: "Bar Graph [Canvas Editable]",
     diagrams: [
       {
         id: "21",

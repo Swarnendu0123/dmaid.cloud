@@ -9,26 +9,24 @@ import mermaid from "mermaid";
 import Panzoom from "@panzoom/panzoom";
 import {
   ArrowDownToLine,
-  Bot,
-  Bug,
   Check,
   Copy,
-  Image,
   Lock,
   Redo,
   Sparkles,
   Undo,
   User,
   X,
-  AlertCircle,
 } from "lucide-react";
 import { default_code } from "./default_mermaid_code";
 import { v4 as uuidv4 } from "uuid";
 import { BACKEND_URL } from "../../config";
-import Markdown from "../../components/Markdown";
+import Markdown from "../../components/EditorPage/Markdown";
 import { useRecoilState } from "recoil";
 import { chatState, codeState } from "../../store/atoms";
 import { myHighlightStyle } from "./theme";
+import Sidebar from "../../components/EditorPage/SideBar";
+import ErrorNotification from "../../components/EditorPage/ErrorNotification";
 
 // Types for better type safety
 interface ApiResponse {
@@ -62,6 +60,16 @@ const MermaidEditor = () => {
     "meta-llama/llama-4-maverick-17b-128e-instruct"
   );
   const [mode, setMode] = useState("new");
+  const [isCanvasEditMode, setIsCanvasEditMode] = useState(false);
+  interface SelectedElement {
+    element: HTMLElement;
+    type: "text" | "shape";
+    index: number;
+  }
+
+  const [selectedElement, setSelectedElement] =
+    useState<SelectedElement | null>(null);
+  const [editableText, setEditableText] = useState("");
 
   // Error state
   const [error, setError] = useState<ErrorState>({ type: null, message: "" });
@@ -192,7 +200,97 @@ const MermaidEditor = () => {
     }
   }, [code, showError]);
 
-  // Render diagram with proper error handling
+  // 2. Add function to make SVG elements editable
+  const makeElementsEditable = useCallback(() => {
+    if (!diagramRef.current) return;
+
+    const svgElement = diagramRef.current.querySelector("svg");
+    if (!svgElement) return;
+
+    // Remove any existing event listeners by cloning elements
+    const clonedSvg = svgElement.cloneNode(true);
+    if (svgElement.parentNode) {
+      svgElement.parentNode.replaceChild(clonedSvg, svgElement);
+    }
+
+    if (!isCanvasEditMode) return;
+
+    // Make text elements editable only in edit mode
+    const textElements = (clonedSvg as Element).querySelectorAll("text, tspan");
+    textElements.forEach((textEl, index) => {
+      (textEl as HTMLElement).style.cursor = "pointer";
+      textEl.addEventListener("click", (e) => {
+        if (!isCanvasEditMode) return; // Double check
+        e.stopPropagation();
+        setSelectedElement({
+          element: textEl as HTMLElement,
+          type: "text",
+          index,
+        });
+        setEditableText(textEl.textContent || "");
+      });
+    });
+
+    // Make shape elements selectable for repositioning only in edit mode
+    const shapeElements = (clonedSvg as Element).querySelectorAll(
+      "rect, circle, ellipse, polygon, path"
+    );
+    shapeElements.forEach((shapeEl, index) => {
+      (shapeEl as HTMLElement).style.cursor = "move";
+      let isDragging = false;
+      let startX: number, startY: number, startTransform: string;
+
+      const handleMouseDown = (e: MouseEvent) => {
+        if (!isCanvasEditMode) return; // Check edit mode
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+
+        const transform = shapeEl.getAttribute("transform") || "";
+        startTransform = transform;
+
+        setSelectedElement({
+          element: shapeEl as HTMLElement,
+          type: "shape",
+          index,
+        });
+      };
+
+      const handleMouseMove = (e: { clientX: number; clientY: number }) => {
+        if (!isDragging || !isCanvasEditMode) return;
+
+        const deltaX = e.clientX - startX;
+        const deltaY = e.clientY - startY;
+
+        let newTransform = startTransform;
+        if (newTransform.includes("translate")) {
+          // Update existing translate
+          newTransform = newTransform.replace(
+            /translate\([^)]*\)/,
+            `translate(${deltaX}, ${deltaY})`
+          );
+        } else {
+          // Add new translate
+          newTransform = `translate(${deltaX}, ${deltaY}) ${newTransform}`;
+        }
+
+        shapeEl.setAttribute("transform", newTransform);
+      };
+
+      const handleMouseUp = () => {
+        isDragging = false;
+      };
+
+      shapeEl.addEventListener(
+        "mousedown",
+        handleMouseDown as (e: Event) => void
+      );
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+    });
+  }, [isCanvasEditMode]);
+
+  // 3. Update the renderDiagram function to include editability
   const renderDiagram = useCallback(async () => {
     if (!diagramRef.current) return;
 
@@ -203,6 +301,11 @@ const MermaidEditor = () => {
 
       const { svg } = await mermaid.render("generatedDiagram", code);
       diagramRef.current.innerHTML = svg;
+
+      // Always call makeElementsEditable - it will handle the mode check internally
+      setTimeout(() => {
+        makeElementsEditable();
+      }, 100);
 
       // Restore zoom and pan with error handling
       setTimeout(() => {
@@ -221,18 +324,44 @@ const MermaidEditor = () => {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error occurred";
       diagramRef.current.innerHTML = `
-        <div style="color: red; padding: 20px; text-align: center; font-family: monospace;">
-          <p><strong>Error rendering diagram:</strong></p>
-          <p>${errorMessage}</p>
-          <p style="margin-top: 10px; font-size: 0.9em;">Please check your Mermaid syntax</p>
-        </div>
-      `;
+      <div style="color: red; padding: 20px; text-align: center; font-family: monospace;">
+        <p><strong>Error rendering diagram:</strong></p>
+        <p>${errorMessage}</p>
+        <p style="margin-top: 10px; font-size: 0.9em;">Please check your Mermaid syntax</p>
+      </div>
+    `;
       showError("render", `Diagram rendering failed: ${errorMessage}`);
       console.error("Render error:", error);
     } finally {
       setLoading(false);
     }
-  }, [code, showError, clearError]);
+  }, [code, showError, clearError, makeElementsEditable]);
+
+  // Add effect to re-apply editability when mode changes
+  useEffect(() => {
+    makeElementsEditable();
+  }, [isCanvasEditMode, makeElementsEditable]);
+
+  // 4. Add function to handle text editing
+  const handleTextEdit = useCallback(
+    (newText: string | null) => {
+      if (!selectedElement || selectedElement.type !== "text") return;
+
+      const textElement = selectedElement.element;
+      textElement.textContent = newText;
+
+      // Update the Mermaid code to reflect changes
+      // This is a simplified approach - you might need more sophisticated parsing
+      const oldText = editableText;
+      const newCode = code.replace(oldText, newText || "");
+      setCode(newCode);
+      localStorage.setItem("mermaid_code", newCode);
+
+      setSelectedElement(null);
+      setEditableText("");
+    },
+    [selectedElement, editableText, code, setCode]
+  );
 
   // Code change handler with error handling
   const handleCodeChange = useCallback(
@@ -482,74 +611,32 @@ const MermaidEditor = () => {
     }
   }, [mode, generateAIDiagram, enhanceTheDiagram]);
 
-  // Error notification component
-  const ErrorNotification = () => {
-    if (!error.type) return null;
-
-    return (
-      <div className="fixed top-4 right-4 z-50 max-w-md">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded shadow-lg">
-          <div className="flex items-start">
-            <AlertCircle size={20} className="mr-2 mt-0.5 flex-shrink-0" />
-            <div className="flex-1">
-              <p className="font-medium">Error</p>
-              <p className="text-sm">{error.message}</p>
-            </div>
-            <button
-              onClick={clearError}
-              className="ml-2 text-red-700 hover:text-red-900"
-            >
-              <X size={16} />
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="flex gap-4 p-4 items-start relative">
-      <ErrorNotification />
+      <ErrorNotification
+        error={{ ...error, type: error.type || "" }}
+        clearError={clearError}
+      />
 
       {/* Side bar */}
-      <div>
-        <div className="rounded-lg bg-slate-100 p-2 flex flex-col items-center my-5">
-          <p className="font-black my-2">{"</>"}</p>
-
-          <button
-            className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1"
-            onClick={() => setIsEditorOpen(!isEditorOpen)}
-            title="Toggle Code Editor"
-          >
-            <Bug size={16} color="#ffffff" />
-          </button>
-
-          <button
-            className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1"
-            onClick={() => setIsChatOpen(!isChatOpen)}
-            title="Toggle AI Chat"
-          >
-            <Bot size={16} color="#ffffff" />
-          </button>
-        </div>
-
-        <div className="rounded-lg bg-slate-100 p-2 flex flex-col items-center my-5">
-          <p className="font-black my-2">
-            <Image size={16} color="#000" />
-          </p>
-
-          <button
-            className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1"
-            onClick={() => setIsDownloadModalOpen(true)}
-            title="Download Diagram"
-          >
-            <ArrowDownToLine size={16} color="#ffffff" />
-          </button>
-        </div>
-      </div>
+      <Sidebar
+        isEditorOpen={isEditorOpen}
+        setIsEditorOpen={setIsEditorOpen}
+        isChatOpen={isChatOpen}
+        setIsChatOpen={setIsChatOpen}
+        isCanvasEditMode={isCanvasEditMode}
+        setIsCanvasEditMode={setIsCanvasEditMode}
+        setIsDownloadModalOpen={setIsDownloadModalOpen}
+      />
 
       {/* Canvas */}
       <div className="w-full p-4 rounded-lg bg-dot-grid bg-dot-grid-size overflow-hidden relative">
+        {isCanvasEditMode && (
+          <div className="absolute top-2 left-2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium z-20">
+            Canvas Edit Mode Active
+          </div>
+        )}
+
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center bg-dot-grid bg-dot-grid-size z-10">
             <div className="animate-spin text-gray-600 text-4xl">⟳</div>
@@ -558,7 +645,9 @@ const MermaidEditor = () => {
 
         <div
           ref={containerRef}
-          className="p-4 cursor-grab h-[600px] flex justify-center items-center relative"
+          className={`p-4 h-[600px] flex justify-center items-center relative ${
+            isCanvasEditMode ? "cursor-default" : "cursor-grab"
+          }`}
         >
           <div ref={diagramRef} className="transform scale-75"></div>
         </div>
@@ -960,6 +1049,54 @@ const MermaidEditor = () => {
                     <Copy size={16} color="#ffffff" />
                   </button>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 6. Add text editing modal (insert after other modals)  */}
+      {selectedElement && selectedElement.type === "text" && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg relative max-w-md">
+            <button
+              className="absolute top-2 right-2 bg-black rounded hover:bg-gray-800 transition-colors"
+              onClick={() => {
+                setSelectedElement(null);
+                setEditableText("");
+              }}
+              title="Close"
+            >
+              <X size={20} color="#fff" />
+            </button>
+
+            <h2 className="text-xl mb-4 font-black">Edit Text</h2>
+
+            <div className="flex flex-col gap-4">
+              <textarea
+                value={editableText}
+                onChange={(e) => setEditableText(e.target.value)}
+                className="border p-2 rounded resize-none"
+                rows={3}
+                placeholder="Enter new text"
+              />
+
+              <div className="flex gap-2 justify-end">
+                <button
+                  className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors"
+                  onClick={() => {
+                    setSelectedElement(null);
+                    setEditableText("");
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800 transition-colors"
+                  onClick={() => handleTextEdit(editableText)}
+                >
+                  Save
+                </button>
               </div>
             </div>
           </div>
