@@ -83,12 +83,11 @@ router.post("/diagram/generate", async (req, res) => {
 // route to enhance diagrams based on prompts
 router.post("/diagram/enhance", async (req, res) => {
   try {
-    let chat = req.body.chat;
-    const diagram = req.body.diagram;
+    let diagram = req.body.diagram;
     let prompt = req.body.prompt;
     const model = req.body.model;
 
-    chat = await diagramEnhancer(prompt, chat, model || default_model);
+    const chat = await diagramEnhancer(prompt, diagram, model || default_model);
 
     res.send({
       messege: "Diagram enhanced",
