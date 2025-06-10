@@ -94,7 +94,7 @@ const MermaidEditor = () => {
   // Embedding state
   // 1. Add branding state (add to your existing useState declarations)
   const [includeBranding, setIncludeBranding] = useState(true);
-  const [brandingPosition, ] = useState("bottom-right"); // "bottom-right", "bottom-left", "top-right", "top-left"
+  const [brandingPosition, setBrandingPosition] = useState("bottom-right"); // "bottom-right", "bottom-left", "top-right", "top-left"
 
   const [isEmbedModalOpen, setIsEmbedModalOpen] = useState(false);
   const [embedCode, setEmbedCode] = useState("");
@@ -1391,6 +1391,26 @@ const MermaidEditor = () => {
                   </div>
                 </div>
 
+                {includeBranding && (
+                  <div className="flex flex-col gap-2">
+                    <label className="font-bold text-sm">
+                      Branding Position
+                    </label>
+                    <select
+                      value={brandingPosition}
+                      onChange={(e) =>
+                        setBrandingPosition(e.target.value)
+                      }
+                      className="border p-2 rounded"
+                    >
+                      <option value="bottom-right">Bottom Right</option>
+                      <option value="bottom-left">Bottom Left</option>
+                      <option value="top-right">Top Right</option>
+                      <option value="top-left">Top Left</option>
+                    </select>
+                  </div>
+                )}
+
                 <div className="flex gap-2">
                   {embedType === "download" ? (
                     <button
@@ -1455,7 +1475,10 @@ const MermaidEditor = () => {
                     <div className="text-sm text-blue-700">
                       {embedType === "markdown" && (
                         <ul className="list-disc list-inside space-y-1">
-                          <li>Copy the compressed code by clicking on the "Copy" Button</li>
+                          <li>
+                            Copy the compressed code by clicking on the "Copy"
+                            Button
+                          </li>
                           <li>Paste into your README.md or blog post</li>
                           <li>The SVG will render directly</li>
                         </ul>
