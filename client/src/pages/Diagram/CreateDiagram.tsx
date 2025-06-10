@@ -1455,9 +1455,9 @@ const MermaidEditor = () => {
                     <div className="text-sm text-blue-700">
                       {embedType === "markdown" && (
                         <ul className="list-disc list-inside space-y-1">
-                          <li>Copy the compressed code above</li>
+                          <li>Copy the compressed code by clicking on the "Copy" Button</li>
                           <li>Paste into your README.md or blog post</li>
-                          <li>The SVG will render directly in GitHub/GitLab</li>
+                          <li>The SVG will render directly</li>
                         </ul>
                       )}
                       {embedType === "html" && (

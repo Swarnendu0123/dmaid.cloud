@@ -214,7 +214,7 @@ const Navigation = () => {
           onClick={() => navigate("/")}
         >
           <img src="/logo_dmaid.png" alt="" height={10} width={50} />
-          Dmaid.cloud
+          Dmaid Workspace
         </h1>
         <ul className="flex justify-center space-x-4 text-sm font-normal">
           <li className="flex items-center space-x-2">
