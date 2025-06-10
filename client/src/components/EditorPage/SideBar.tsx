@@ -1,4 +1,11 @@
-import { Bug, Bot, Edit, Image, ArrowDownToLine } from "lucide-react";
+import {
+  Bug,
+  Bot,
+  Edit,
+  Image,
+  ArrowDownToLine,
+  ClipboardPen,
+} from "lucide-react";
 
 const Sidebar = ({
   isEditorOpen,
@@ -8,6 +15,7 @@ const Sidebar = ({
   isCanvasEditMode,
   setIsCanvasEditMode,
   setIsDownloadModalOpen,
+  setIsEmbedModalOpen,
 }: {
   isEditorOpen: boolean;
   setIsEditorOpen: (value: boolean) => void;
@@ -16,7 +24,36 @@ const Sidebar = ({
   isCanvasEditMode: boolean;
   setIsCanvasEditMode: (value: boolean) => void;
   setIsDownloadModalOpen: (value: boolean) => void;
+  setIsEmbedModalOpen: (value: boolean) => void;
 }) => {
+  const SidebarButton = ({
+    onClick,
+    title,
+    children,
+    className = "",
+  }: {
+    onClick: () => void;
+    title: string;
+    children: React.ReactNode;
+    className?: string;
+  }) => (
+    <button
+      className={`p-2 rounded-lg hover:bg-gray-100 transition-colors ${className}`}
+      onClick={onClick}
+      title={title}
+    >
+      {children}
+    </button>
+  );
+
+  // Add this button in your sidebar:
+  <SidebarButton
+    onClick={() => setIsEmbedModalOpen(true)}
+    title="Generate Embed Code for Blogs/Websites"
+    className="bg-purple-50 hover:bg-purple-100"
+  >
+    📋
+  </SidebarButton>;
   return (
     <div>
       <div className="rounded-lg bg-slate-100 p-2 flex flex-col items-center my-5">
@@ -48,6 +85,14 @@ const Sidebar = ({
           title="Toggle Canvas Edit Mode"
         >
           <Edit size={16} color="#ffffff" />
+        </button>
+
+        <button
+          className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1"
+          onClick={() => setIsEmbedModalOpen(true)}
+          title="Generate Embed Code"
+        >
+          <ClipboardPen size={16} color="#ffffff" />
         </button>
       </div>
 
