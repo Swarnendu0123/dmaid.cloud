@@ -1485,15 +1485,17 @@ const MermaidEditor = () => {
                       )}
                       {embedType === "html" && (
                         <ul className="list-disc list-inside space-y-1">
-                          <li>Copy the compressed HTML code above</li>
+                          <li>Copy the compressed code by clicking on the "Copy"
+                          Button</li>
                           <li>Paste into your website or blog</li>
-                          <li>Includes collapsible Mermaid source code</li>
+                        
                           <li>Optimized for minimal file size</li>
                         </ul>
                       )}
                       {embedType === "svg" && (
                         <ul className="list-disc list-inside space-y-1">
-                          <li>Copy the compressed SVG code</li>
+                          <li>Copy the compressed SVG code by clicking on the "Copy"
+                          Button</li>
                           <li>Use in any application that supports SVG</li>
                           <li>Can be saved as .svg file</li>
                           <li>Optimized scalable vector format</li>
