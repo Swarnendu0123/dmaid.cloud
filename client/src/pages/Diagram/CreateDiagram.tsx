@@ -75,7 +75,6 @@ const MermaidEditor = () => {
   const [error, setError] = useState<ErrorState>({ type: null, message: "" });
 
   // Modals
-  const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isEditorOpen, setIsEditorOpen] = useState(true);
   const [isChatOpen, setIsChatOpen] = useState(true);
@@ -95,12 +94,12 @@ const MermaidEditor = () => {
   // Embedding state
   // 1. Add branding state (add to your existing useState declarations)
   const [includeBranding, setIncludeBranding] = useState(true);
-  const [brandingPosition, setBrandingPosition] = useState("bottom-right"); // "bottom-right", "bottom-left", "top-right", "top-left"
+  const [brandingPosition, ] = useState("bottom-right"); // "bottom-right", "bottom-left", "top-right", "top-left"
 
   const [isEmbedModalOpen, setIsEmbedModalOpen] = useState(false);
   const [embedCode, setEmbedCode] = useState("");
   const [embedDescription, setEmbedDescription] = useState("");
-  const [embedType, setEmbedType] = useState("markdown"); // "markdown", "html", "svg"
+  const [embedType, setEmbedType] = useState("download"); // "markdown", "html", "svg"
 
   const models: Model[] = [
     {
@@ -790,6 +789,11 @@ const MermaidEditor = () => {
         throw new Error("No valid diagram found");
       }
 
+      // Skip code generation for download type
+      if (embedType === "download") {
+        return;
+      }
+
       // Get SVG content and add branding
       const originalSvgContent = new XMLSerializer().serializeToString(
         svgElement
@@ -801,36 +805,30 @@ const MermaidEditor = () => {
 
       switch (embedType) {
         case "markdown":
-          // Option 1: Use Unicode-safe base64 encoding
-
           generatedCode = `# ${imageTitle || "Diagram"}
-
-${embedDescription ? `${embedDescription}\n\n` : ""}
-
-
-<!-- Alternative: URL-encoded SVG (more compatible) -->
-![${
-            imageTitle || "Diagram"
-          }](data:image/svg+xml;charset=utf-8,${encodeURIComponent(
-            brandedSvgContent
-          )})
-
----
-*Created with [dmaid.cloud](https://dmaid.cloud) - Free Mermaid Diagram Editor*`;
+  
+  ${embedDescription ? `${embedDescription}\n\n` : ""}
+  
+  ![${
+    imageTitle || "Diagram"
+  }](data:image/svg+xml;charset=utf-8,${encodeURIComponent(brandedSvgContent)})
+  
+  ---
+  *Created with [dmaid.cloud](https://dmaid.cloud) - Free Mermaid Diagram Editor*`;
           break;
 
         case "html":
           generatedCode = `<!-- Embeddable HTML -->
-<div class="diagram-embed" style="text-align: center; margin: 20px 0;">
-  ${imageTitle ? `<h3>${imageTitle}</h3>` : ""}
-  ${embedDescription ? `<p>${embedDescription}</p>` : ""}
-  <div style="display: inline-block; border: 1px solid #ddd; padding: 10px; border-radius: 8px;">
-    ${brandedSvgContent}
-  </div>
-  <p style="font-size: 12px; color: #666; margin-top: 10px;">
-    Created with <a href="https://dmaid.cloud" target="_blank" style="color: #0066cc;">dmaid.cloud</a>
-  </p>
-</div>`;
+  <div class="diagram-embed" style="text-align: center; margin: 20px 0;">
+    ${imageTitle ? `<h3>${imageTitle}</h3>` : ""}
+    ${embedDescription ? `<p>${embedDescription}</p>` : ""}
+    <div style="display: inline-block; border: 1px solid #ddd; padding: 10px; border-radius: 8px;">
+      ${brandedSvgContent}
+    </div>
+    <p style="font-size: 12px; color: #666; margin-top: 10px;">
+      Created with <a href="https://dmaid.cloud" target="_blank" style="color: #0066cc;">dmaid.cloud</a>
+    </p>
+  </div>`;
           break;
 
         case "svg":
@@ -847,14 +845,7 @@ ${embedDescription ? `${embedDescription}\n\n` : ""}
         err instanceof Error ? err.message : "Failed to generate embed code";
       showError("api", errorMessage);
     }
-  }, [
-    embedType,
-    imageTitle,
-    embedDescription,
-    showError,
-    addBrandingToSVG,
-    // Removed 'code' from dependencies - this was causing unnecessary re-renders
-  ]);
+  }, [embedType, imageTitle, embedDescription, showError, addBrandingToSVG]);
 
   // function to generate embed code when type or title changes
   const copyEmbedCode = useCallback(async () => {
@@ -886,7 +877,6 @@ ${embedDescription ? `${embedDescription}\n\n` : ""}
         setIsChatOpen={setIsChatOpen}
         isCanvasEditMode={isCanvasEditMode}
         setIsCanvasEditMode={setIsCanvasEditMode}
-        setIsDownloadModalOpen={setIsDownloadModalOpen}
         setIsEmbedModalOpen={setIsEmbedModalOpen}
       />
 
@@ -1136,104 +1126,6 @@ ${embedDescription ? `${embedDescription}\n\n` : ""}
         )}
       </div>
 
-      {/* Download Modal */}
-      {isDownloadModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg relative max-w-2xl max-h-[90vh] overflow-y-auto">
-            <button
-              className="absolute top-2 right-2 bg-black rounded hover:bg-gray-800 transition-colors"
-              onClick={() => setIsDownloadModalOpen(false)}
-              title="Close"
-            >
-              <X size={20} color="#fff" />
-            </button>
-
-            <h2 className="text-xl mb-4 font-black">Export Diagram</h2>
-
-            <div className="flex flex-col gap-4">
-              {/* File name input */}
-              <div className="flex items-center gap-2">
-                <label className="font-black text-sm min-w-[50px]">Name:</label>
-                <input
-                  type="text"
-                  onChange={(e) => setimageTitle(e.target.value)}
-                  className="p-2 flex-1 border rounded"
-                  value={imageTitle}
-                  placeholder="Enter filename"
-                  maxLength={100}
-                />
-                <button
-                  className={`bg-black text-white px-3 py-2 rounded font-black text-sm flex items-center transition-all duration-200 ${
-                    isAIGeneratingTitle || !code.trim()
-                      ? "opacity-50 cursor-not-allowed"
-                      : "hover:bg-gray-800"
-                  }`}
-                  onClick={generateAItitleWithDiagrams}
-                  disabled={isAIGeneratingTitle || !code.trim()}
-                  title={
-                    !code.trim()
-                      ? "No diagram to generate title from"
-                      : "Generate title with AI"
-                  }
-                >
-                  {isAIGeneratingTitle ? (
-                    <span className="animate-spin">⏳</span>
-                  ) : (
-                    <Sparkles size={16} color="#ffffff" />
-                  )}
-                </button>
-              </div>
-
-              {/* Preview */}
-              <div className="border mt-4 rounded-lg overflow-auto max-h-60 w-full bg-gray-50">
-                <div
-                  className="overflow-auto max-h-60 p-4"
-                  style={{ whiteSpace: "nowrap" }}
-                  dangerouslySetInnerHTML={{
-                    __html:
-                      diagramRef.current?.innerHTML ||
-                      "<p style='color: gray; text-align: center; padding: 40px;'>No diagram available for preview</p>",
-                  }}
-                />
-              </div>
-
-              {/* Download button */}
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">
-                  Export as SVG format
-                </span>
-                <button
-                  className={`bg-black text-white px-6 py-2 rounded font-black text-sm flex items-center transition-all duration-200 ${
-                    isDownloading
-                      ? "opacity-50 cursor-not-allowed"
-                      : "hover:bg-gray-800"
-                  }`}
-                  onClick={handleDownloadSVG}
-                  disabled={isDownloading}
-                  title="Download SVG file"
-                >
-                  {isDownloading ? (
-                    <div className="flex items-center">
-                      <span className="animate-spin mr-2">⏳</span>
-                      Processing...
-                    </div>
-                  ) : (
-                    <>
-                      Download
-                      <ArrowDownToLine
-                        size={16}
-                        color="#ffffff"
-                        className="ml-2"
-                      />
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Settings Modal */}
       {isSettingsModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
@@ -1364,10 +1256,10 @@ ${embedDescription ? `${embedDescription}\n\n` : ""}
         </div>
       )}
 
-      {/* Embed Code Modal */}
+      {/* Embed & Download Modal */}
       {isEmbedModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg relative max-w-4xl max-h-[90vh] overflow-y-auto w-full mx-4">
+          <div className="bg-white p-6 rounded-lg shadow-lg relative max-w-7xl max-h-[90vh] overflow-y-auto w-full mx-4">
             <button
               className="absolute top-2 right-2 bg-black rounded px-2 py-1 hover:bg-gray-800 transition-colors"
               onClick={() => setIsEmbedModalOpen(false)}
@@ -1377,50 +1269,110 @@ ${embedDescription ? `${embedDescription}\n\n` : ""}
             </button>
 
             <h2 className="text-2xl mb-4 font-black">
-              Embed Code for your Blogs, Docs
+              Export & Embed Your Diagram
             </h2>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Left side - Configuration */}
               <div className="flex flex-col gap-4">
+                {/* Export Type Selection */}
                 <div className="flex flex-col gap-2">
-                  <label className="font-bold text-sm">Embed Type</label>
-                  <select
-                    value={embedType}
-                    onChange={(e) => setEmbedType(e.target.value)}
-                    className="border p-2 rounded"
-                  >
-                    <option value="markdown">Markdown (README)</option>
-                    <option value="html">HTML Embed</option>
-                    <option value="svg">SVG Only</option>
-                  </select>
+                  <label className="font-bold text-sm">Export Type</label>
+                  <div className="flex gap-2">
+                    <button
+                      className={`px-4 py-2 rounded font-bold text-sm transition-colors ${
+                        embedType === "download"
+                          ? "bg-black text-white"
+                          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                      }`}
+                      onClick={() => setEmbedType("download")}
+                    >
+                      Download SVG
+                    </button>
+                    <button
+                      className={`px-4 py-2 rounded font-bold text-sm transition-colors ${
+                        embedType === "markdown"
+                          ? "bg-black text-white"
+                          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                      }`}
+                      onClick={() => setEmbedType("markdown")}
+                    >
+                      Markdown
+                    </button>
+                    <button
+                      className={`px-4 py-2 rounded font-bold text-sm transition-colors ${
+                        embedType === "html"
+                          ? "bg-black text-white"
+                          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                      }`}
+                      onClick={() => setEmbedType("html")}
+                    >
+                      HTML
+                    </button>
+                    <button
+                      className={`px-4 py-2 rounded font-bold text-sm transition-colors ${
+                        embedType === "svg"
+                          ? "bg-black text-white"
+                          : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                      }`}
+                      onClick={() => setEmbedType("svg")}
+                    >
+                      SVG Code
+                    </button>
+                  </div>
                 </div>
 
-                <div className="flex flex-col gap-2">
-                  <label className="font-bold text-sm">Title</label>
+                {/* File name input */}
+                <div className="flex items-center gap-2">
+                  <label className="font-bold text-sm min-w-[50px]">
+                    Name:
+                  </label>
                   <input
                     type="text"
-                    value={imageTitle}
                     onChange={(e) => setimageTitle(e.target.value)}
-                    className="border p-2 rounded"
-                    placeholder="Enter diagram title"
+                    className="p-2 flex-1 border rounded"
+                    value={imageTitle}
+                    placeholder="Enter filename"
                     maxLength={100}
                   />
+                  <button
+                    className={`bg-black text-white px-3 py-2 rounded font-black text-sm flex items-center transition-all duration-200 ${
+                      isAIGeneratingTitle || !code.trim()
+                        ? "opacity-50 cursor-not-allowed"
+                        : "hover:bg-gray-800"
+                    }`}
+                    onClick={generateAItitleWithDiagrams}
+                    disabled={isAIGeneratingTitle || !code.trim()}
+                    title={
+                      !code.trim()
+                        ? "No diagram to generate title from"
+                        : "Generate title with AI"
+                    }
+                  >
+                    {isAIGeneratingTitle ? (
+                      <span className="animate-spin">⏳</span>
+                    ) : (
+                      <Sparkles size={16} color="#ffffff" />
+                    )}
+                  </button>
                 </div>
 
-                <div className="flex flex-col gap-2">
-                  <label className="font-bold text-sm">
-                    Description (Optional)
-                  </label>
-                  <textarea
-                    value={embedDescription}
-                    onChange={(e) => setEmbedDescription(e.target.value)}
-                    className="border p-2 rounded resize-none"
-                    rows={3}
-                    placeholder="Brief description of the diagram"
-                    maxLength={500}
-                  />
-                </div>
+                {/* Description - only show for embed types */}
+                {embedType !== "download" && (
+                  <div className="flex flex-col gap-2">
+                    <label className="font-bold text-sm">
+                      Description (Optional)
+                    </label>
+                    <textarea
+                      value={embedDescription}
+                      onChange={(e) => setEmbedDescription(e.target.value)}
+                      className="border p-2 rounded resize-none"
+                      rows={3}
+                      placeholder="Brief description of the diagram"
+                      maxLength={500}
+                    />
+                  </div>
+                )}
 
                 <div className="flex flex-col gap-2">
                   <label className="font-bold text-sm">Branding</label>
@@ -1433,61 +1385,123 @@ ${embedDescription ? `${embedDescription}\n\n` : ""}
                       className="rounded"
                     />
                     <label htmlFor="includeBranding" className="text-sm">
-                      Include "Created with dmaid.cloud" watermark
+                      Include "Created with dmaid.cloud" watermark (bottom
+                      right)
                     </label>
                   </div>
-
-                  {includeBranding && (
-                    <select
-                      value={brandingPosition}
-                      onChange={(e) => setBrandingPosition(e.target.value)}
-                      className="border p-2 rounded text-sm"
-                    >
-                      <option value="bottom-right">Bottom Right</option>
-                      <option value="bottom-left">Bottom Left</option>
-                      <option value="top-right">Top Right</option>
-                      <option value="top-left">Top Left</option>
-                    </select>
-                  )}
                 </div>
 
                 <div className="flex gap-2">
-                  <button
-                    className="bg-gray-600 text-white px-4 py-2 rounded font-bold hover:bg-black transition-colors flex items-center gap-2"
-                    onClick={generateEmbedCode}
-                    disabled={!code.trim() || loading}
-                    title={
-                      !code.trim()
-                        ? "Please enter a valid Mermaid diagram code"
-                        : "Generate embed code"
-                    }
-                  >
-                    Generate Code
-                  </button>
-                  {embedCode && (
+                  {embedType === "download" ? (
                     <button
-                      className="bg-gray-600 text-white px-4 py-2 rounded font-bold hover:bg-black transition-colors flex items-center gap-2"
-                      onClick={copyEmbedCode}
+                      className={`bg-black text-white px-6 py-2 rounded font-black text-sm flex items-center transition-all duration-200 ${
+                        isDownloading
+                          ? "opacity-50 cursor-not-allowed"
+                          : "hover:bg-gray-800"
+                      }`}
+                      onClick={handleDownloadSVG}
+                      disabled={isDownloading}
+                      title="Download SVG file"
                     >
-                      {copiedToClipboard ? (
-                        <Check size={16} />
+                      {isDownloading ? (
+                        <div className="flex items-center">
+                          <span className="animate-spin mr-2">⏳</span>
+                          Processing...
+                        </div>
                       ) : (
-                        <Copy size={16} />
+                        <>
+                          Download SVG
+                          <ArrowDownToLine
+                            size={16}
+                            color="#ffffff"
+                            className="ml-2"
+                          />
+                        </>
                       )}
-                      {copiedToClipboard ? "Copied!" : "Copy"}
                     </button>
+                  ) : (
+                    <>
+                      <button
+                        className="bg-gray-600 text-white px-4 py-2 rounded font-bold hover:bg-black transition-colors flex items-center gap-2"
+                        onClick={generateEmbedCode}
+                        disabled={!code.trim() || loading}
+                        title={
+                          !code.trim()
+                            ? "Please enter a valid Mermaid diagram code"
+                            : "Generate embed code"
+                        }
+                      >
+                        Generate Code
+                      </button>
+                      {embedCode && (
+                        <button
+                          className="bg-gray-600 text-white px-4 py-2 rounded font-bold hover:bg-black transition-colors flex items-center gap-2"
+                          onClick={copyEmbedCode}
+                        >
+                          {copiedToClipboard ? (
+                            <Check size={16} />
+                          ) : (
+                            <Copy size={16} />
+                          )}
+                          {copiedToClipboard ? "Copied!" : "Copy"}
+                        </button>
+                      )}
+                    </>
                   )}
                 </div>
 
+                {embedCode && embedType !== "download" && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="text-sm text-blue-700">
+                      {embedType === "markdown" && (
+                        <ul className="list-disc list-inside space-y-1">
+                          <li>Copy the compressed code above</li>
+                          <li>Paste into your README.md or blog post</li>
+                          <li>The SVG will render directly in GitHub/GitLab</li>
+                        </ul>
+                      )}
+                      {embedType === "html" && (
+                        <ul className="list-disc list-inside space-y-1">
+                          <li>Copy the compressed HTML code above</li>
+                          <li>Paste into your website or blog</li>
+                          <li>Includes collapsible Mermaid source code</li>
+                          <li>Optimized for minimal file size</li>
+                        </ul>
+                      )}
+                      {embedType === "svg" && (
+                        <ul className="list-disc list-inside space-y-1">
+                          <li>Copy the compressed SVG code</li>
+                          <li>Use in any application that supports SVG</li>
+                          <li>Can be saved as .svg file</li>
+                          <li>Optimized scalable vector format</li>
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+                )}
+                {embedType === "download" && (
+                  <div>
+                    <div className="border rounded-lg p-4 bg-gray-50">
+                      <h4 className="font-bold mb-2">Ready to Download</h4>
+                      <p className="text-sm text-gray-600 mb-4">
+                        Click the download button above to save your diagram as
+                        an SVG file.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Right side - Preview, Code & Information */}
+              <div className="flex flex-col gap-4">
                 {/* Preview */}
                 <div className="flex flex-col gap-2">
                   <label className="font-bold text-sm">
                     Preview {includeBranding && "(with branding)"}
                   </label>
-                  <div className="border rounded-lg p-4 bg-gray-50 max-h-48 overflow-auto">
+                  <div className="border rounded-lg p-4 bg-gray-50 min-h-[200px] max-h-[300px] overflow-auto">
                     {diagramRef.current?.innerHTML ? (
                       <div className="text-center">
-                        {/* Show preview with branding if enabled */}
                         <div
                           dangerouslySetInnerHTML={{
                             __html: includeBranding
@@ -1497,60 +1511,67 @@ ${embedDescription ? `${embedDescription}\n\n` : ""}
                         />
                       </div>
                     ) : (
-                      <p className="text-gray-500 text-center">
+                      <p className="text-gray-500 text-center flex items-center justify-center h-full">
                         No diagram available
                       </p>
                     )}
                   </div>
                 </div>
-              </div>
 
-              {/* Right side - Generated Code */}
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-col gap-2">
-                  <label className="font-bold text-sm">
-                    Generated Embed Code
-                  </label>
-                  <textarea
-                    value={embedCode}
-                    readOnly
-                    className="border p-3 rounded font-mono text-sm resize-none bg-gray-50 h-96"
-                    placeholder="Click 'Generate Code' to create embed code"
-                  />
-                </div>
-
-                {embedCode && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <h4 className="font-bold text-blue-800 mb-2">
-                      How to Use:
-                    </h4>
-                    <div className="text-sm text-blue-700">
-                      {embedType === "markdown" && (
-                        <ul className="list-disc list-inside space-y-1">
-                          <li>Copy the code above</li>
-                          <li>Paste into your README.md or blog post</li>
-                          <li>The SVG will render directly in GitHub/GitLab</li>
-                          <li>Includes both embedded SVG and Mermaid source</li>
+                {/* Generated Code or Download Info */}
+                {embedType === "download" ? (
+                  <div className="flex flex-col gap-4">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <h4 className="font-bold text-blue-800 mb-2">
+                        Download Information:
+                      </h4>
+                      <div className="text-sm text-blue-700 space-y-2">
+                        <p>
+                          <strong>Format:</strong> SVG (Scalable Vector
+                          Graphics)
+                        </p>
+                        <p>
+                          <strong>Filename:</strong> {imageTitle || "diagram"}
+                          .svg
+                        </p>
+                        <p>
+                          <strong>Features:</strong>
+                        </p>
+                        <ul className="list-disc list-inside space-y-1 ml-4">
+                          <li>High-quality vector graphics</li>
+                          <li>Scalable to any size without quality loss</li>
+                          <li>
+                            Can be opened in browsers, design tools, or editors
+                          </li>
+                          <li>Small file size</li>
+                          {includeBranding && (
+                            <li>Includes dmaid.cloud branding</li>
+                          )}
                         </ul>
-                      )}
-                      {embedType === "html" && (
-                        <ul className="list-disc list-inside space-y-1">
-                          <li>Copy the HTML code above</li>
-                          <li>Paste into your website or blog</li>
-                          <li>Includes collapsible Mermaid source code</li>
-                          <li>Styled with inline CSS for portability</li>
-                        </ul>
-                      )}
-                      {embedType === "svg" && (
-                        <ul className="list-disc list-inside space-y-1">
-                          <li>Copy the raw SVG code</li>
-                          <li>Use in any application that supports SVG</li>
-                          <li>Can be saved as .svg file</li>
-                          <li>Scalable vector format</li>
-                        </ul>
-                      )}
+                      </div>
                     </div>
                   </div>
+                ) : (
+                  <>
+                    <div className="flex flex-col gap-2">
+                      <label className="font-bold text-sm">
+                        Generated Embed Code (Compressed)
+                      </label>
+                      <textarea
+                        value={
+                          embedCode
+                            ? embedCode
+                                .replace(/\s+/g, " ")
+                                .replace(/>\s+</g, "><")
+                                .trim()
+                            : ""
+                        }
+                        readOnly
+                        className="border p-3 rounded font-mono text-xs resize-none bg-gray-50 h-32 leading-tight"
+                        placeholder="Click 'Generate Code' to create compressed embed code"
+                      />
+                    </div>
+                  </>
                 )}
               </div>
             </div>
