@@ -36,7 +36,7 @@ const Navigation = () => {
 
         setChat(
           `## Hello ${
-            user.displayName || "User"
+            user.displayName?.split(" ")[0] || "User"
           },\n\n ## I'm \`Dmaid AI\` :) \n\nI help people in creating high-quality technical diagrams.\n\nI can generate,\n **Flowcharts, Sequences, Classes, State Diagrams, Entity Relationship, Gantt Charts, Pie Charts, Requirement, User Journey, Git Graph, Mindmaps, Timeline, Quadrant Chart, Packet, C4 Context, Block, Bar Graph** \n\nExplain me your specifications and I will create diagrams for you instantly.\n\n ### How I have been made? \n\n\`\`\`mermaid\nflowchart TD\n    A[💡 Brain] --> C{Creative Process}\n    B[❤️ Love] --> C\n    C --> D[🛠️ Development]\n    C --> E[🎨 Design]\n    C --> F[⚡ Innovation]\n    D --> G[🚀 Dmaid]\n    E --> G\n    F --> G\n    G --> H[👥 Users]\n    H --> I[🌟 Impact]\n    \n    style A fill:#e1f5fe,stroke:#01579b,stroke-width:2px\n    style B fill:#fce4ec,stroke:#880e4f,stroke-width:2px\n    style C fill:#f3e5f5,stroke:#4a148c,stroke-width:2px\n    style G fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px\n    style I fill:#fff3e0,stroke:#ef6c00,stroke-width:2px\n\`\`\`\n\n ~ Developed with ❤️, by [Swarnendu](https://www.linkedin.com/in/swarnendu-bhandari/)`
         );
       } else {

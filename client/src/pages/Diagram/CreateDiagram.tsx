@@ -1498,7 +1498,6 @@ const MermaidEditor = () => {
                           Button</li>
                           <li>Use in any application that supports SVG</li>
                           <li>Can be saved as .svg file</li>
-                          <li>Optimized scalable vector format</li>
                         </ul>
                       )}
                     </div>
