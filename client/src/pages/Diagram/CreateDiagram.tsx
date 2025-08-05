@@ -1175,7 +1175,7 @@ const MermaidEditor = () => {
                   <input
                     type="text"
                     onChange={(e) => setimageTitle(e.target.value)}
-                    className="p-2 flex-1 border rounded"
+                    className="p-2 flex-1 border rounded text-black bg-white"
                     value={imageTitle}
                     placeholder="Enter filename"
                     maxLength={100}
@@ -1244,7 +1244,7 @@ const MermaidEditor = () => {
                     <select
                       value={brandingPosition}
                       onChange={(e) => setBrandingPosition(e.target.value)}
-                      className="border p-2 rounded"
+                      className="border p-2 rounded text-black bg-white"
                     >
                       <option value="bottom-right">Bottom Right</option>
                       <option value="bottom-left">Bottom Left</option>
