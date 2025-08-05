@@ -1103,8 +1103,8 @@ const MermaidEditor = () => {
 
       {/* Embed & Download Modal */}
       {isEmbedModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg relative max-w-7xl max-h-[90vh] overflow-y-auto w-full mx-4">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50 dark:bg-[#232326]">
+          <div className="bg-white p-6 rounded-lg shadow-lg relative max-w-7xl max-h-[90vh] overflow-y-auto w-full mx-4 dark:bg-[#232326] dark:text-white">
             <button
               className="absolute top-2 right-2 bg-black rounded px-2 py-1 hover:bg-gray-800 transition-colors"
               onClick={() => setIsEmbedModalOpen(false)}
@@ -1438,7 +1438,7 @@ const MermaidEditor = () => {
                             : ""
                         }
                         readOnly
-                        className="border p-3 rounded font-mono text-xs resize-none bg-gray-50 h-32 leading-tight"
+                        className="border p-3 rounded font-mono text-xs resize-none bg-gray-50 h-32 leading-tight dark:text-black"
                         placeholder="Click 'Generate Code' to create compressed embed code"
                       />
                     </div>
