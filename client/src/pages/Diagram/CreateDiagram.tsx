@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { basicLight } from "@uiw/codemirror-theme-basic";
+import { dracula } from "@uiw/codemirror-theme-dracula";
 import { foldByIndent, mermaid as mermaidLang } from "codemirror-lang-mermaid";
 import { syntaxHighlighting } from "@codemirror/language";
 import ExampleList from "./ExampleList";
@@ -27,6 +28,9 @@ import { chatState, codeState } from "../../store/atoms";
 import { myHighlightStyle } from "./theme";
 import Sidebar from "../../components/EditorPage/SideBar";
 import ErrorNotification from "../../components/EditorPage/ErrorNotification";
+import ChatBox from "../../components/EditorPage/ChatBox";
+import MovableCodeEditor from "../../components/EditorPage/MovableCodeEditor";
+import MovableExampleSection from "../../components/EditorPage/MovableExampleSection";
 
 // Types for better type safety
 interface ApiResponse {
@@ -745,7 +749,7 @@ const MermaidEditor = () => {
 
         // Create clickable link
         const linkElement = svgDoc.createElementNS(
-          "http://www.w3.org/2000/svg",
+          "http://www.w3.org/1999/xlink",
           "a"
         );
         linkElement.setAttributeNS(
@@ -862,6 +866,35 @@ const MermaidEditor = () => {
     }
   }, [embedCode, showError]);
 
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window !== "undefined") {
+      return (
+        document.documentElement.classList.contains("dark") ||
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+      );
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    const handler = () => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    };
+    window.addEventListener("storage", handler);
+    const observer = new MutationObserver(handler);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    return () => {
+      window.removeEventListener("storage", handler);
+      observer.disconnect();
+    };
+  }, []);
+
+  const [isMovableEditorOpen, setIsMovableEditorOpen] = useState(true);
+  const [isMovableExampleOpen, setIsMovableExampleOpen] = useState(true);
+
   return (
     <div className="flex gap-4 p-4 items-start relative">
       <ErrorNotification
@@ -871,8 +904,8 @@ const MermaidEditor = () => {
 
       {/* Side bar */}
       <Sidebar
-        isEditorOpen={isEditorOpen}
-        setIsEditorOpen={setIsEditorOpen}
+        setIsMovableEditorOpen={setIsMovableEditorOpen}
+        setIsMovableExampleOpen={setIsMovableExampleOpen}
         isChatOpen={isChatOpen}
         setIsChatOpen={setIsChatOpen}
         isCanvasEditMode={isCanvasEditMode}
@@ -936,194 +969,39 @@ const MermaidEditor = () => {
         </div>
 
         {/* Chat Box */}
-        {isChatOpen && (
-          <div className="absolute justify-center flex flex-col items-center space-y-2 p-2 rounded-lg right-4 bottom-10 h-[560px] bg-white shadow-sm">
-            <div className="flex space-x-2">
-              <div className="bg-white p-6 rounded-lg shadow-lg relative max-w-md">
-                <div className="z-10 drag-handle cursor-move">
-                  <p className="text-lg font-black mb-2 flex items-center gap-2">
-                    Dmaid AI
-                  </p>
-                  <button
-                    className="absolute top-2 right-2 bg-black rounded px-4 py-2 my-1 m-0.5 hover:bg-gray-800 transition-colors"
-                    onClick={() => setIsChatOpen(false)}
-                    title="Close Chat"
-                  >
-                    <X size={20} color="#fff" />
-                  </button>
-                </div>
+        <ChatBox
+          chat={chat}
+          prompt={prompt}
+          setPrompt={setPrompt}
+          model={model}
+          setModel={setModel}
+          mode={mode}
+          setMode={setMode}
+          isAIGeneratingDiagram={isAIGeneratingDiagram}
+          editOrGenerateWithAI={editOrGenerateWithAI}
+          isChatOpen={isChatOpen}
+          setIsChatOpen={setIsChatOpen}
+          models={models}
+        />
 
-                <div className="flex flex-col gap-2">
-                  <div className="flex flex-col">
-                    {chat && (
-                      <div className="max-w-full sm:max-w-md max-h-[400px] overflow-y-auto p-4 rounded-lg">
-                        <Markdown markdownString={chat} />
-                      </div>
-                    )}
 
-                    {/* Prompt input */}
-                    <div className="flex items-center">
-                      <textarea
-                        value={prompt}
-                        className="border p-2 m-1 rounded w-full resize-none"
-                        onChange={(e) => setPrompt(e.target.value)}
-                        placeholder="Create a client-server architecture with database and middlewares"
-                        rows={3}
-                        maxLength={1000}
-                      />
-                    </div>
-
-                    {/* Controls */}
-                    <div className="flex flex-wrap gap-1">
-                      {/* Model Selection */}
-                      <select
-                        name="model"
-                        className="bg-gradient-to-r from-pink-100 via-blue-100 to-green-100 text-black rounded-full font-bold flex-1 min-w-[150px] p-2 text-sm transition-all duration-300"
-                        value={model}
-                        onChange={(e) => setModel(e.target.value)}
-                      >
-                        {models.map((modelOption) => (
-                          <option
-                            key={modelOption.name}
-                            value={modelOption.model}
-                          >
-                            {modelOption.name}
-                          </option>
-                        ))}
-                      </select>
-
-                      {/* Mode selection */}
-                      <select
-                        name="edit/new"
-                        className="bg-black text-white rounded-md font-bold p-2 text-sm transition-all duration-300"
-                        value={mode}
-                        onChange={(e) => setMode(e.target.value)}
-                      >
-                        <option value="new">New</option>
-                        <option value="edit">Edit</option>
-                      </select>
-
-                      {/* Generate button */}
-                      <button
-                        className={`bg-black text-white px-4 py-2 rounded font-black text-sm flex items-center justify-center transition-all duration-200 ${
-                          isAIGeneratingDiagram || !prompt.trim()
-                            ? "opacity-50 cursor-not-allowed"
-                            : "hover:bg-gray-800"
-                        }`}
-                        onClick={editOrGenerateWithAI}
-                        disabled={isAIGeneratingDiagram || !prompt.trim()}
-                        title={
-                          !prompt.trim()
-                            ? "Please enter a prompt"
-                            : "Generate diagram"
-                        }
-                      >
-                        {isAIGeneratingDiagram ? (
-                          <div className="flex items-center justify-center">
-                            <span className="animate-spin mr-2">⏳</span>
-                            Generating...
-                          </div>
-                        ) : (
-                          <>
-                            Generate
-                            <Sparkles
-                              size={16}
-                              color="#ffffff"
-                              className="ml-2"
-                            />
-                          </>
-                        )}
-                      </button>
-                    </div>
-                    <div className="text-[10px] text-gray-500 text-center w-full">
-                      (Dmaid AI can make mistakes. Please review and edit as
-                      necessary.)
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Code editor */}
-        {isEditorOpen && (
-          <div>
-            <div className="absolute top-4 justify-center flex flex-col items-center space-y-2 p-2 rounded-lg bg-white h-[400px] w-[460px] shadow-lg">
-              <div className="drag-handle cursor-move w-full">
-                <div className="flex justify-between items-center mb-2">
-                  <div className="flex">
-                    <button
-                      disabled={history.length <= 1}
-                      className={`bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 transition-all duration-200 ${
-                        history.length > 1
-                          ? "hover:bg-gray-800"
-                          : "opacity-50 cursor-not-allowed"
-                      }`}
-                      onClick={handleUndo}
-                      title="Undo"
-                    >
-                      <Undo size={16} color="#ffffff" />
-                    </button>
-
-                    <button
-                      disabled={redoStack.length === 0}
-                      className={`bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 transition-all duration-200 ${
-                        redoStack.length > 0
-                          ? "hover:bg-gray-800"
-                          : "opacity-50 cursor-not-allowed"
-                      }`}
-                      onClick={handleRedo}
-                      title="Redo"
-                    >
-                      <Redo size={16} color="#ffffff" />
-                    </button>
-
-                    <button
-                      className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 hover:bg-gray-800 transition-all duration-200"
-                      onClick={copyToClipboard}
-                      title="Copy to clipboard"
-                    >
-                      {copiedToClipboard ? (
-                        <Check size={16} color="#ffffff" />
-                      ) : (
-                        <Copy size={16} color="#ffffff" />
-                      )}
-                    </button>
-                  </div>
-
-                  <button
-                    className="bg-black rounded px-4 py-2 hover:bg-gray-800 transition-colors"
-                    onClick={() => setIsEditorOpen(false)}
-                    title="Close Editor"
-                  >
-                    <X size={20} color="#fff" />
-                  </button>
-                </div>
-              </div>
-
-              <CodeMirror
-                value={code}
-                height="335px"
-                width="450px"
-                className="rounded-lg border border-gray-300"
-                extensions={[
-                  mermaidLang(),
-                  syntaxHighlighting(myHighlightStyle),
-                  foldByIndent(),
-                ]}
-                theme={basicLight}
-                onChange={handleCodeChange}
-              />
-            </div>
-
-            <div className="absolute bottom-1 border border-gray-300 bg-white w-[600px] h-[200px] p-2 overflow-y-auto rounded-lg">
-              <div className="flex flex-wrap gap-2">
-                <ExampleList />
-              </div>
-            </div>
-          </div>
-        )}
+        <MovableCodeEditor
+          code={code}
+          setCode={setCode}
+          isOpen={isMovableEditorOpen}
+          setIsOpen={setIsMovableEditorOpen}
+          handleUndo={handleUndo}
+          handleRedo={handleRedo}
+          handleCopy={copyToClipboard}
+          copiedToClipboard={copiedToClipboard}
+          history={history}
+          redoStack={redoStack}
+          isDark={isDark}
+        />
+        <MovableExampleSection
+          isOpen={isMovableExampleOpen}
+          setIsOpen={setIsMovableExampleOpen}
+        />
       </div>
 
       {/* Settings Modal */}
@@ -1398,9 +1276,7 @@ const MermaidEditor = () => {
                     </label>
                     <select
                       value={brandingPosition}
-                      onChange={(e) =>
-                        setBrandingPosition(e.target.value)
-                      }
+                      onChange={(e) => setBrandingPosition(e.target.value)}
                       className="border p-2 rounded"
                     >
                       <option value="bottom-right">Bottom Right</option>
@@ -1485,17 +1361,21 @@ const MermaidEditor = () => {
                       )}
                       {embedType === "html" && (
                         <ul className="list-disc list-inside space-y-1">
-                          <li>Copy the compressed code by clicking on the "Copy"
-                          Button</li>
+                          <li>
+                            Copy the compressed code by clicking on the "Copy"
+                            Button
+                          </li>
                           <li>Paste into your website or blog</li>
-                        
+
                           <li>Optimized for minimal file size</li>
                         </ul>
                       )}
                       {embedType === "svg" && (
                         <ul className="list-disc list-inside space-y-1">
-                          <li>Copy the compressed SVG code by clicking on the "Copy"
-                          Button</li>
+                          <li>
+                            Copy the compressed SVG code by clicking on the
+                            "Copy" Button
+                          </li>
                           <li>Use in any application that supports SVG</li>
                           <li>Can be saved as .svg file</li>
                         </ul>

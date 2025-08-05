@@ -1,21 +1,20 @@
-import { Bug, Bot, Edit, ArrowDownToLine } from "lucide-react";
+import { Bug, Bot, Edit, ArrowDownToLine, Image } from "lucide-react";
 
 const Sidebar = ({
-  isEditorOpen,
-  setIsEditorOpen,
+  setIsMovableEditorOpen,
+  setIsMovableExampleOpen,
   isChatOpen,
   setIsChatOpen,
   isCanvasEditMode,
   setIsCanvasEditMode,
   setIsEmbedModalOpen,
 }: {
-  isEditorOpen: boolean;
-  setIsEditorOpen: (value: boolean) => void;
+  setIsMovableEditorOpen: (value: boolean) => void;
+  setIsMovableExampleOpen: (value: boolean) => void;
   isChatOpen: boolean;
   setIsChatOpen: (value: boolean) => void;
   isCanvasEditMode: boolean;
   setIsCanvasEditMode: (value: boolean) => void;
-
   setIsEmbedModalOpen: (value: boolean) => void;
 }) => {
   const SidebarButton = ({
@@ -48,19 +47,29 @@ const Sidebar = ({
   </SidebarButton>;
   return (
     <div>
-      <div className="rounded-lg bg-slate-100 p-2 flex flex-col items-center my-5">
-        <p className="font-black my-2">{"</>"}</p>
+      <div className="rounded-lg bg-slate-100 dark:bg-[#232326] p-2 flex flex-col items-center my-5">
+        <p className="font-black my-2 text-gray-900 dark:text-[#e5e7eb]">
+          {"</>"}
+        </p>
 
         <button
-          className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1"
-          onClick={() => setIsEditorOpen(!isEditorOpen)}
+          className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1 hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white"
+          onClick={() => setIsMovableEditorOpen((v) => !v)}
           title="Toggle Code Editor"
         >
           <Bug size={16} color="#ffffff" />
         </button>
 
         <button
-          className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1"
+          className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1 hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white"
+          onClick={() => setIsMovableExampleOpen((v) => !v)}
+          title="Toggle Code Editor"
+        >
+          <Image size={16} color="#ffffff" />
+        </button>
+
+        <button
+          className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1 hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white"
           onClick={() => setIsChatOpen(!isChatOpen)}
           title="Toggle AI Chat"
         >
@@ -70,8 +79,8 @@ const Sidebar = ({
         <button
           className={`px-4 py-2 rounded font-extrabold m-0.5 my-1 transition-all duration-200 ${
             isCanvasEditMode
-              ? "bg-blue-600 text-white"
-              : "bg-black text-white hover:bg-gray-800"
+              ? "bg-blue-600 text-white dark:bg-blue-700"
+              : "bg-black text-white hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white"
           }`}
           onClick={() => setIsCanvasEditMode(!isCanvasEditMode)}
           title="Toggle Canvas Edit Mode"
@@ -80,7 +89,7 @@ const Sidebar = ({
         </button>
 
         <button
-          className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1"
+          className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1 hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white"
           onClick={() => setIsEmbedModalOpen(true)}
           title="Generate Embed Code"
         >

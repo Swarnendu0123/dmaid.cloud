@@ -20,7 +20,7 @@ const ExampleList: React.FC = () => {
       <div className="space-y-8">
         {examples.map((exampleCategory, categoryIndex) => (
           <div key={`${exampleCategory.category}-${categoryIndex}`}>
-            <h2 className="text-xl font-medium text-gray-900 mb-4 border-b border-gray-200 pb-2">
+            <h2 className="text-xl font-medium text-gray-900 dark:text-[#e5e7eb] mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">
               {exampleCategory.category}
             </h2>
 
@@ -29,14 +29,14 @@ const ExampleList: React.FC = () => {
                 <button 
                   key={example.id}
                   onClick={() => handleCodeChange(example.code)}
-                  className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow w-full"
+                  className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-md transition-shadow w-full bg-white dark:bg-[#232326]"
                 >
-                  <div className="aspect-square bg-gray-50 p-3 flex items-center justify-center">
+                  <div className="aspect-square bg-gray-50 dark:bg-[#18181b] p-3 flex items-center justify-center">
                     <MermaidImage code={example.code} />
                   </div>
 
                   <div className="p-3">
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">
+                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                       {example.name}
                     </h3>
                   </div>

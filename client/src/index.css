@@ -6,19 +6,33 @@
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light;
-  background-color: rgba(255, 255, 255, 0.87);
+  color-scheme: light dark;
+  background-color: rgba(255, 255, 255, 0);
   color: #242424;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+html.dark {
+  color-scheme: dark;
+}
+
 body {
   margin: 30px;
   min-width: 320px;
+  @apply bg-white text-black dark:bg-[#18181b] dark:text-[#e5e7eb];
+}
+
+.bg-dot-grid {
+  background-image: radial-gradient(circle, #ccc 1px, transparent 1px);
+}
+.bg-dot-grid-size {
+  background-size: 20px 20px;
+}
+
+html.dark .bg-dot-grid {
+  background-image: radial-gradient(circle, #444 1px, transparent 1px);
 }
 

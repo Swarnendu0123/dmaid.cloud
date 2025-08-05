@@ -16,6 +16,8 @@ import {
   Plus,
   UserCog,
   X,
+  Moon,
+  Sun,
 } from "lucide-react";
 import { useSetRecoilState } from "recoil";
 import { chatState } from "../store/atoms";
@@ -26,6 +28,13 @@ const Navigation = () => {
   const [dropdown, setDropdown] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("theme") === "dark" ||
+        (!localStorage.getItem("theme") && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    }
+    return false;
+  });
 
   const navigate = useNavigate();
 
@@ -45,6 +54,17 @@ const Navigation = () => {
     });
     return () => unsubscribe();
   }, [user]);
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (isDark) {
+      root.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      root.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [isDark]);
 
   const signInWithGoogle = async () => {
     try {
@@ -208,15 +228,12 @@ const Navigation = () => {
         </div>
       )}
 
-      <nav className="flex justify-between">
-        <h1
-          className="text-center text-3xl font-black cursor-pointer flex"
-          onClick={() => navigate("/")}
-        >
-          <img src="/logo_dmaid.png" alt="" height={10} width={50} />
-          Dmaid Workspace
-        </h1>
-        <ul className="flex justify-center space-x-4 text-sm font-normal">
+      <nav className="flex justify-between items-center py-2 px-4 bg-white/80 text-black dark:bg-[#232326]/90 dark:text-[#e5e7eb] backdrop-blur-md sticky top-0 z-30">
+        <div className="flex items-center space-x-3 cursor-pointer select-none" onClick={() => navigate("/")}> 
+          <img src="/logo_dmaid.png" alt="Dmaid Logo" className="h-10 w-auto" />
+          <span className="text-2xl md:text-3xl font-black tracking-tight">Dmaid Workspace</span>
+        </div>
+        <ul className="flex justify-center space-x-4 text-sm font-normal items-center">
           <li className="flex items-center space-x-2">
             <Link
               to="/diagram/create"
@@ -238,10 +255,10 @@ const Navigation = () => {
             </li>
           ) : (
             <li
-              className="flex items-center space-x-2 bg-gray-200 rounded-md p-2 cursor-pointer"
+              className="flex items-center space-x-2 bg-gray-200 dark:bg-[#232326] rounded-md p-2 cursor-pointer"
               onClick={() => setDropdown(!dropdown)}
             >
-              <p>{user.displayName}</p>
+              <p className="text-gray-900 dark:text-[#e5e7eb]">{user.displayName}</p>
               <img
                 src={user.photoURL || ""}
                 alt="user"
@@ -250,9 +267,9 @@ const Navigation = () => {
             </li>
           )}
           {user && dropdown && (
-            <div className="absolute end-10 z-10 mt-12 divide-y divide-gray-100 rounded-md border border-gray-100 bg-white shadow-lg cursor-pointer">
+            <div className="absolute end-10 z-10 mt-12 divide-y divide-gray-100 dark:divide-gray-700 rounded-md border border-gray-100 dark:border-gray-700 bg-white dark:bg-[#232326] shadow-lg cursor-pointer">
               <div
-                className="absolute end-0 z-10 mt-2 divide-y divide-gray-100 rounded-md border border-gray-100 bg-white shadow-lg"
+                className="absolute end-0 z-10 mt-2 divide-y divide-gray-100 dark:divide-gray-700 rounded-md border border-gray-100 dark:border-gray-700 bg-white dark:bg-[#232326] shadow-lg"
                 role="menu"
               >
                 <div className="p-5 flex justify-centre items-start flex-col">
@@ -283,13 +300,22 @@ const Navigation = () => {
                       </button>
                     </div>
                   </div>
-                  <strong className="block p-2 text-xs font-medium  text-gray-600">
+                  <strong className="block p-2 text-xs font-medium text-gray-600 dark:text-gray-300">
                     {user.email}
                   </strong>
                 </div>
               </div>
             </div>
           )}
+          <li>
+            <button
+              className="bg-gray-200 dark:bg-gray-700 rounded-full p-2 transition-colors"
+              onClick={() => setIsDark((d) => !d)}
+              aria-label="Toggle dark mode"
+            >
+              {isDark ? <Sun size={18} className="text-yellow-400" /> : <Moon size={18} className="text-gray-700" />}
+            </button>
+          </li>
         </ul>
       </nav>
       <Outlet />
