@@ -1,6 +1,14 @@
+import { useEffect } from "react";
 import Markdown from "../components/EditorPage/Markdown";
 
 const Landing = () => {
+
+  // redirect to /diagram/create
+  useEffect(() => {
+    window.location.href = "/diagram/create";
+  }, []);
+
+
   const content =
     "# Dmaid.Cloud";
 
