@@ -7,7 +7,7 @@ import Navigation from "./components/Navigation";
 import { useEffect, useState } from "react";
 
 function App() {
-  const [isDarkMode, setIsDarkMode] = useState(
+  const [isDarkMode, _] = useState(
     localStorage.getItem("theme") === "dark" ||
       (!("theme" in localStorage) &&
         window.matchMedia("(prefers-color-scheme: dark)").matches)
