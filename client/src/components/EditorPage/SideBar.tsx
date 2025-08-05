@@ -1,7 +1,9 @@
 import { Bug, Bot, Edit, ArrowDownToLine, Image } from "lucide-react";
 
 const Sidebar = ({
+  isMovableEditorOpen,
   setIsMovableEditorOpen,
+  isMovableExampleOpen,
   setIsMovableExampleOpen,
   isChatOpen,
   setIsChatOpen,
@@ -9,7 +11,9 @@ const Sidebar = ({
   setIsCanvasEditMode,
   setIsEmbedModalOpen,
 }: {
+  isMovableEditorOpen: boolean;
   setIsMovableEditorOpen: (value: boolean) => void;
+  isMovableExampleOpen: boolean;
   setIsMovableExampleOpen: (value: boolean) => void;
   isChatOpen: boolean;
   setIsChatOpen: (value: boolean) => void;
@@ -54,7 +58,7 @@ const Sidebar = ({
 
         <button
           className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1 hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white"
-          onClick={() => setIsMovableEditorOpen((v) => !v)}
+          onClick={() => setIsMovableEditorOpen(!isMovableEditorOpen)}
           title="Toggle Code Editor"
         >
           <Bug size={16} color="#ffffff" />
@@ -62,7 +66,7 @@ const Sidebar = ({
 
         <button
           className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1 hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white"
-          onClick={() => setIsMovableExampleOpen((v) => !v)}
+          onClick={() => setIsMovableExampleOpen(!isMovableExampleOpen)}
           title="Toggle Code Editor"
         >
           <Image size={16} color="#ffffff" />

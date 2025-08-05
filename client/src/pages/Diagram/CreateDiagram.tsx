@@ -1,10 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import CodeMirror from "@uiw/react-codemirror";
-import { basicLight } from "@uiw/codemirror-theme-basic";
-import { dracula } from "@uiw/codemirror-theme-dracula";
-import { foldByIndent, mermaid as mermaidLang } from "codemirror-lang-mermaid";
-import { syntaxHighlighting } from "@codemirror/language";
-import ExampleList from "./ExampleList";
 
 import mermaid from "mermaid";
 import Panzoom from "@panzoom/panzoom";
@@ -13,19 +7,15 @@ import {
   Check,
   Copy,
   Lock,
-  Redo,
   Sparkles,
-  Undo,
   User,
   X,
 } from "lucide-react";
 import { default_code } from "./default_mermaid_code";
 import { v4 as uuidv4 } from "uuid";
 import { BACKEND_URL } from "../../config";
-import Markdown from "../../components/EditorPage/Markdown";
 import { useRecoilState } from "recoil";
 import { chatState, codeState } from "../../store/atoms";
-import { myHighlightStyle } from "./theme";
 import Sidebar from "../../components/EditorPage/SideBar";
 import ErrorNotification from "../../components/EditorPage/ErrorNotification";
 import ChatBox from "../../components/EditorPage/ChatBox";
@@ -80,8 +70,9 @@ const MermaidEditor = () => {
 
   // Modals
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
-  const [isEditorOpen, setIsEditorOpen] = useState(true);
   const [isChatOpen, setIsChatOpen] = useState(true);
+  const [isMovableEditorOpen, setIsMovableEditorOpen] = useState(false);
+  const [isMovableExampleOpen, setIsMovableExampleOpen] = useState(false);
 
   // Loading states
   const [isDownloading, setIsDownloading] = useState(false);
@@ -93,7 +84,6 @@ const MermaidEditor = () => {
   const panzoomRef = useRef<any>(null);
   const diagramRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   // Embedding state
   // 1. Add branding state (add to your existing useState declarations)
@@ -374,27 +364,6 @@ const MermaidEditor = () => {
       setEditableText("");
     },
     [selectedElement, editableText, code, setCode]
-  );
-
-  // Code change handler with error handling
-  const handleCodeChange = useCallback(
-    (value: string) => {
-      try {
-        setCode(value);
-        localStorage.setItem("mermaid_code", value);
-
-        if (debounceRef.current) clearTimeout(debounceRef.current);
-
-        debounceRef.current = setTimeout(() => {
-          setHistory((prev) => [...prev, value]);
-          setRedoStack([]);
-        }, 500);
-      } catch (err) {
-        console.error("Failed to save code:", err);
-        showError("render", "Failed to save changes");
-      }
-    },
-    [setCode, showError]
   );
 
   // Undo functionality
@@ -892,9 +861,6 @@ const MermaidEditor = () => {
     };
   }, []);
 
-  const [isMovableEditorOpen, setIsMovableEditorOpen] = useState(true);
-  const [isMovableExampleOpen, setIsMovableExampleOpen] = useState(true);
-
   return (
     <div className="flex gap-4 p-4 items-start relative">
       <ErrorNotification
@@ -904,7 +870,9 @@ const MermaidEditor = () => {
 
       {/* Side bar */}
       <Sidebar
+        isMovableEditorOpen={isMovableEditorOpen}
         setIsMovableEditorOpen={setIsMovableEditorOpen}
+        isMovableExampleOpen={isMovableExampleOpen}
         setIsMovableExampleOpen={setIsMovableExampleOpen}
         isChatOpen={isChatOpen}
         setIsChatOpen={setIsChatOpen}
@@ -983,7 +951,6 @@ const MermaidEditor = () => {
           setIsChatOpen={setIsChatOpen}
           models={models}
         />
-
 
         <MovableCodeEditor
           code={code}
