@@ -405,7 +405,7 @@ const Markdown = ({ markdownString }: { markdownString: string }) => {
   return (
     <article
       className="
-        prose lg:prose-xl prose-a:text-gray-600 max-w-full
+        prose dark:prose-invert lg:prose-xl prose-a:text-gray-600 max-w-full
         prose-code:text-red-600 prose-pre:text-white prose-pre:bg-gray-900
         prose-p:text-md prose-code:text-md prose-ul:text-md prose-ol:text-md
         prose-headings:text-gray-600 prose-table:border-gray-200 prose-table:border
@@ -417,6 +417,8 @@ const Markdown = ({ markdownString }: { markdownString: string }) => {
         ref={containerRef}
         className="
           text-sm p-5
+          dark:text-[#e5e7eb]
+          dark:prose-headings:text-[#e5e7eb]
           [&_.thinking]:italic
           [&_.thinking]:bg-gray-50
           [&_.thinking]:border-l-2
@@ -435,7 +437,7 @@ const Markdown = ({ markdownString }: { markdownString: string }) => {
           [&_pre_code]:leading-relaxed
         "
         dangerouslySetInnerHTML={{ __html: htmlContent }}
-      ></div>
+      />
     </article>
   );
 };

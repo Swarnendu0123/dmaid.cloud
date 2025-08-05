@@ -135,7 +135,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
         zIndex: 40,
         touchAction: "none",
       }}
-      className="flex flex-col items-center h-[560px] w-[370px] sm:w-[420px] md:w-[480px] bg-white/90 dark:bg-[#18181b]/90 shadow-xl border border-gray-200 dark:border-gray-700 backdrop-blur-md rounded-2xl p-0"
+      className="flex flex-col items-center h-[560px] w-[370px] sm:w-[420px] md:w-[480px] bg-white/80 dark:bg-[#18181b]/80 shadow-xl border border-gray-200 dark:border-gray-700 backdrop-blur-md rounded-2xl p-0"
     >
       <div
         className="z-10 drag-handle cursor-move w-full px-6 pt-6 pb-2 flex justify-between items-center select-none"
@@ -155,14 +155,14 @@ const ChatBox: React.FC<ChatBoxProps> = ({
       </div>
       <div className="flex-1 w-full flex flex-col gap-2 px-6 pb-6">
         {chat && (
-          <div className="max-w-full max-h-[260px] overflow-y-auto p-4 rounded-lg bg-gray-50 dark:bg-[#232326] text-gray-900 dark:text-[#e5e7eb] border border-gray-100 dark:border-gray-700 mb-2">
+          <div className="max-w-full max-h-[260px] overflow-y-auto p-4 rounded-lg bg-gray-50 dark:bg-[#232326] text-gray-900 dark:text-[#e5e7eb] border border-gray-200 dark:border-gray-700 mb-2">
             <Markdown markdownString={chat} />
           </div>
         )}
         {/* Prompt input */}
         <textarea
           value={prompt}
-          className="border border-gray-300 dark:border-gray-700 bg-white dark:bg-[#18181b] text-gray-900 dark:text-[#e5e7eb] p-2 rounded w-full resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-600 transition-all mb-2"
+          className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#18181b] text-gray-900 dark:text-[#e5e7eb] p-2 rounded w-full resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-600 transition-all mb-2"
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="Create a client-server architecture with database and middlewares"
           rows={3}
@@ -172,7 +172,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
         <div className="flex flex-wrap gap-2">
           <select
             name="model"
-            className="bg-gradient-to-r from-pink-100 via-blue-100 to-green-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 text-black dark:text-[#e5e7eb] rounded-full font-bold flex-1 min-w-[120px] p-2 text-sm border border-gray-200 dark:border-gray-700"
+            className="bg-gray-100 dark:bg-gray-800 text-black dark:text-[#e5e7eb] rounded-full font-bold flex-1 min-w-[120px] p-2 text-sm border border-gray-200 dark:border-gray-700"
             value={model}
             onChange={(e) => setModel(e.target.value)}
           >
@@ -187,7 +187,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
           </select>
           <select
             name="edit/new"
-            className="bg-black text-white dark:bg-gray-700 dark:text-[#e5e7eb] rounded-md font-bold p-2 text-sm border border-gray-200 dark:border-gray-700"
+            className="bg-gray-100 text-black dark:bg-gray-700 dark:text-[#e5e7eb] rounded-md font-bold p-2 text-sm border border-gray-200 dark:border-gray-700"
             value={mode}
             onChange={(e) => setMode(e.target.value)}
           >
@@ -195,7 +195,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
             <option value="edit">Edit</option>
           </select>
           <button
-            className={`bg-black text-white dark:bg-blue-600 dark:text-white px-4 py-2 rounded font-black text-sm flex items-center justify-center border border-gray-200 dark:border-gray-700 shadow-sm transition-all duration-200 ${
+            className={`bg-gray-800 text-white dark:bg-blue-600 dark:text-white px-4 py-2 rounded font-black text-sm flex items-center justify-center border border-gray-200 dark:border-gray-700 shadow-sm transition-all duration-200 ${
               isAIGeneratingDiagram || !prompt.trim()
                 ? "opacity-50 cursor-not-allowed"
                 : "hover:bg-gray-800 dark:hover:bg-blue-700"
