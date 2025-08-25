@@ -23,12 +23,13 @@ export async function generateTextToDiagramWithGemini(prompt: string) {
 // Groq gen AI model
 export async function generateTextToDiagramWithGroq(
   prompt: any,
-  ai_model: string
+  ai_model: string,
+  diagramType: string = "auto"
 ) {
   console.log(ai_model);
   
   try {
-    const chatCompletion = await getGroqChatCompletion(prompt, ai_model);
+    const chatCompletion = await getGroqChatCompletion(prompt, ai_model, diagramType);
 
     console.log(chatCompletion.choices[0]?.message?.content);
 
@@ -61,7 +62,27 @@ export async function generateTextToDiagramWithAnthropic(
 }
 
 // Groq config
-const getGroqChatCompletion = async (prompt: string, ai_model: string) => {
+const getGroqChatCompletion = async (prompt: string, ai_model: string, diagramType: string = "auto") => {
+  // Create diagram type specific instruction
+  let diagramTypeInstruction = "";
+  if (diagramType !== "auto") {
+    const diagramTypeMap: Record<string, string> = {
+      "flowchart": "flowchart",
+      "sequence": "sequence diagram", 
+      "class": "class diagram",
+      "state": "state diagram",
+      "er": "entity relationship diagram",
+      "gantt": "gantt chart",
+      "pie": "pie chart",
+      "journey": "user journey diagram",
+      "mindmap": "mindmap",
+      "timeline": "timeline diagram",
+      "gitgraph": "git graph",
+      "c4": "C4 diagram"
+    };
+    const diagramName = diagramTypeMap[diagramType] || diagramType;
+    diagramTypeInstruction = `\n\nIMPORTANT: You MUST generate a ${diagramName} specifically. Do not generate any other type of diagram.`;
+  }
   return groq.chat.completions.create({
     //
     // Required parameters
@@ -72,7 +93,7 @@ const getGroqChatCompletion = async (prompt: string, ai_model: string) => {
       // how it should behave throughout the conversation.
       {
         role: "system",
-        content: instructions,
+        content: instructions + diagramTypeInstruction,
       },
       // Set a user message for the assistant to respond to.
       {

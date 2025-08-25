@@ -50,16 +50,18 @@ router.post("/diagram/generate", async (req, res) => {
   try {
     let prompt = req.body.prompt;
     const model = req.body.model;
+    const diagramType = req.body.diagramType || "auto";
 
     console.log("Enhancing Prompt ... \n\n\n");
-    prompt = await enhancePromptWithGroq(prompt);
+    prompt = await enhancePromptWithGroq(prompt, diagramType);
     console.log(prompt);
 
     console.log("Generating Diagram ... \n\n\n");
 
     const chat = await generateTextToDiagramWithGroq(
       prompt,
-      model || default_model
+      model || default_model,
+      diagramType
     );
     console.log("chat:", chat);
 
@@ -86,8 +88,9 @@ router.post("/diagram/enhance", async (req, res) => {
     let diagram = req.body.diagram;
     let prompt = req.body.prompt;
     const model = req.body.model;
+    const diagramType = req.body.diagramType || "auto";
 
-    const chat = await diagramEnhancer(prompt, diagram, model || default_model);
+    const chat = await diagramEnhancer(prompt, diagram, model || default_model, diagramType);
 
     res.send({
       messege: "Diagram enhanced",

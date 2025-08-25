@@ -40,6 +40,12 @@ interface Model {
   model: string;
 }
 
+interface DiagramType {
+  name: string;
+  value: string;
+  description: string;
+}
+
 const MermaidEditor = () => {
   const [code, setCode] = useRecoilState<string>(codeState);
   const [copiedToClipboard, setCopiedToClipboard] = useState(false);
@@ -54,6 +60,7 @@ const MermaidEditor = () => {
     "meta-llama/llama-4-maverick-17b-128e-instruct"
   );
   const [mode, setMode] = useState("new");
+  const [diagramType, setDiagramType] = useState("auto");
   const [isCanvasEditMode, setIsCanvasEditMode] = useState(false);
   interface SelectedElement {
     element: HTMLElement;
@@ -111,6 +118,79 @@ const MermaidEditor = () => {
       description: "",
       model: "deepseek-r1-distill-llama-70b",
     },
+    {
+      name: "Kimi K2 [70B]",
+      description: "",
+      model: "moonshotai/kimi-k2-instruct",
+    },
+  ];
+
+  const diagramTypes: DiagramType[] = [
+    {
+      name: "Auto-detect",
+      value: "auto",
+      description: "AI will automatically choose the best diagram type"
+    },
+    {
+      name: "Flowchart",
+      value: "flowchart",
+      description: "For processes, workflows, decision trees, system flows"
+    },
+    {
+      name: "Sequence Diagram",
+      value: "sequence",
+      description: "For interactions between actors over time, API calls, user journeys"
+    },
+    {
+      name: "Class Diagram",
+      value: "class",
+      description: "For object-oriented structures, database schemas"
+    },
+    {
+      name: "State Diagram",
+      value: "state",
+      description: "For system states and transitions"
+    },
+    {
+      name: "Entity Relationship",
+      value: "er",
+      description: "For database relationships and data models"
+    },
+    {
+      name: "Gantt Chart",
+      value: "gantt",
+      description: "For project timelines and scheduling"
+    },
+    {
+      name: "Pie Chart",
+      value: "pie",
+      description: "For data distribution and percentages"
+    },
+    {
+      name: "User Journey",
+      value: "journey",
+      description: "For user experience flows"
+    },
+    {
+      name: "Mindmap",
+      value: "mindmap",
+      description: "For hierarchical information and brainstorming"
+    },
+    {
+      name: "Timeline",
+      value: "timeline",
+      description: "For chronological events"
+    },
+    {
+      name: "Git Graph",
+      value: "gitgraph",
+      description: "For version control workflows and branching strategies"
+    },
+    {
+      name: "C4 Diagram",
+      value: "c4",
+      description: "For system architecture contexts"
+    }
   ];
 
   // Error handling utility
@@ -499,7 +579,7 @@ const MermaidEditor = () => {
 
       const data = await makeApiCall(
         "/diagram/generate",
-        { prompt, model },
+        { prompt, model, diagramType },
         "Diagram generation"
       );
 
@@ -536,7 +616,7 @@ const MermaidEditor = () => {
 
       const data = await makeApiCall(
         "/diagram/enhance",
-        { diagram: code, chat, prompt, model },
+        { diagram: code, chat, prompt, model, diagramType },
         "Diagram enhancement"
       );
 
@@ -945,11 +1025,14 @@ const MermaidEditor = () => {
           setModel={setModel}
           mode={mode}
           setMode={setMode}
+          diagramType={diagramType}
+          setDiagramType={setDiagramType}
           isAIGeneratingDiagram={isAIGeneratingDiagram}
           editOrGenerateWithAI={editOrGenerateWithAI}
           isChatOpen={isChatOpen}
           setIsChatOpen={setIsChatOpen}
           models={models}
+          diagramTypes={diagramTypes}
         />
 
         <MovableCodeEditor

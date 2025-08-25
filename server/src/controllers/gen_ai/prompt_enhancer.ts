@@ -17,16 +17,21 @@ export async function generateTextTotitleWithGemini(prompt: string) {
 }
 
 // Gorq gen AI model
-export async function enhancePromptWithGroq(prompt: any) {
+export async function enhancePromptWithGroq(prompt: any, diagramType: string = "auto") {
   const ai_model = "meta-llama/llama-4-scout-17b-16e-instruct";
-  const chatCompletion = await getGroqChatCompletion(prompt, ai_model);
+  const chatCompletion = await getGroqChatCompletion(prompt, ai_model, diagramType);
 
   // Print the completion returned by the LLM.
   return chatCompletion.choices[0]?.message?.content || "";
 }
 
 // grok config
-const getGroqChatCompletion = async (prompt: string, ai_model: string) => {
+const getGroqChatCompletion = async (prompt: string, ai_model: string, diagramType: string = "auto") => {
+  // Create diagram type specific instruction
+  let diagramTypeInstruction = "";
+  if (diagramType !== "auto") {
+    diagramTypeInstruction = `\n\nIMPORTANT: The user has specifically requested a ${diagramType} diagram. Please enhance the prompt to generate a ${diagramType} diagram type specifically.`;
+  }
   return groq.chat.completions.create({
     //
     // Required parameters
@@ -37,7 +42,7 @@ const getGroqChatCompletion = async (prompt: string, ai_model: string) => {
       // how it should behave throughout the conversation.
       {
         role: "system",
-        content: instructions,
+        content: instructions + diagramTypeInstruction,
       },
       // Set a user message for the assistant to respond to.
       {

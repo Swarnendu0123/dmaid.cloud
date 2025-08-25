@@ -8,9 +8,9 @@ dotenv.config();
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 // Gorq gen AI model
-export async function diagramEnhancer(prompt: string, old_diagram: string, ai_model:string) {
+export async function diagramEnhancer(prompt: string, old_diagram: string, ai_model:string, diagramType: string = "auto") {
   try {
-    const chatCompletion = await getGroqChatCompletion(prompt, old_diagram, ai_model);
+    const chatCompletion = await getGroqChatCompletion(prompt, old_diagram, ai_model, diagramType);
 
     console.log(ai_model);
     
@@ -26,7 +26,27 @@ export async function diagramEnhancer(prompt: string, old_diagram: string, ai_mo
 }
 
 // grok config
-const getGroqChatCompletion = async (prompt: string, old_diagram: string, ai_model: string) => {
+const getGroqChatCompletion = async (prompt: string, old_diagram: string, ai_model: string, diagramType: string = "auto") => {
+  // Create diagram type specific instruction
+  let diagramTypeInstruction = "";
+  if (diagramType !== "auto") {
+    const diagramTypeMap: Record<string, string> = {
+      "flowchart": "flowchart",
+      "sequence": "sequence diagram", 
+      "class": "class diagram",
+      "state": "state diagram",
+      "er": "entity relationship diagram",
+      "gantt": "gantt chart",
+      "pie": "pie chart",
+      "journey": "user journey diagram",
+      "mindmap": "mindmap",
+      "timeline": "timeline diagram",
+      "gitgraph": "git graph",
+      "c4": "C4 diagram"
+    };
+    const diagramName = diagramTypeMap[diagramType] || diagramType;
+    diagramTypeInstruction = `\n\nIMPORTANT: When enhancing this diagram, ensure it remains a ${diagramName}. Do not change the diagram type.`;
+  }
   return groq.chat.completions.create({
     //
     // Required parameters
@@ -37,7 +57,7 @@ const getGroqChatCompletion = async (prompt: string, old_diagram: string, ai_mod
       // how it should behave throughout the conversation.
       {
         role: "system",
-        content: instructions,
+        content: instructions + diagramTypeInstruction,
       },
       // Set a user message for the assistant to respond to.
       {

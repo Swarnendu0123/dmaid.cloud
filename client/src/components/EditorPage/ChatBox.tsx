@@ -8,6 +8,12 @@ interface ModelOption {
   model: string;
 }
 
+interface DiagramTypeOption {
+  name: string;
+  value: string;
+  description: string;
+}
+
 interface ChatBoxProps {
   chat: string;
   prompt: string;
@@ -16,11 +22,14 @@ interface ChatBoxProps {
   setModel: (v: string) => void;
   mode: string;
   setMode: (v: string) => void;
+  diagramType: string;
+  setDiagramType: (v: string) => void;
   isAIGeneratingDiagram: boolean;
   editOrGenerateWithAI: () => void;
   isChatOpen: boolean;
   setIsChatOpen: (v: boolean) => void;
   models: ModelOption[];
+  diagramTypes: DiagramTypeOption[];
 }
 
 const ChatBox: React.FC<ChatBoxProps> = ({
@@ -31,11 +40,14 @@ const ChatBox: React.FC<ChatBoxProps> = ({
   setModel,
   mode,
   setMode,
+  diagramType,
+  setDiagramType,
   isAIGeneratingDiagram,
   editOrGenerateWithAI,
   isChatOpen,
   setIsChatOpen,
   models,
+  diagramTypes,
 }) => {
   const boxRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -170,6 +182,23 @@ const ChatBox: React.FC<ChatBoxProps> = ({
         />
         {/* Controls */}
         <div className="flex flex-wrap gap-2">
+          <select
+            name="diagramType"
+            className="bg-gray-100 dark:bg-gray-800 text-black dark:text-[#e5e7eb] rounded-full font-bold flex-1 min-w-[140px] p-2 text-sm border border-gray-200 dark:border-gray-700"
+            value={diagramType}
+            onChange={(e) => setDiagramType(e.target.value)}
+            title="Select diagram type"
+          >
+            {diagramTypes.map((typeOption) => (
+              <option
+                key={typeOption.value}
+                value={typeOption.value}
+                title={typeOption.description}
+              >
+                {typeOption.name}
+              </option>
+            ))}
+          </select>
           <select
             name="model"
             className="bg-gray-100 dark:bg-gray-800 text-black dark:text-[#e5e7eb] rounded-full font-bold flex-1 min-w-[120px] p-2 text-sm border border-gray-200 dark:border-gray-700"
