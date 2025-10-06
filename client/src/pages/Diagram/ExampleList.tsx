@@ -20,7 +20,7 @@ const ExampleList: React.FC = () => {
       <div className="space-y-8">
         {examples.map((exampleCategory, categoryIndex) => (
           <div key={`${exampleCategory.category}-${categoryIndex}`}>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-[#e5e7eb] mb-4 border-b-2 border-gradient-to-r from-blue-400 to-purple-400 pb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-[#e5e7eb] mb-4 border-b-2 border-green-400 pb-2 text-green-700 dark:text-green-400">
               {exampleCategory.category}
             </h2>
 
@@ -29,9 +29,9 @@ const ExampleList: React.FC = () => {
                 <button 
                   key={example.id}
                   onClick={() => handleCodeChange(example.code)}
-                  className="glass-card rounded-xl overflow-hidden hover:shadow-glow-purple transition-all duration-300 w-full transform hover:scale-105 hover:-translate-y-1 border border-white/30 dark:border-gray-700/30"
+                  className="glass-card rounded-xl overflow-hidden hover:shadow-glow-green transition-all duration-300 w-full transform hover:scale-105 hover:-translate-y-1 border border-white/30 dark:border-gray-700/30"
                 >
-                  <div className="aspect-square bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 p-3 flex items-center justify-center">
+                  <div className="aspect-square bg-gradient-to-br from-green-50 to-emerald-50 dark:from-gray-800 dark:to-gray-900 p-3 flex items-center justify-center">
                     <MermaidImage code={example.code} />
                   </div>
 

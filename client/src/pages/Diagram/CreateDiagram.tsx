@@ -964,14 +964,14 @@ const MermaidEditor = () => {
       {/* Canvas */}
       <div className="w-full p-4 rounded-2xl glass-card overflow-hidden relative shadow-glossy-lg border border-white/30 dark:border-gray-700/30">
         {isCanvasEditMode && (
-          <div className="absolute top-4 left-4 bg-gradient-to-r from-blue-500 to-emerald-500 text-white px-4 py-2 rounded-xl text-sm font-bold z-20 shadow-lg backdrop-blur-sm">
+          <div className="absolute top-4 left-4 bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-bold z-20 shadow-lg backdrop-blur-sm">
             Canvas Edit Mode Active ✏️
           </div>
         )}
 
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center bg-dot-grid bg-dot-grid-size z-10 backdrop-blur-sm">
-            <div className="animate-spin text-transparent bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-5xl font-bold">⟳</div>
+            <div className="animate-spin text-green-600 text-5xl font-bold">⟳</div>
           </div>
         )}
 
@@ -988,7 +988,7 @@ const MermaidEditor = () => {
         <div className="absolute bottom-4 right-4 flex flex-col items-center space-y-2 p-2 rounded-xl glass-card shadow-glossy border border-white/20 dark:border-gray-700/30">
           <div className="flex space-x-2">
             <button
-              className="glass-button px-4 py-2 rounded-lg font-bold hover:shadow-glow-purple transition-all duration-300"
+              className="glass-button px-4 py-2 rounded-lg font-bold hover:shadow-glow-green transition-all duration-300"
               onClick={() => {
                 try {
                   panzoomRef.current?.zoomIn();
@@ -1001,7 +1001,7 @@ const MermaidEditor = () => {
               +
             </button>
             <button
-              className="glass-button px-4 py-2 rounded-lg font-bold hover:shadow-glow-purple transition-all duration-300"
+              className="glass-button px-4 py-2 rounded-lg font-bold hover:shadow-glow-green transition-all duration-300"
               onClick={() => {
                 try {
                   panzoomRef.current?.zoomOut();
@@ -1059,14 +1059,14 @@ const MermaidEditor = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50">
           <div className="glass-card p-8 rounded-2xl shadow-glossy-lg relative max-w-md w-full mx-4">
             <button
-              className="absolute top-4 right-4 glass-button rounded-lg p-2 hover:shadow-glow-purple transition-all duration-300"
+              className="absolute top-4 right-4 glass-button rounded-lg p-2 hover:shadow-glow-green transition-all duration-300"
               onClick={() => setIsSettingsModalOpen(false)}
               title="Close"
             >
               <X size={20} color="#fff" />
             </button>
 
-            <h2 className="text-2xl mb-6 font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Access Control Settings</h2>
+            <h2 className="text-2xl mb-6 font-black text-green-700 dark:text-green-400">Access Control Settings</h2>
 
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
@@ -1075,7 +1075,7 @@ const MermaidEditor = () => {
                   <button className="glass-button opacity-50 rounded-xl text-white text-sm p-3 flex-1 flex justify-center items-center cursor-not-allowed">
                     Private <Lock size={16} color="#ffffff" className="ml-1" />
                   </button>
-                  <button className="glass-button rounded-xl text-white text-sm p-3 flex-1 flex justify-center items-center hover:shadow-glow-purple transition-all duration-300">
+                  <button className="glass-button rounded-xl text-white text-sm p-3 flex-1 flex justify-center items-center hover:shadow-glow-green transition-all duration-300">
                     Public <User size={16} color="#ffffff" className="ml-1" />
                   </button>
                 </div>
@@ -1093,7 +1093,7 @@ const MermaidEditor = () => {
                     maxLength={100}
                   />
                   <button
-                    className="glass-button text-white rounded-xl text-sm px-4 py-2 hover:shadow-glow-purple transition-all duration-300"
+                    className="glass-button text-white rounded-xl text-sm px-4 py-2 hover:shadow-glow-green transition-all duration-300"
                     onClick={() => {
                       try {
                         // Add save logic here
@@ -1116,7 +1116,7 @@ const MermaidEditor = () => {
                     {window.location.href}
                   </div>
                   <button
-                    className="glass-button text-white rounded-xl text-sm px-4 py-2 hover:shadow-glow-purple transition-all duration-300"
+                    className="glass-button text-white rounded-xl text-sm px-4 py-2 hover:shadow-glow-green transition-all duration-300"
                     onClick={() => {
                       try {
                         navigator.clipboard.writeText(window.location.href);
@@ -1141,7 +1141,7 @@ const MermaidEditor = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50">
           <div className="glass-card p-8 rounded-2xl shadow-glossy-lg relative max-w-md w-full mx-4">
             <button
-              className="absolute top-4 right-4 glass-button rounded-lg p-2 hover:shadow-glow-purple transition-all duration-300"
+              className="absolute top-4 right-4 glass-button rounded-lg p-2 hover:shadow-glow-green transition-all duration-300"
               onClick={() => {
                 setSelectedElement(null);
                 setEditableText("");
@@ -1151,7 +1151,7 @@ const MermaidEditor = () => {
               <X size={20} color="#fff" />
             </button>
 
-            <h2 className="text-2xl mb-6 font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Edit Text</h2>
+            <h2 className="text-2xl mb-6 font-black text-green-700 dark:text-green-400">Edit Text</h2>
 
             <div className="flex flex-col gap-4">
               <textarea
@@ -1164,7 +1164,7 @@ const MermaidEditor = () => {
 
               <div className="flex gap-2 justify-end">
                 <button
-                  className="bg-gradient-to-br from-gray-500 to-gray-700 hover:from-gray-600 hover:to-gray-800 text-white px-6 py-2.5 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl"
+                  className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2.5 rounded-xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl"
                   onClick={() => {
                     setSelectedElement(null);
                     setEditableText("");
@@ -1173,7 +1173,7 @@ const MermaidEditor = () => {
                   Cancel
                 </button>
                 <button
-                  className="glass-button px-6 py-2.5 rounded-xl font-bold hover:shadow-glow-purple transition-all duration-300"
+                  className="glass-button px-6 py-2.5 rounded-xl font-bold hover:shadow-glow-green transition-all duration-300"
                   onClick={() => handleTextEdit(editableText)}
                 >
                   Save
@@ -1189,14 +1189,14 @@ const MermaidEditor = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50">
           <div className="glass-card p-8 rounded-2xl shadow-glossy-lg relative max-w-7xl max-h-[90vh] overflow-y-auto w-full mx-4">
             <button
-              className="absolute top-4 right-4 glass-button rounded-lg px-3 py-2 hover:shadow-glow-purple transition-all duration-300"
+              className="absolute top-4 right-4 glass-button rounded-lg px-3 py-2 hover:shadow-glow-green transition-all duration-300"
               onClick={() => setIsEmbedModalOpen(false)}
               title="Close"
             >
               <X size={20} color="#fff" />
             </button>
 
-            <h2 className="text-3xl mb-6 font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <h2 className="text-3xl mb-6 font-black text-green-700 dark:text-green-400">
               Export & Embed Your Diagram
             </h2>
 
@@ -1210,7 +1210,7 @@ const MermaidEditor = () => {
                     <button
                       className={`px-4 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 ${
                         embedType === "download"
-                          ? "glass-button shadow-glow-purple"
+                          ? "glass-button shadow-glow-green"
                           : "bg-white/50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-gray-800/70 backdrop-blur-sm"
                       }`}
                       onClick={() => setEmbedType("download")}

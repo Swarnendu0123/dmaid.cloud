@@ -26,7 +26,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Light Mode Background with Animated Gradient */
+/* Light Mode Background with Animated Gradient - Green Theme */
 body::before {
   content: '';
   position: fixed;
@@ -36,10 +36,10 @@ body::before {
   height: 100%;
   z-index: -1;
   background: linear-gradient(135deg, 
-    #e3f2fd 0%, 
-    #f3e5f5 25%, 
-    #fce4ec 50%, 
-    #fff3e0 75%, 
+    #e8f5e9 0%, 
+    #e0f2f1 25%, 
+    #f1f8e9 50%, 
+    #dcedc8 75%, 
     #e8f5e9 100%
   );
   background-size: 400% 400%;
@@ -49,7 +49,7 @@ body::before {
 html.dark body::before {
   background: linear-gradient(135deg, 
     #0f172a 0%, 
-    #1e1b4b 25%, 
+    #064e3b 25%, 
     #1e293b 50%, 
     #18181b 75%, 
     #0f172a 100%
@@ -70,18 +70,18 @@ html.dark body::before {
 /* Glossy Card Utilities */
 @layer components {
   .glass-card {
-    @apply bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border border-white/20 dark:border-gray-700/30 shadow-glossy;
+    @apply bg-white/40 dark:bg-gray-900/40 backdrop-blur-md border border-white/20 dark:border-gray-700/30 shadow-glossy;
   }
   
   .glass-button {
-    @apply bg-gradient-to-br from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 
-           text-white font-bold shadow-lg hover:shadow-glow-purple 
+    @apply bg-green-600 hover:bg-green-700 
+           text-white font-bold shadow-lg hover:shadow-glow-green 
            transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5;
   }
   
   .glossy-input {
     @apply bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 
-           focus:border-purple-400 dark:focus:border-purple-500 focus:ring-2 focus:ring-purple-200 dark:focus:ring-purple-900/30
+           focus:border-green-400 dark:focus:border-green-500 focus:ring-2 focus:ring-green-200 dark:focus:ring-green-900/30
            rounded-lg px-4 py-2 transition-all duration-200;
   }
 }

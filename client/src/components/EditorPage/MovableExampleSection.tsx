@@ -101,16 +101,16 @@ const MovableExampleSection: React.FC<MovableExampleSectionProps> = ({ isOpen, s
         width: 600,
         height: 320,
       }}
-      className="rounded-2xl glass-card shadow-glossy-lg border border-white/30 dark:border-gray-700/30 overflow-y-auto"
+      className="rounded-2xl bg-white/20 dark:bg-gray-900/20 backdrop-blur-md shadow-glossy-lg border border-white/30 dark:border-gray-700/30 overflow-y-auto"
     >
       <div
-        className="drag-handle cursor-move w-full flex justify-between items-center px-4 py-3 select-none bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm border-b border-white/20 dark:border-gray-700/30"
+        className="drag-handle cursor-move w-full flex justify-between items-center px-4 py-3 select-none bg-green-500/20 backdrop-blur-sm border-b border-white/20 dark:border-gray-700/30"
         onMouseDown={onMouseDown}
         onTouchStart={onTouchStart}
       >
-        <span className="font-bold text-gray-900 dark:text-[#e5e7eb] bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Examples</span>
+        <span className="font-bold text-green-700 dark:text-green-400">Examples</span>
         <button
-          className="glass-button rounded-lg px-4 py-2 hover:shadow-glow-purple transition-all duration-300"
+          className="glass-button rounded-lg px-4 py-2 hover:shadow-glow-green transition-all duration-300"
           onClick={() => setIsOpen(false)}
           title="Close Examples"
         >

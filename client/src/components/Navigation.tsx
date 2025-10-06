@@ -101,17 +101,17 @@ const Navigation = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50">
           <div className="glass-card p-8 rounded-2xl shadow-glossy-lg relative max-w-md w-full mx-4">
             <button
-              className="absolute top-4 right-4 bg-gradient-to-br from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black rounded-lg p-1.5 transition-all duration-300 hover:scale-110"
+              className="absolute top-4 right-4 bg-gray-700 hover:bg-gray-800 rounded-lg p-1.5 transition-all duration-300 hover:scale-110"
               onClick={() => setIsAuthModalOpen(false)}
             >
               <X size={20} color="#fff" />
             </button>
-            <h2 className="text-2xl mb-6 font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Welcome Back</h2>
+            <h2 className="text-2xl mb-6 font-black text-green-700 dark:text-green-400">Welcome Back</h2>
             <div className="flex flex-col gap-2">
               <div className="flex items-center">
                 <div className="flex items-center justify-center w-full">
                   <button
-                    className="flex items-center justify-center glass-button border border-white/20 dark:border-gray-700/30 rounded-xl shadow-lg px-6 py-3 text-sm font-bold text-white w-full hover:shadow-glow-blue"
+                    className="flex items-center justify-center glass-button border border-white/20 dark:border-gray-700/30 rounded-xl shadow-lg px-6 py-3 text-sm font-bold text-white w-full hover:shadow-glow-green"
                     onClick={signInWithGoogle}
                   >
                     <svg
@@ -188,12 +188,12 @@ const Navigation = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50">
           <div className="glass-card p-8 rounded-2xl shadow-glossy-lg relative max-w-md w-full mx-4">
             <button
-              className="absolute top-4 right-4 bg-gradient-to-br from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black rounded-lg p-1.5 transition-all duration-300 hover:scale-110"
+              className="absolute top-4 right-4 bg-gray-700 hover:bg-gray-800 rounded-lg p-1.5 transition-all duration-300 hover:scale-110"
               onClick={() => setIsLogoutModalOpen(false)}
             >
               <X size={20} color="#fff" />
             </button>
-            <h2 className="text-2xl font-black mb-4 bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">Confirm Logout</h2>
+            <h2 className="text-2xl font-black mb-4 text-red-700 dark:text-red-400">Confirm Logout</h2>
             <div className="flex flex-col gap-4">
               <div className="flex items-center">
                 <div className="flex items-center justify-center flex-col w-full">
@@ -211,7 +211,7 @@ const Navigation = () => {
                       <CircleX size={16} color="#ffffff" />
                     </button>
                     <button
-                      className="bg-gradient-to-br from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white px-6 py-3 rounded-xl m-0.5 my-1 flex items-center gap-2 font-bold shadow-lg hover:shadow-xl transition-all duration-300"
+                      className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl m-0.5 my-1 flex items-center gap-2 font-bold shadow-lg hover:shadow-xl transition-all duration-300"
                       onClick={() => {
                         handleSignOut();
                         setIsLogoutModalOpen(false);
@@ -231,7 +231,7 @@ const Navigation = () => {
       <nav className="flex justify-between items-center py-3 px-6 bg-white/60 text-black dark:bg-gray-900/60 dark:text-[#e5e7eb] backdrop-blur-xl border-b border-white/20 dark:border-gray-700/30 sticky top-0 z-30 shadow-lg">
         <div className="flex items-center space-x-3 cursor-pointer select-none group" onClick={() => navigate("/")}> 
           <img src="/logo_dmaid.png" alt="Dmaid Logo" className="h-10 w-auto transition-transform duration-300 group-hover:scale-110" />
-          <span className="text-2xl md:text-3xl font-black tracking-tight bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">Dmaid Workspace</span>
+          <span className="text-2xl md:text-3xl font-black tracking-tight text-green-700 dark:text-green-400">Dmaid Workspace</span>
         </div>
         <ul className="flex justify-center space-x-4 text-sm font-normal items-center">
           <li className="flex items-center space-x-2">
@@ -256,7 +256,7 @@ const Navigation = () => {
             </li>
           ) : (
             <li
-              className="flex items-center space-x-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-2 cursor-pointer border border-white/20 dark:border-gray-700/30 hover:shadow-glow-purple transition-all duration-300"
+              className="flex items-center space-x-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-2 cursor-pointer border border-white/20 dark:border-gray-700/30 hover:shadow-glow-green transition-all duration-300"
               onClick={() => setDropdown(!dropdown)}
             >
               <p className="text-gray-900 dark:text-[#e5e7eb]">{user.displayName}</p>
@@ -310,7 +310,7 @@ const Navigation = () => {
           )}
           <li>
             <button
-              className="bg-gradient-to-br from-yellow-200 to-orange-200 dark:from-indigo-900 dark:to-purple-900 rounded-full p-2.5 transition-all duration-300 hover:scale-110 hover:shadow-glow-purple border border-white/30 dark:border-gray-700/30"
+              className="bg-gradient-to-br from-yellow-200 to-orange-200 dark:from-green-900 dark:to-emerald-900 rounded-full p-2.5 transition-all duration-300 hover:scale-110 hover:shadow-glow-green border border-white/30 dark:border-gray-700/30"
               onClick={() => setIsDark((d) => !d)}
               aria-label="Toggle dark mode"
             >

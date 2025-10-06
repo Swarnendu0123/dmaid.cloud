@@ -147,18 +147,18 @@ const ChatBox: React.FC<ChatBoxProps> = ({
         zIndex: 40,
         touchAction: "none",
       }}
-      className="flex flex-col items-center h-[560px] w-[370px] sm:w-[420px] md:w-[480px] glass-card shadow-glossy-lg border border-white/30 dark:border-gray-700/30 rounded-2xl p-0"
+      className="flex flex-col items-center h-[560px] w-[370px] sm:w-[420px] md:w-[480px] bg-white/20 dark:bg-gray-900/20 backdrop-blur-md border border-white/30 dark:border-gray-700/30 rounded-2xl p-0 shadow-glossy-lg"
     >
       <div
-        className="z-10 drag-handle cursor-move w-full px-6 pt-6 pb-2 flex justify-between items-center select-none bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm rounded-t-2xl"
+        className="z-10 drag-handle cursor-move w-full px-6 pt-6 pb-2 flex justify-between items-center select-none bg-green-500/20 backdrop-blur-sm rounded-t-2xl"
         onMouseDown={onMouseDown}
         onTouchStart={onTouchStart}
       >
-        <p className="text-lg font-black flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent m-0">
+        <p className="text-lg font-black flex items-center gap-2 text-green-700 dark:text-green-400 m-0">
           Dmaid AI ✨
         </p>
         <button
-          className="glass-button rounded-lg px-3 py-1.5 hover:shadow-glow-purple transition-all duration-300"
+          className="glass-button rounded-lg px-3 py-1.5 hover:shadow-glow-green transition-all duration-300"
           onClick={() => setIsChatOpen(false)}
           title="Close Chat"
         >
@@ -167,7 +167,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
       </div>
       <div className="flex-1 w-full flex flex-col gap-2 px-6 pb-6">
         {chat && (
-          <div className="max-w-full max-h-[260px] overflow-y-auto p-4 rounded-xl glass-card text-gray-900 dark:text-[#e5e7eb] border border-white/20 dark:border-gray-700/30 mb-2 shadow-inner-glow">
+          <div className="max-w-full max-h-[260px] overflow-y-auto p-4 rounded-xl bg-white/20 dark:bg-gray-900/20 backdrop-blur-sm text-gray-900 dark:text-[#e5e7eb] border border-white/20 dark:border-gray-700/30 mb-2 shadow-inner-glow">
             <Markdown markdownString={chat} />
           </div>
         )}
@@ -227,7 +227,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
             className={`glass-button px-5 py-2.5 rounded-xl font-bold text-sm flex items-center justify-center shadow-lg transition-all duration-300 ${
               isAIGeneratingDiagram || !prompt.trim()
                 ? "opacity-50 cursor-not-allowed"
-                : "hover:shadow-glow-purple hover:scale-105"
+                : "hover:shadow-glow-green hover:scale-105"
             }`}
             onClick={editOrGenerateWithAI}
             disabled={isAIGeneratingDiagram || !prompt.trim()}

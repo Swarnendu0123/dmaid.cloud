@@ -15,9 +15,9 @@ export default {
         'dot-grid': '20px 20px',
       },
       colors: {
-        'pastel-blue': '#e3f2fd',
-        'pastel-purple': '#f3e5f5',
-        'pastel-pink': '#fce4ec',
+        'pastel-green': '#e8f5e9',
+        'pastel-teal': '#e0f2f1',
+        'pastel-lime': '#f1f8e9',
         'glossy-light': 'rgba(255, 255, 255, 0.7)',
         'glossy-dark': 'rgba(0, 0, 0, 0.3)',
       },
@@ -68,10 +68,10 @@ export default {
         },
         'glow': {
           'from': { 
-            'box-shadow': '0 0 10px rgba(139, 92, 246, 0.5)',
+            'box-shadow': '0 0 10px rgba(34, 197, 94, 0.5)',
           },
           'to': { 
-            'box-shadow': '0 0 20px rgba(139, 92, 246, 0.8), 0 0 30px rgba(139, 92, 246, 0.6)',
+            'box-shadow': '0 0 20px rgba(34, 197, 94, 0.8), 0 0 30px rgba(34, 197, 94, 0.6)',
           },
         },
       },
@@ -79,8 +79,8 @@ export default {
         'glossy': '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
         'glossy-lg': '0 10px 40px 0 rgba(31, 38, 135, 0.45)',
         'glossy-dark': '0 8px 32px 0 rgba(0, 0, 0, 0.5)',
-        'glow-purple': '0 0 20px rgba(139, 92, 246, 0.5)',
-        'glow-blue': '0 0 20px rgba(59, 130, 246, 0.5)',
+        'glow-green': '0 0 20px rgba(34, 197, 94, 0.5)',
+        'glow-emerald': '0 0 20px rgba(16, 185, 129, 0.5)',
         'inner-glow': 'inset 0 2px 4px 0 rgba(255, 255, 255, 0.1)',
       },
     },

@@ -52,12 +52,12 @@ const Sidebar = ({
   return (
     <div>
       <div className="rounded-2xl glass-card p-3 flex flex-col items-center my-5 shadow-glossy border border-white/30 dark:border-gray-700/30">
-        <p className="font-black my-2 text-transparent bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text">
+        <p className="font-black my-2 text-green-700 dark:text-green-400">
           {"</>"}
         </p>
 
         <button
-          className="glass-button px-4 py-2 rounded-lg font-bold m-0.5 my-1 hover:shadow-glow-purple transition-all duration-300"
+          className="glass-button px-4 py-2 rounded-lg font-bold m-0.5 my-1 hover:shadow-glow-green transition-all duration-300"
           onClick={() => setIsMovableEditorOpen(!isMovableEditorOpen)}
           title="Toggle Code Editor"
         >
@@ -65,7 +65,7 @@ const Sidebar = ({
         </button>
 
         <button
-          className="glass-button px-4 py-2 rounded-lg font-bold m-0.5 my-1 hover:shadow-glow-purple transition-all duration-300"
+          className="glass-button px-4 py-2 rounded-lg font-bold m-0.5 my-1 hover:shadow-glow-green transition-all duration-300"
           onClick={() => setIsMovableExampleOpen(!isMovableExampleOpen)}
           title="Toggle Examples"
         >
@@ -73,7 +73,7 @@ const Sidebar = ({
         </button>
 
         <button
-          className="glass-button px-4 py-2 rounded-lg font-bold m-0.5 my-1 hover:shadow-glow-purple transition-all duration-300"
+          className="glass-button px-4 py-2 rounded-lg font-bold m-0.5 my-1 hover:shadow-glow-green transition-all duration-300"
           onClick={() => setIsChatOpen(!isChatOpen)}
           title="Toggle AI Chat"
         >
@@ -83,8 +83,8 @@ const Sidebar = ({
         <button
           className={`px-4 py-2 rounded-lg font-bold m-0.5 my-1 transition-all duration-300 ${
             isCanvasEditMode
-              ? "bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-glow-blue"
-              : "glass-button hover:shadow-glow-purple"
+              ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-glow-emerald"
+              : "glass-button hover:shadow-glow-green"
           }`}
           onClick={() => setIsCanvasEditMode(!isCanvasEditMode)}
           title="Toggle Canvas Edit Mode"
@@ -93,7 +93,7 @@ const Sidebar = ({
         </button>
 
         <button
-          className="glass-button px-4 py-2 rounded-lg font-bold m-0.5 my-1 hover:shadow-glow-purple transition-all duration-300"
+          className="glass-button px-4 py-2 rounded-lg font-bold m-0.5 my-1 hover:shadow-glow-green transition-all duration-300"
           onClick={() => setIsEmbedModalOpen(true)}
           title="Generate Embed Code"
         >
