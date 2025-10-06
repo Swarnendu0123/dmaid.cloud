@@ -22,7 +22,68 @@ html.dark {
 body {
   margin: 30px;
   min-width: 320px;
-  @apply bg-white text-[#37352f] dark:bg-[#18181b] dark:text-[#e5e7eb];
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Light Mode Background with Animated Gradient */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background: linear-gradient(135deg, 
+    #e3f2fd 0%, 
+    #f3e5f5 25%, 
+    #fce4ec 50%, 
+    #fff3e0 75%, 
+    #e8f5e9 100%
+  );
+  background-size: 400% 400%;
+  animation: gradient-shift 15s ease infinite;
+}
+
+html.dark body::before {
+  background: linear-gradient(135deg, 
+    #0f172a 0%, 
+    #1e1b4b 25%, 
+    #1e293b 50%, 
+    #18181b 75%, 
+    #0f172a 100%
+  );
+  background-size: 400% 400%;
+  animation: gradient-shift 20s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Glossy Card Utilities */
+@layer components {
+  .glass-card {
+    @apply bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl border border-white/20 dark:border-gray-700/30 shadow-glossy;
+  }
+  
+  .glass-button {
+    @apply bg-gradient-to-br from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 
+           text-white font-bold shadow-lg hover:shadow-glow-purple 
+           transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5;
+  }
+  
+  .glossy-input {
+    @apply bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 
+           focus:border-purple-400 dark:focus:border-purple-500 focus:ring-2 focus:ring-purple-200 dark:focus:ring-purple-900/30
+           rounded-lg px-4 py-2 transition-all duration-200;
+  }
 }
 
 .bg-dot-grid {
@@ -34,5 +95,12 @@ body {
 
 html.dark .bg-dot-grid {
   background-image: radial-gradient(circle, #444 1px, transparent 1px);
+}
+
+/* Smooth Transitions */
+* {
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
 }
 

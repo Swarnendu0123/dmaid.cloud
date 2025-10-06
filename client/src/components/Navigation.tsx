@@ -98,24 +98,24 @@ const Navigation = () => {
     <div className="text-black font-normal">
       {/* Auth Modal */}
       {isAuthModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg relative">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50">
+          <div className="glass-card p-8 rounded-2xl shadow-glossy-lg relative max-w-md w-full mx-4">
             <button
-              className="absolute top-2 right-2 bg-black rounded"
+              className="absolute top-4 right-4 bg-gradient-to-br from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black rounded-lg p-1.5 transition-all duration-300 hover:scale-110"
               onClick={() => setIsAuthModalOpen(false)}
             >
               <X size={20} color="#fff" />
             </button>
-            <h2 className="text-xl mb-4 font-black">Authentication</h2>
+            <h2 className="text-2xl mb-6 font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Welcome Back</h2>
             <div className="flex flex-col gap-2">
               <div className="flex items-center">
-                <div className="flex items-center justify-center">
+                <div className="flex items-center justify-center w-full">
                   <button
-                    className="flex items-center bg-black  border border-gray-600 rounded-lg shadow-md px-6 py-2 text-sm font-medium text-white"
+                    className="flex items-center justify-center glass-button border border-white/20 dark:border-gray-700/30 rounded-xl shadow-lg px-6 py-3 text-sm font-bold text-white w-full hover:shadow-glow-blue"
                     onClick={signInWithGoogle}
                   >
                     <svg
-                      className="h-6 w-6 mr-2"
+                      className="h-6 w-6 mr-3"
                       xmlns="http://www.w3.org/2000/svg"
                       width="800px"
                       height="800px"
@@ -185,40 +185,40 @@ const Navigation = () => {
       )}
 
       {isLogoutModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg relative">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-50">
+          <div className="glass-card p-8 rounded-2xl shadow-glossy-lg relative max-w-md w-full mx-4">
             <button
-              className="absolute top-2 right-2 bg-black rounded"
+              className="absolute top-4 right-4 bg-gradient-to-br from-gray-700 to-gray-900 hover:from-gray-800 hover:to-black rounded-lg p-1.5 transition-all duration-300 hover:scale-110"
               onClick={() => setIsLogoutModalOpen(false)}
             >
               <X size={20} color="#fff" />
             </button>
-            <h2 className="text-xl font-black">Log Out</h2>
-            <div className="flex flex-col gap-2">
+            <h2 className="text-2xl font-black mb-4 bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">Confirm Logout</h2>
+            <div className="flex flex-col gap-4">
               <div className="flex items-center">
-                <div className="flex items-center justify-center flex-col">
-                  <div className="">
-                    <p className="font-semibold  text-sm">
-                      Are you sure you want to Log Out?
+                <div className="flex items-center justify-center flex-col w-full">
+                  <div className="mb-6">
+                    <p className="font-semibold text-base text-gray-700 dark:text-gray-300">
+                      Are you sure you want to log out?
                     </p>
                   </div>
-                  <div className="flex justify-evenly w-full">
+                  <div className="flex justify-evenly w-full gap-3">
                     <button
-                      className="bg-black text-white px-4 py-2 rounded  m-0.5 my-1 flex items-center"
+                      className="glass-button px-6 py-3 rounded-xl m-0.5 my-1 flex items-center gap-2 font-bold"
                       onClick={() => setIsLogoutModalOpen(false)}
                     >
                       Cancel
-                      <CircleX size={16} color="#ffffff" className="ml-2" />
+                      <CircleX size={16} color="#ffffff" />
                     </button>
                     <button
-                      className="bg-red-600 text-white px-4 py-2 rounded  m-0.5 my-1 flex items-center"
+                      className="bg-gradient-to-br from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white px-6 py-3 rounded-xl m-0.5 my-1 flex items-center gap-2 font-bold shadow-lg hover:shadow-xl transition-all duration-300"
                       onClick={() => {
                         handleSignOut();
                         setIsLogoutModalOpen(false);
                       }}
                     >
                       Log out
-                      <LogOutIcon size={16} color="#fff" className="ml-2" />
+                      <LogOutIcon size={16} color="#fff" />
                     </button>
                   </div>
                 </div>
@@ -228,10 +228,10 @@ const Navigation = () => {
         </div>
       )}
 
-      <nav className="flex justify-between items-center py-2 px-4 bg-white/80 text-black dark:bg-[#232326]/90 dark:text-[#e5e7eb] backdrop-blur-md sticky top-0 z-30">
-        <div className="flex items-center space-x-3 cursor-pointer select-none" onClick={() => navigate("/")}> 
-          <img src="/logo_dmaid.png" alt="Dmaid Logo" className="h-10 w-auto" />
-          <span className="text-2xl md:text-3xl font-black tracking-tight">Dmaid Workspace</span>
+      <nav className="flex justify-between items-center py-3 px-6 bg-white/60 text-black dark:bg-gray-900/60 dark:text-[#e5e7eb] backdrop-blur-xl border-b border-white/20 dark:border-gray-700/30 sticky top-0 z-30 shadow-lg">
+        <div className="flex items-center space-x-3 cursor-pointer select-none group" onClick={() => navigate("/")}> 
+          <img src="/logo_dmaid.png" alt="Dmaid Logo" className="h-10 w-auto transition-transform duration-300 group-hover:scale-110" />
+          <span className="text-2xl md:text-3xl font-black tracking-tight bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">Dmaid Workspace</span>
         </div>
         <ul className="flex justify-center space-x-4 text-sm font-normal items-center">
           <li className="flex items-center space-x-2">
@@ -239,15 +239,16 @@ const Navigation = () => {
               to="/diagram/create"
               className="hover:underline text-gray-500"
             >
-              <button className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1">
+              <button className="glass-button px-4 py-2 rounded-lg font-bold m-0.5 my-1 flex items-center gap-2">
                 <Plus size={16} />
+                <span className="hidden sm:inline">New</span>
               </button>
             </Link>
           </li>
           {!user ? (
             <li className="flex items-center space-x-2">
               <button
-                className="bg-black text-white px-4 py-2 rounded font-extrabold"
+                className="glass-button px-5 py-2.5 rounded-lg font-bold"
                 onClick={() => setIsAuthModalOpen(true)}
               >
                 Sign In
@@ -255,7 +256,7 @@ const Navigation = () => {
             </li>
           ) : (
             <li
-              className="flex items-center space-x-2 bg-gray-200 dark:bg-[#232326] rounded-md p-2 cursor-pointer"
+              className="flex items-center space-x-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl p-2 cursor-pointer border border-white/20 dark:border-gray-700/30 hover:shadow-glow-purple transition-all duration-300"
               onClick={() => setDropdown(!dropdown)}
             >
               <p className="text-gray-900 dark:text-[#e5e7eb]">{user.displayName}</p>
@@ -267,9 +268,9 @@ const Navigation = () => {
             </li>
           )}
           {user && dropdown && (
-            <div className="absolute end-10 z-10 mt-12 divide-y divide-gray-100 dark:divide-gray-700 rounded-md border border-gray-100 dark:border-gray-700 bg-white dark:bg-[#232326] shadow-lg cursor-pointer">
+            <div className="absolute end-10 z-10 mt-12 divide-y divide-gray-100/50 dark:divide-gray-700/50 rounded-2xl border border-white/30 dark:border-gray-700/30 glass-card shadow-glossy cursor-pointer">
               <div
-                className="absolute end-0 z-10 mt-2 divide-y divide-gray-100 dark:divide-gray-700 rounded-md border border-gray-100 dark:border-gray-700 bg-white dark:bg-[#232326] shadow-lg"
+                className="absolute end-0 z-10 mt-2 divide-y divide-gray-100/50 dark:divide-gray-700/50 rounded-2xl border border-white/30 dark:border-gray-700/30 glass-card shadow-glossy"
                 role="menu"
               >
                 <div className="p-5 flex justify-centre items-start flex-col">
@@ -278,22 +279,22 @@ const Navigation = () => {
                     <img
                       src={user.photoURL || ""}
                       alt="user"
-                      className="w-20 h-20 rounded-md"
+                      className="w-20 h-20 rounded-xl shadow-lg ring-2 ring-purple-400/30"
                     />
                     <div className="flex flex-col items-start justify-between h-full">
-                      <button className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1">
+                      <button className="glass-button px-4 py-2 rounded-lg font-bold m-0.5 my-1">
                         <LayoutDashboard size={16} />
                       </button>
-                      <button className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1">
+                      <button className="glass-button px-4 py-2 rounded-lg font-bold m-0.5 my-1">
                         <BookMarked size={16} />
                       </button>
                     </div>
                     <div className="flex flex-col items-start justify-between h-full">
-                      <button className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1">
+                      <button className="glass-button px-4 py-2 rounded-lg font-bold m-0.5 my-1">
                         <UserCog size={16} />
                       </button>
                       <button
-                        className="bg-red-600 text-white px-4 py-2 rounded font-extrabold m-0.5 my-1"
+                        className="bg-gradient-to-br from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white px-4 py-2 rounded-lg font-bold m-0.5 my-1 shadow-lg hover:shadow-xl transition-all duration-300"
                         onClick={() => setIsLogoutModalOpen(true)}
                       >
                         <LogOut size={16} />
@@ -309,11 +310,11 @@ const Navigation = () => {
           )}
           <li>
             <button
-              className="bg-gray-200 dark:bg-gray-700 rounded-full p-2 transition-colors"
+              className="bg-gradient-to-br from-yellow-200 to-orange-200 dark:from-indigo-900 dark:to-purple-900 rounded-full p-2.5 transition-all duration-300 hover:scale-110 hover:shadow-glow-purple border border-white/30 dark:border-gray-700/30"
               onClick={() => setIsDark((d) => !d)}
               aria-label="Toggle dark mode"
             >
-              {isDark ? <Sun size={18} className="text-yellow-400" /> : <Moon size={18} className="text-gray-700" />}
+              {isDark ? <Sun size={18} className="text-yellow-300" /> : <Moon size={18} className="text-gray-700" />}
             </button>
           </li>
         </ul>
