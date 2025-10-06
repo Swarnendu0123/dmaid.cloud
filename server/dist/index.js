@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const db_1 = require("./db");
-const v1_1 = __importDefault(require("./api/v1"));
+const v2_1 = __importDefault(require("./api/v2"));
 const cors = require("cors");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
@@ -21,7 +21,9 @@ app.get("/", (req, res) => {
     //   redirect to /api/v1
     res.redirect("/api/v1");
 });
-app.use("/api/v1", v1_1.default);
+app.use("/api/v2", v2_1.default);
+// Error handling middleware (must be last)
+// app.use(errorHandler);
 app.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`);
 });
