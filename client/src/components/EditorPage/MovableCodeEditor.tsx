@@ -125,19 +125,19 @@ const MovableCodeEditor: React.FC<MovableCodeEditorProps> = ({
         zIndex: 50,
         touchAction: "none",
       }}
-      className="flex flex-col items-center space-y-2 p-2 rounded-lg bg-white dark:bg-[#232326] h-[400px] w-[460px] shadow-lg border border-gray-300 dark:border-gray-700"
+      className="flex flex-col items-center space-y-2 p-3 rounded-2xl glass-card h-[400px] w-[460px] shadow-glossy-lg border border-white/30 dark:border-gray-700/30"
     >
       <div
-        className="drag-handle cursor-move w-full flex justify-between items-center mb-2 select-none"
+        className="drag-handle cursor-move w-full flex justify-between items-center mb-2 select-none bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm rounded-lg px-3 py-2"
         onMouseDown={onMouseDown}
         onTouchStart={onTouchStart}
       >
-        <div className="flex">
+        <div className="flex gap-1">
           <button
             disabled={history.length <= 1}
-            className={`bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 transition-all duration-200 ${
+            className={`glass-button px-3 py-2 rounded-lg font-bold transition-all duration-300 ${
               history.length > 1
-                ? "hover:bg-gray-800"
+                ? "hover:shadow-glow-purple"
                 : "opacity-50 cursor-not-allowed"
             }`}
             onClick={handleUndo}
@@ -147,9 +147,9 @@ const MovableCodeEditor: React.FC<MovableCodeEditorProps> = ({
           </button>
           <button
             disabled={redoStack.length === 0}
-            className={`bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 transition-all duration-200 ${
+            className={`glass-button px-3 py-2 rounded-lg font-bold transition-all duration-300 ${
               redoStack.length > 0
-                ? "hover:bg-gray-800"
+                ? "hover:shadow-glow-purple"
                 : "opacity-50 cursor-not-allowed"
             }`}
             onClick={handleRedo}
@@ -158,7 +158,7 @@ const MovableCodeEditor: React.FC<MovableCodeEditorProps> = ({
             <Redo size={16} color="#ffffff" />
           </button>
           <button
-            className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 hover:bg-gray-800 transition-all duration-200"
+            className="glass-button px-3 py-2 rounded-lg font-bold hover:shadow-glow-purple transition-all duration-300"
             onClick={handleCopy}
             title="Copy to clipboard"
           >
@@ -170,7 +170,7 @@ const MovableCodeEditor: React.FC<MovableCodeEditorProps> = ({
           </button>
         </div>
         <button
-          className="bg-black rounded px-4 py-2 hover:bg-gray-800 transition-colors"
+          className="glass-button rounded-lg px-4 py-2 hover:shadow-glow-purple transition-all duration-300"
           onClick={() => setIsOpen(false)}
           title="Close Editor"
         >

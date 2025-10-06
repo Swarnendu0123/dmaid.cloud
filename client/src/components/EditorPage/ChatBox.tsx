@@ -147,18 +147,18 @@ const ChatBox: React.FC<ChatBoxProps> = ({
         zIndex: 40,
         touchAction: "none",
       }}
-      className="flex flex-col items-center h-[560px] w-[370px] sm:w-[420px] md:w-[480px] bg-white/80 dark:bg-[#18181b]/80 shadow-xl border border-gray-200 dark:border-gray-700 backdrop-blur-md rounded-2xl p-0"
+      className="flex flex-col items-center h-[560px] w-[370px] sm:w-[420px] md:w-[480px] glass-card shadow-glossy-lg border border-white/30 dark:border-gray-700/30 rounded-2xl p-0"
     >
       <div
-        className="z-10 drag-handle cursor-move w-full px-6 pt-6 pb-2 flex justify-between items-center select-none"
+        className="z-10 drag-handle cursor-move w-full px-6 pt-6 pb-2 flex justify-between items-center select-none bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm rounded-t-2xl"
         onMouseDown={onMouseDown}
         onTouchStart={onTouchStart}
       >
-        <p className="text-lg font-black flex items-center gap-2 text-gray-900 dark:text-[#e5e7eb] m-0">
-          Dmaid AI
+        <p className="text-lg font-black flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent m-0">
+          Dmaid AI ✨
         </p>
         <button
-          className="bg-black dark:bg-gray-700 rounded px-3 py-1 hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors"
+          className="glass-button rounded-lg px-3 py-1.5 hover:shadow-glow-purple transition-all duration-300"
           onClick={() => setIsChatOpen(false)}
           title="Close Chat"
         >
@@ -167,14 +167,14 @@ const ChatBox: React.FC<ChatBoxProps> = ({
       </div>
       <div className="flex-1 w-full flex flex-col gap-2 px-6 pb-6">
         {chat && (
-          <div className="max-w-full max-h-[260px] overflow-y-auto p-4 rounded-lg bg-gray-50 dark:bg-[#232326] text-gray-900 dark:text-[#e5e7eb] border border-gray-200 dark:border-gray-700 mb-2">
+          <div className="max-w-full max-h-[260px] overflow-y-auto p-4 rounded-xl glass-card text-gray-900 dark:text-[#e5e7eb] border border-white/20 dark:border-gray-700/30 mb-2 shadow-inner-glow">
             <Markdown markdownString={chat} />
           </div>
         )}
         {/* Prompt input */}
         <textarea
           value={prompt}
-          className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#18181b] text-gray-900 dark:text-[#e5e7eb] p-2 rounded w-full resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-600 transition-all mb-2"
+          className="glossy-input text-gray-900 dark:text-[#e5e7eb] p-3 rounded-xl w-full resize-none focus:outline-none mb-2"
           onChange={(e) => setPrompt(e.target.value)}
           placeholder="Create a client-server architecture with database and middlewares"
           rows={3}
@@ -184,7 +184,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
         <div className="flex flex-wrap gap-2">
           <select
             name="diagramType"
-            className="bg-gray-100 dark:bg-gray-800 text-black dark:text-[#e5e7eb] rounded-full font-bold flex-1 min-w-[140px] p-2 text-sm border border-gray-200 dark:border-gray-700"
+            className="glossy-input text-black dark:text-[#e5e7eb] rounded-full font-semibold flex-1 min-w-[140px] p-2 text-sm"
             value={diagramType}
             onChange={(e) => setDiagramType(e.target.value)}
             title="Select diagram type"
@@ -201,7 +201,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
           </select>
           <select
             name="model"
-            className="bg-gray-100 dark:bg-gray-800 text-black dark:text-[#e5e7eb] rounded-full font-bold flex-1 min-w-[120px] p-2 text-sm border border-gray-200 dark:border-gray-700"
+            className="glossy-input text-black dark:text-[#e5e7eb] rounded-full font-semibold flex-1 min-w-[120px] p-2 text-sm"
             value={model}
             onChange={(e) => setModel(e.target.value)}
           >
@@ -216,7 +216,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({
           </select>
           <select
             name="edit/new"
-            className="bg-gray-100 text-black dark:bg-gray-700 dark:text-[#e5e7eb] rounded-md font-bold p-2 text-sm border border-gray-200 dark:border-gray-700"
+            className="glossy-input text-black dark:text-[#e5e7eb] rounded-lg font-semibold p-2 text-sm"
             value={mode}
             onChange={(e) => setMode(e.target.value)}
           >
@@ -224,10 +224,10 @@ const ChatBox: React.FC<ChatBoxProps> = ({
             <option value="edit">Edit</option>
           </select>
           <button
-            className={`bg-gray-800 text-white dark:bg-blue-600 dark:text-white px-4 py-2 rounded font-black text-sm flex items-center justify-center border border-gray-200 dark:border-gray-700 shadow-sm transition-all duration-200 ${
+            className={`glass-button px-5 py-2.5 rounded-xl font-bold text-sm flex items-center justify-center shadow-lg transition-all duration-300 ${
               isAIGeneratingDiagram || !prompt.trim()
                 ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-gray-800 dark:hover:bg-blue-700"
+                : "hover:shadow-glow-purple hover:scale-105"
             }`}
             onClick={editOrGenerateWithAI}
             disabled={isAIGeneratingDiagram || !prompt.trim()}

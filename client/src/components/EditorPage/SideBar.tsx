@@ -51,13 +51,13 @@ const Sidebar = ({
   </SidebarButton>;
   return (
     <div>
-      <div className="rounded-lg bg-slate-100 dark:bg-[#232326] p-2 flex flex-col items-center my-5">
-        <p className="font-black my-2 text-gray-900 dark:text-[#e5e7eb]">
+      <div className="rounded-2xl glass-card p-3 flex flex-col items-center my-5 shadow-glossy border border-white/30 dark:border-gray-700/30">
+        <p className="font-black my-2 text-transparent bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text">
           {"</>"}
         </p>
 
         <button
-          className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1 hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white"
+          className="glass-button px-4 py-2 rounded-lg font-bold m-0.5 my-1 hover:shadow-glow-purple transition-all duration-300"
           onClick={() => setIsMovableEditorOpen(!isMovableEditorOpen)}
           title="Toggle Code Editor"
         >
@@ -65,15 +65,15 @@ const Sidebar = ({
         </button>
 
         <button
-          className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1 hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white"
+          className="glass-button px-4 py-2 rounded-lg font-bold m-0.5 my-1 hover:shadow-glow-purple transition-all duration-300"
           onClick={() => setIsMovableExampleOpen(!isMovableExampleOpen)}
-          title="Toggle Code Editor"
+          title="Toggle Examples"
         >
           <Image size={16} color="#ffffff" />
         </button>
 
         <button
-          className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1 hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white"
+          className="glass-button px-4 py-2 rounded-lg font-bold m-0.5 my-1 hover:shadow-glow-purple transition-all duration-300"
           onClick={() => setIsChatOpen(!isChatOpen)}
           title="Toggle AI Chat"
         >
@@ -81,10 +81,10 @@ const Sidebar = ({
         </button>
 
         <button
-          className={`px-4 py-2 rounded font-extrabold m-0.5 my-1 transition-all duration-200 ${
+          className={`px-4 py-2 rounded-lg font-bold m-0.5 my-1 transition-all duration-300 ${
             isCanvasEditMode
-              ? "bg-blue-600 text-white dark:bg-blue-700"
-              : "bg-black text-white hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white"
+              ? "bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-glow-blue"
+              : "glass-button hover:shadow-glow-purple"
           }`}
           onClick={() => setIsCanvasEditMode(!isCanvasEditMode)}
           title="Toggle Canvas Edit Mode"
@@ -93,7 +93,7 @@ const Sidebar = ({
         </button>
 
         <button
-          className="bg-black text-white px-4 py-2 rounded font-extrabold m-0.5 my-1 hover:bg-gray-800 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white"
+          className="glass-button px-4 py-2 rounded-lg font-bold m-0.5 my-1 hover:shadow-glow-purple transition-all duration-300"
           onClick={() => setIsEmbedModalOpen(true)}
           title="Generate Embed Code"
         >
