@@ -74,9 +74,9 @@ html.dark body::before {
   }
   
   .glass-button {
-    @apply bg-green-600 hover:bg-green-700 
-           text-white font-bold shadow-lg hover:shadow-glow-green 
-           transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5;
+    @apply bg-[#1f883d] hover:bg-[#1a7f37] 
+           text-white font-semibold shadow-sm border border-[#1f883d]/20 hover:border-[#1a7f37]/20
+           transition-all duration-150;
   }
   
   .glossy-input {
