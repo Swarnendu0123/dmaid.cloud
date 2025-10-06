@@ -1,6 +1,7 @@
-import { X, Sparkles } from "lucide-react";
+import { X, Sparkles, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 import Markdown from "./Markdown";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
+import { ChatMessage } from "../../types";
 
 interface ModelOption {
   name: string;
@@ -15,44 +16,55 @@ interface DiagramTypeOption {
 }
 
 interface ChatBoxProps {
-  chat: string;
+  messages: ChatMessage[];
   prompt: string;
   setPrompt: (v: string) => void;
   model: string;
   setModel: (v: string) => void;
-  mode: string;
-  setMode: (v: string) => void;
   diagramType: string;
   setDiagramType: (v: string) => void;
   isAIGeneratingDiagram: boolean;
-  editOrGenerateWithAI: () => void;
+  onGenerate: () => void;
+  onEnhance: () => void;
   isChatOpen: boolean;
   setIsChatOpen: (v: boolean) => void;
   models: ModelOption[];
   diagramTypes: DiagramTypeOption[];
+  onClearChat: () => void;
+  hasExistingDiagram: boolean;
 }
 
 const ChatBox: React.FC<ChatBoxProps> = ({
-  chat,
+  messages,
   prompt,
   setPrompt,
   model,
   setModel,
-  mode,
-  setMode,
   diagramType,
   setDiagramType,
   isAIGeneratingDiagram,
-  editOrGenerateWithAI,
+  onGenerate,
+  onEnhance,
   isChatOpen,
   setIsChatOpen,
   models,
   diagramTypes,
+  onClearChat,
+  hasExistingDiagram,
 }) => {
   const boxRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
   const dragOffset = useRef({ x: 0, y: 0 });
+  const [showSettings, setShowSettings] = useState(false);
+  const [mode, setMode] = useState<"conversation" | "enhancement">("conversation");
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const onMouseDown = (e: React.MouseEvent) => {
     setDragging(true);
@@ -135,6 +147,24 @@ const ChatBox: React.FC<ChatBoxProps> = ({
   }, [dragging]);
 
   if (!isChatOpen) return null;
+
+  const handleSubmit = () => {
+    if (!prompt.trim() || isAIGeneratingDiagram) return;
+    
+    if (mode === "conversation") {
+      onGenerate();
+    } else {
+      onEnhance();
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
+
   return (
     <div
       ref={boxRef}
@@ -147,113 +177,206 @@ const ChatBox: React.FC<ChatBoxProps> = ({
         zIndex: 40,
         touchAction: "none",
       }}
-      className="flex flex-col items-center h-[560px] w-[370px] sm:w-[420px] md:w-[480px] bg-white/80 dark:bg-[#18181b]/80 shadow-xl border border-gray-200 dark:border-gray-700 backdrop-blur-md rounded-2xl p-0"
+      className="glass-card flex flex-col h-[600px] w-[400px] sm:w-[450px] md:w-[500px] overflow-hidden scale-in"
     >
+      {/* Header */}
       <div
-        className="z-10 drag-handle cursor-move w-full px-6 pt-6 pb-2 flex justify-between items-center select-none"
+        className="drag-handle cursor-move px-5 py-4 flex justify-between items-center border-b border-white/10 dark:border-white/5 bg-gradient-to-r from-primary-500/10 to-purple-500/10 select-none"
         onMouseDown={onMouseDown}
         onTouchStart={onTouchStart}
       >
-        <p className="text-lg font-black flex items-center gap-2 text-gray-900 dark:text-[#e5e7eb] m-0">
-          Dmaid AI
-        </p>
-        <button
-          className="bg-black dark:bg-gray-700 rounded px-3 py-1 hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors"
-          onClick={() => setIsChatOpen(false)}
-          title="Close Chat"
-        >
-          <X size={20} color="#fff" />
-        </button>
-      </div>
-      <div className="flex-1 w-full flex flex-col gap-2 px-6 pb-6">
-        {chat && (
-          <div className="max-w-full max-h-[260px] overflow-y-auto p-4 rounded-lg bg-gray-50 dark:bg-[#232326] text-gray-900 dark:text-[#e5e7eb] border border-gray-200 dark:border-gray-700 mb-2">
-            <Markdown markdownString={chat} />
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-blue flex items-center justify-center">
+            <Sparkles size={20} className="text-white" />
           </div>
-        )}
-        {/* Prompt input */}
-        <textarea
-          value={prompt}
-          className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#18181b] text-gray-900 dark:text-[#e5e7eb] p-2 rounded w-full resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-600 transition-all mb-2"
-          onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Create a client-server architecture with database and middlewares"
-          rows={3}
-          maxLength={1000}
-        />
-        {/* Controls */}
-        <div className="flex flex-wrap gap-2">
-          <select
-            name="diagramType"
-            className="bg-gray-100 dark:bg-gray-800 text-black dark:text-[#e5e7eb] rounded-full font-bold flex-1 min-w-[140px] p-2 text-sm border border-gray-200 dark:border-gray-700"
-            value={diagramType}
-            onChange={(e) => setDiagramType(e.target.value)}
-            title="Select diagram type"
-          >
-            {diagramTypes.map((typeOption) => (
-              <option
-                key={typeOption.value}
-                value={typeOption.value}
-                title={typeOption.description}
-              >
-                {typeOption.name}
-              </option>
-            ))}
-          </select>
-          <select
-            name="model"
-            className="bg-gray-100 dark:bg-gray-800 text-black dark:text-[#e5e7eb] rounded-full font-bold flex-1 min-w-[120px] p-2 text-sm border border-gray-200 dark:border-gray-700"
-            value={model}
-            onChange={(e) => setModel(e.target.value)}
-          >
-            {models.map((modelOption) => (
-              <option
-                key={modelOption.name}
-                value={modelOption.model}
-              >
-                {modelOption.name}
-              </option>
-            ))}
-          </select>
-          <select
-            name="edit/new"
-            className="bg-gray-100 text-black dark:bg-gray-700 dark:text-[#e5e7eb] rounded-md font-bold p-2 text-sm border border-gray-200 dark:border-gray-700"
-            value={mode}
-            onChange={(e) => setMode(e.target.value)}
-          >
-            <option value="new">New</option>
-            <option value="edit">Edit</option>
-          </select>
+          <div>
+            <p className="text-base font-bold text-primary m-0 gradient-text">
+              Dmaid AI
+            </p>
+            <p className="text-xs text-secondary m-0">Professional Diagram Assistant</p>
+          </div>
+        </div>
+        <div className="flex gap-2">
           <button
-            className={`bg-gray-800 text-white dark:bg-blue-600 dark:text-white px-4 py-2 rounded font-black text-sm flex items-center justify-center border border-gray-200 dark:border-gray-700 shadow-sm transition-all duration-200 ${
-              isAIGeneratingDiagram || !prompt.trim()
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-gray-800 dark:hover:bg-blue-700"
+            className="btn-modern btn-ghost p-2"
+            onClick={onClearChat}
+            title="Clear Chat History"
+          >
+            <Trash2 size={18} />
+          </button>
+          <button
+            className="btn-modern btn-ghost p-2"
+            onClick={() => setShowSettings(!showSettings)}
+            title="Toggle Settings"
+          >
+            {showSettings ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+          </button>
+          <button
+            className="btn-modern btn-ghost p-2"
+            onClick={() => setIsChatOpen(false)}
+            title="Close Chat"
+          >
+            <X size={20} />
+          </button>
+        </div>
+      </div>
+
+      {/* Settings Panel (Collapsible) */}
+      {showSettings && (
+        <div className="px-5 py-4 border-b border-white/10 dark:border-white/5 bg-white/20 dark:bg-black/20 slide-down">
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-semibold text-primary mb-2 block">
+                AI Model
+              </label>
+              <select
+                name="model"
+                className="input-modern w-full"
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+              >
+                {models.map((modelOption) => (
+                  <option key={modelOption.name} value={modelOption.model}>
+                    {modelOption.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-sm font-semibold text-primary mb-2 block">
+                Diagram Type
+              </label>
+              <select
+                name="diagramType"
+                className="input-modern w-full"
+                value={diagramType}
+                onChange={(e) => setDiagramType(e.target.value)}
+                title="Select diagram type"
+              >
+                {diagramTypes.map((typeOption) => (
+                  <option
+                    key={typeOption.value}
+                    value={typeOption.value}
+                    title={typeOption.description}
+                  >
+                    {typeOption.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Messages Area */}
+      <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={`flex ${
+              message.role === "user" ? "justify-end" : "justify-start"
             }`}
-            onClick={editOrGenerateWithAI}
+          >
+            <div
+              className={`max-w-[85%] rounded-2xl px-4 py-3 ${
+                message.role === "user"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 dark:bg-[#232326] text-gray-900 dark:text-[#e5e7eb]"
+              }`}
+            >
+              {message.role === "user" ? (
+                <p className="text-sm whitespace-pre-wrap m-0 leading-relaxed">
+                  {message.content}
+                </p>
+              ) : (
+                <div className="text-sm">
+                  <Markdown markdownString={message.content} />
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Input Area - Claude-like */}
+      <div className="px-5 pb-5 pt-3 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-[#18181b]">
+        {/* Mode Toggle */}
+        <div className="flex gap-2 mb-3">
+          <button
+            onClick={() => setMode("conversation")}
+            className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              mode === "conversation"
+                ? "bg-blue-600 text-white shadow-sm"
+                : "bg-gray-100 dark:bg-[#232326] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+            }`}
+          >
+            💬 Conversation
+          </button>
+          <button
+            onClick={() => setMode("enhancement")}
+            disabled={!hasExistingDiagram}
+            className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              mode === "enhancement"
+                ? "bg-purple-600 text-white shadow-sm"
+                : "bg-gray-100 dark:bg-[#232326] text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            }`}
+            title={!hasExistingDiagram ? "Create a diagram first to enable enhancement mode" : ""}
+          >
+            ✨ Enhancement
+          </button>
+        </div>
+
+        {/* Input Container */}
+        <div className="relative">
+          <textarea
+            ref={textareaRef}
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={
+              mode === "conversation"
+                ? "Describe the diagram you want to create..."
+                : "Describe how to enhance the existing diagram..."
+            }
+            rows={3}
+            maxLength={1000}
+            className="w-full bg-gray-50 dark:bg-[#232326] text-gray-900 dark:text-[#e5e7eb] p-3 pr-12 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 border border-gray-200 dark:border-gray-700 text-sm"
+          />
+          <button
+            onClick={handleSubmit}
             disabled={isAIGeneratingDiagram || !prompt.trim()}
+            className={`absolute right-2 bottom-2 p-2 rounded-lg transition-all ${
+              isAIGeneratingDiagram || !prompt.trim()
+                ? "bg-gray-300 dark:bg-gray-700 cursor-not-allowed opacity-50"
+                : mode === "conversation"
+                ? "bg-blue-600 hover:bg-blue-700 shadow-sm"
+                : "bg-purple-600 hover:bg-purple-700 shadow-sm"
+            }`}
             title={
               !prompt.trim()
-                ? "Please enter a prompt"
-                : "Generate diagram"
+                ? "Enter a prompt first"
+                : mode === "conversation"
+                ? "Generate new diagram"
+                : "Enhance existing diagram"
             }
           >
             {isAIGeneratingDiagram ? (
-              <div className="flex items-center justify-center">
-                <span className="animate-spin mr-2">⏳</span>
-                Generating...
-              </div>
+              <span className="animate-spin text-white">⏳</span>
             ) : (
-              <>
-                Generate
-                <Sparkles
-                  size={16}
-                  color="#ffffff"
-                  className="ml-2"
-                />
-              </>
+              <Sparkles size={18} className="text-white" />
             )}
           </button>
         </div>
+
+        {/* Hint Text */}
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
+          {mode === "conversation" ? (
+            <>Press Enter to send • Shift+Enter for new line</>
+          ) : (
+            <>Enhancement mode: Modify the current diagram • Press Enter to send</>
+          )}
+        </p>
       </div>
     </div>
   );
