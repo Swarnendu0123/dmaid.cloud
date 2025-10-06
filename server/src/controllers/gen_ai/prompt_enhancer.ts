@@ -44,7 +44,7 @@ function ensureEnv(keys = []) {
  * ----- Gemini (Google Generative AI) -----
  * generateTextTotitleWithGemini(prompt: string)
  */
-export async function generateTextTotitleWithGemini(prompt) {
+export async function generateTextTotitleWithGemini(prompt: string) {
   ensureEnv(["GOOGLE_GEMINI_API_KEY"]);
   if (!GoogleGenerativeAI) {
     throw new Error(
