@@ -1,7 +1,7 @@
 import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import { connectToDB } from "./db";
-import v1router from "./api/v1";
+import v2router from "./api/v2";
 const cors = require("cors");
 
 dotenv.config();
@@ -22,7 +22,10 @@ app.get("/", (req: Request, res: Response) => {
   res.redirect("/api/v1");
 });
 
-app.use("/api/v1", v1router);
+app.use("/api/v2", v2router);
+
+// Error handling middleware (must be last)
+// app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
